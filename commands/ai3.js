@@ -1,4 +1,4 @@
-const { ActivityType, Activity } = require('discord.js');
+const { ActivityType } = require('discord.js');
 const { Configuration, OpenAIApi } = require("openai");
 const { openaiToken } = require('./../resources/config.json');
 
@@ -45,10 +45,10 @@ exports.run = async(client, msg, args) => {
         if (res.content.length > 2000) {
             const resArray = res.content.match(/[\s\S]{1,2000}/g)
             resArray.forEach((r) => {
-                msg.channel.send(r);
+                msg.reply(r);
             })
         } else {
-            msg.channel.send(res.content);
+            msg.reply(res.content);
         }
     }
 }
