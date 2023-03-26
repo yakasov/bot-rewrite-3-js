@@ -12,14 +12,22 @@ const client = new Client({
 		GatewayIntentBits.MessageContent,
 	],
 });
-const date = new Date()
+var date = new Date().toLocaleDateString('en-GB').slice(0, -5)
+
+async function checkBirthdays(force = false) {
+	var birthdays = require('./tasks/birthdays.js');
+	date = await birthdays.run(client, date, force);
+}
 
 client.once(Events.ClientReady, c => {
 	console.log(
 		'Connected and ready to go!\n' +
-		`Current date is ${date.toLocaleDateString('en-GB')}, ` +
+		`Current date is ${date}, ` +
 		`logged in as ${c.user.tag}`
 	);
+
+	checkBirthdays(true);
+	setInterval(checkBirthdays, 900000);
 });
 
 client.on('messageCreate', async (msg) => {
