@@ -27,6 +27,7 @@ exports.run = async(client, msg, args) => {
     ai3Messages = ai3Messages.concat({"role": "user", "content": prompt})
     var res;
 
+    msg.channel.send(`Generating OpenAI (gpt-3.5-turbo) response with prompt:\n${prompt}`)
     client.user.setPresence({ activities: [{ name: 'AI3 response...', type: ActivityType.Streaming, }]})
     try {
         res = await openai.createChatCompletion({

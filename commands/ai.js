@@ -14,6 +14,7 @@ exports.run = async(client, msg, args) => {
     const prompt = `${args.join(' ')}`;
     var res;
 
+    msg.channel.send(`Generating OpenAI (text-davinci-002) response with prompt:\n${prompt}`)
     client.user.setPresence({ activities: [{ name: 'AI2 response...', type: ActivityType.Streaming, }]})
     try {
         res = await openai.createCompletion({
