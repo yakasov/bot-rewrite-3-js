@@ -1,3 +1,4 @@
+const { ActivityType, Activity } = require('discord.js');
 const { Configuration, OpenAIApi } = require("openai");
 const { openaiToken } = require('./../resources/config.json');
 
@@ -26,6 +27,7 @@ exports.run = async(client, msg, args) => {
     ai3Messages = ai3Messages.concat({"role": "user", "content": prompt})
     var res;
 
+    client.user.setPresence({ activities: [{ name: 'AI3 response...', type: ActivityType.Streaming, }]})
     try {
         res = await openai.createChatCompletion({
             model: "gpt-3.5-turbo",
@@ -34,6 +36,7 @@ exports.run = async(client, msg, args) => {
     } catch(err) {
         console.warn(err);
     };
+    client.user.setPresence({ activities: null })
 
     if (res) {
         res = res.data.choices[0].message;

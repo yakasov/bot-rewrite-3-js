@@ -14,6 +14,7 @@ exports.run = async(client, msg, args) => {
     const prompt = `${args.join(' ')}`;
     var res;
 
+    client.user.setPresence({ activities: [{ name: 'AI2 response...', type: ActivityType.Streaming, }]})
     try {
         res = await openai.createCompletion({
             model: "text-davinci-002",
@@ -26,6 +27,7 @@ exports.run = async(client, msg, args) => {
     } catch(err) {
         console.warn(err);
     };
+    client.user.setPresence({ activities: null })
 
     if (res) {
         res = res.data.choices[0].text;
