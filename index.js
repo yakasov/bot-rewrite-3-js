@@ -4,9 +4,12 @@ const { token, prefix } = require('./resources/config.json');
 const client = new Client({
 	intents: [
 		GatewayIntentBits.Guilds,
-		GatewayIntentBits.GuildMessages,
-		GatewayIntentBits.MessageContent,
 		GatewayIntentBits.GuildMembers,
+		GatewayIntentBits.GuildMessages,
+		GatewayIntentBits.GuildMessageReactions,
+		GatewayIntentBits.GuildPresences,
+		GatewayIntentBits.GuildVoiceStates,
+		GatewayIntentBits.MessageContent,
 	],
 });
 const date = new Date()
