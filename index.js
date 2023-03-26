@@ -20,8 +20,8 @@ async function checkBirthdays(force = false) {
 	date = await birthdays.run(client, date, force);
 }
 
-function checkMessageResponse(client, msg) {
-	Object.keys(responses).every((k) => {
+function checkMessageResponse(msg) {
+	Object.keys(responses).some((k) => {
 		if (msg.content.toLowerCase().includes(k)) {
 			var res = responses[k];
 
@@ -54,7 +54,7 @@ client.on('messageCreate', async (msg) => {
     if(msg.author.bot) return;
     if(!msg.guild) return;
 
-	checkMessageResponse(client, msg)
+	checkMessageResponse(msg)
     if(!msg.content.toLowerCase().startsWith(prefix)) return;
 
     var args = msg.content.split(' ');
