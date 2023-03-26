@@ -17,7 +17,9 @@
   },
   "homepage": "https://github.com/yakasov/bot-rewrite-3-js#readme",
   "dependencies": {
+    "@discordjs/voice": "^0.15.0",
     "discord.js": "^14.8.0",
+    "gtts": "^0.2.1",
     "openai": "^3.2.1"
   }
 }
