@@ -1,0 +1,11 @@
+# Folders
+__pycache__
+.vscode
+node_modules
+
+# Files
+cache
+config.json
+*.log
+tts.mp3
+!run.bat

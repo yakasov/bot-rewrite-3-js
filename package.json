@@ -1,0 +1,22 @@
+{
+  "name": "bot-rewrite-3-js",
+  "version": "1.0.0",
+  "description": "bot-rewrite-3-py... but in .js",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yakasov/bot-rewrite-3-js.git"
+  },
+  "author": "yakasov",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/yakasov/bot-rewrite-3-js/issues"
+  },
+  "homepage": "https://github.com/yakasov/bot-rewrite-3-js#readme",
+  "dependencies": {
+    "discord.js": "^14.8.0"
+  }
+}
