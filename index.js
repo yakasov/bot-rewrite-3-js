@@ -1,4 +1,5 @@
 const { Client, Events, GatewayIntentBits } = require('discord.js');
+const responses = require('./resources/responses.json')
 const { token, prefix } = require('./resources/config.json');
 
 const client = new Client({
@@ -19,6 +20,25 @@ async function checkBirthdays(force = false) {
 	date = await birthdays.run(client, date, force);
 }
 
+function checkMessageResponse(client, msg) {
+	Object.keys(responses).every((k) => {
+		if (msg.content.toLowerCase().includes(k)) {
+			var res = responses[k];
+
+			if (res.includes('{AUTHOR}')) {
+				res = res.replace('{AUTHOR}', msg.author.username)
+			};
+
+			if (res.includes('{FOLLOWING}')) {
+				const following = msg.content.toLowerCase().split(k)[1]
+				res = res.replace('{FOLLOWING}', following)
+			};
+
+			return msg.channel.send(res);
+		}
+	})
+}
+
 client.once(Events.ClientReady, c => {
 	console.log(
 		'Connected and ready to go!\n' +
@@ -34,6 +54,7 @@ client.on('messageCreate', async (msg) => {
     if(msg.author.bot) return;
     if(!msg.guild) return;
 
+	checkMessageResponse(client, msg)
     if(!msg.content.toLowerCase().startsWith(prefix)) return;
 
     var args = msg.content.split(' ');
