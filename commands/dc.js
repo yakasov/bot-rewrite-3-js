@@ -1,8 +1,8 @@
-const { getVoiceConnection } = require('@discordjs/voice')
+const { getVoiceConnection } = require("@discordjs/voice");
 
-exports.run = async(client, msg, args) => {
-    const conn = getVoiceConnection(msg.guild.id);
-    if (conn) {
-        conn.destroy();
-    }
-}
+exports.run = async (client, msg, args) => {
+  const conn = getVoiceConnection(msg.guild.id);
+  if (conn) {
+    conn.destroy();
+  }
+};
