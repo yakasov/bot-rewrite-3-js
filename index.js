@@ -22,7 +22,7 @@ async function checkBirthdays(force = false) {
 
 function checkMessageResponse(msg) {
   Object.keys(responses).some((k) => {
-    if (msg.content.toLowerCase().includes(k)) {
+    if (` ${msg.content.toLowerCase()} `.includes(` ${k} `)) {
       var res = responses[k];
 
       if (res.includes("{AUTHOR}")) {
@@ -31,7 +31,11 @@ function checkMessageResponse(msg) {
 
       if (res.includes("{FOLLOWING}")) {
         const following = msg.content.toLowerCase().split(k)[1];
-        res = res.replace("{FOLLOWING}", following);
+        if (msg.content.trim() === k) {
+          res = res.replace("{FOLLOWING}", msg.author.username);
+        } else {
+          res = res.replace(" {FOLLOWING}", following);
+        }
       }
 
       return msg.channel.send(res);
