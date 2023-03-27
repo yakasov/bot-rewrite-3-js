@@ -38,9 +38,17 @@ exports.run = async (client, msg, args) => {
     res = await openai.createChatCompletion({
       model: "gpt-3.5-turbo",
       messages: ai3Messages,
+      max_tokens: 2048,
     });
   } catch (err) {
-    console.warn(err);
+    if (res.status === 400) {
+      msg.reply("400 Bad Request: Try again?");
+      if (res.data && res.data.error) {
+        msg.channel.send(res.data.error);
+      }
+    } else {
+      console.warn(err);
+    }
   }
   client.user.setPresence({ activities: null });
 
