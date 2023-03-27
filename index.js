@@ -80,7 +80,7 @@ client.on("messageCreate", async (msg) => {
     var file = require(`./commands/${cmd}.js`);
     file.run(client, msg, args);
   } catch (err) {
-    console.warn(err);
+    console.error(err);
   }
 });
 
