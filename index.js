@@ -31,11 +31,10 @@ function checkMessageResponse(msg) {
 
       if (res.includes("{FOLLOWING}")) {
         const following = msg.content.toLowerCase().split(k)[1];
-        if (msg.content.trim() === k) {
-          res = res.replace("{FOLLOWING}", msg.author.username);
-        } else {
-          res = res.replace(" {FOLLOWING}", following);
-        }
+        res = res.replace(
+          "{FOLLOWING}",
+          msg.content.trim() === k ? msg.author.username : following.trim()
+        );
       }
 
       return msg.channel.send(res);
