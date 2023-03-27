@@ -1,6 +1,7 @@
 const { EmbedBuilder } = require("discord.js");
 
 exports.run = async (client, msg, args) => {
+  var avatar;
   if (args.length) {
     const member =
       msg.mentions.members.first() || (await msg.guild.members.fetch(args[0]));

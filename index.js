@@ -1,6 +1,6 @@
 const { Client, Events, GatewayIntentBits } = require("discord.js");
 const responses = require("./resources/responses.json");
-const reactions = require("./resources/reactions.json")
+const reactions = require("./resources/reactions.json");
 const { token, prefix } = require("./resources/config.json");
 
 const client = new Client({
@@ -46,7 +46,7 @@ function checkMessageResponse(msg) {
 function checkMessageReactions(msg) {
   Object.keys(reactions).some((k) => {
     if (k === msg.author.id) {
-      const reaction = msg.guild.emojis.cache.find(e => e.name === reactions[k])
+      const reaction = msg.guild.emojis.cache.find(e => e.name === reactions[k]);
       if (reaction) {
         msg.react(reaction);
       }
