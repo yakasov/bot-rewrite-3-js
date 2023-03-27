@@ -56,7 +56,7 @@ exports.run = async (client, msg, args) => {
     res = res.data.choices[0].message;
     ai3Messages = ai3Messages.concat(res);
     if (res.content.length > 2000) {
-      const resArray = res.content.match(/[\s\S]{1,2000}/g);
+      const resArray = res.content.match(/[\s\S]{1,2000}(?!\S)/g);
       resArray.forEach((r) => {
         msg.reply(r);
       });

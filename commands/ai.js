@@ -45,7 +45,7 @@ exports.run = async (client, msg, args) => {
   if (res) {
     res = res.data.choices[0].text;
     if (res.length > 2000) {
-      const resArray = res.match(/[\s\S]{1,2000}/g);
+      const resArray = res.match(/[\s\S]{1,2000}(?!\S)/g);
       resArray.forEach((r) => {
         msg.reply(r);
       });
