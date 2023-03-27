@@ -1,5 +1,6 @@
 const { Client, Events, GatewayIntentBits } = require("discord.js");
 const responses = require("./resources/responses.json");
+const reactions = require("./resources/reactions.json")
 const { token, prefix } = require("./resources/config.json");
 
 const client = new Client({
@@ -42,6 +43,17 @@ function checkMessageResponse(msg) {
   });
 }
 
+function checkMessageReactions(msg) {
+  Object.keys(reactions).some((k) => {
+    if (k === msg.author.id) {
+      const reaction = msg.guild.emojis.cache.find(e => e.name === reactions[k])
+      if (reaction) {
+        msg.react(reaction);
+      }
+    }
+  });
+}
+
 client.once(Events.ClientReady, (c) => {
   console.log(
     "Connected and ready to go!\n" +
@@ -58,6 +70,7 @@ client.on("messageCreate", async (msg) => {
   if (!msg.guild) return;
 
   checkMessageResponse(msg);
+  checkMessageReactions(msg);
   if (!msg.content.toLowerCase().startsWith(prefix)) return;
 
   var args = msg.content.split(" ");
