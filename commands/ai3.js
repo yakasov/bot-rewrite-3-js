@@ -42,7 +42,7 @@ exports.run = async (client, msg, args) => {
       max_tokens: 2048,
     });
   } catch (err) {
-    if (res.status === 400) {
+    if (res && res.status === 400) {
       msg.reply("400 Bad Request: Try again?");
       if (res.data && res.data.error) {
         msg.channel.send(res.data.error);

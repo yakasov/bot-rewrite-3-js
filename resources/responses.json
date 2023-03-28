@@ -17,5 +17,6 @@
 
   "nonce": "Are we sure {AUTHOR} isn't a nonce themself?",
   "pedo": "Are we sure {AUTHOR} isn't a pedo themself?",
-  "pedophile": "Are we sure {AUTHOR} isn't a pedophile themself?"
+  "pedophile": "Are we sure {AUTHOR} isn't a pedophile themself?",
+  "likes kids": "Are we sure {AUTHOR} doesn't like kids themself?"
 }
