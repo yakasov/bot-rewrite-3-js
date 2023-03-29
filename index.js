@@ -1,5 +1,5 @@
 const { Client, Events, GatewayIntentBits } = require("discord.js");
-const aliases = require("./commands/aliases.json");
+const fs = require("fs");
 const responses = require("./resources/responses.json");
 const reactions = require("./resources/reactions.json");
 const { token, prefix } = require("./resources/config.json");
@@ -15,8 +15,19 @@ const client = new Client({
     GatewayIntentBits.MessageContent,
   ],
 });
+const aliases = buildAliases();
 var date = new Date().toLocaleDateString("en-GB").slice(0, -5);
 var splash;
+
+function buildAliases() {
+  var aliases = {};
+  const cmdFiles = fs.readdirSync("./commands");
+  cmdFiles.forEach((file) => {
+    const cmd = require(`./commands/${file}`);
+    aliases[file.slice(0, -3)] = cmd.aliases;
+  })
+  return aliases;
+}
 
 async function checkBirthdays(force = false) {
   try {
