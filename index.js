@@ -1,4 +1,5 @@
-const { Client, Events, GatewayIntentBits } = require("discord.js");
+const { ActivityType, Client, Events, GatewayIntentBits } = require("discord.js");
+const fs = require("fs");
 const aliases = require("./commands/aliases.json");
 const responses = require("./resources/responses.json");
 const reactions = require("./resources/reactions.json");
@@ -16,6 +17,7 @@ const client = new Client({
   ],
 });
 var date = new Date().toLocaleDateString("en-GB").slice(0, -5);
+var splash;
 
 async function checkBirthdays(force = false) {
   try {
@@ -61,6 +63,14 @@ function checkMessageReactions(msg) {
   });
 }
 
+function setPresence() {
+  const splashes = fs.readFileSync("./resources/splashes.txt", "utf-8").split("\n");
+  splash = splashes[Math.floor(Math.random() * splashes.length)];
+  client.user.setPresence({
+    activities: [{ name: splash, type: ActivityType.Streaming }],
+  });
+}
+
 client.once(Events.ClientReady, (c) => {
   console.log(
     "Connected and ready to go!\n" +
@@ -68,6 +78,7 @@ client.once(Events.ClientReady, (c) => {
       `logged in as ${c.user.tag}`
   );
 
+  setPresence();
   checkBirthdays(true);
   setInterval(checkBirthdays, 900000);
 });
@@ -93,7 +104,11 @@ client.on("messageCreate", async (msg) => {
 
   try {
     var file = require(`./commands/${cmd}.js`);
-    file.run(client, msg, args);
+    if (["ai", "ai3"].includes(cmd)) {
+      file.run(client, msg, args, splash);
+    } else {
+      file.run(client, msg, args);
+    }
   } catch (err) {
     if (err.code && err.code !== "MODULE_NOT_FOUND") {
       console.error(err);

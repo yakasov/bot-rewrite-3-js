@@ -7,7 +7,7 @@ const config = new Configuration({
 });
 const openai = new OpenAIApi(config);
 
-exports.run = async (client, msg, args) => {
+exports.run = async (client, msg, args, splash) => {
   if (!config.apiKey) {
     return;
   }
@@ -40,7 +40,9 @@ exports.run = async (client, msg, args) => {
       console.warn(err);
     }
   }
-  client.user.setPresence({ activities: null });
+  client.user.setPresence({
+    activities: [{ name: splash, type: ActivityType.Streaming }] 
+  });
 
   if (res) {
     res = res.data.choices[0].text;
