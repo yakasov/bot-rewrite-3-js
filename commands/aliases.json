@@ -1,0 +1,11 @@
+{
+    "ai": ["ai2"],
+    "ai3": ["aix"],
+    "dc": ["disconnect", "leave"],
+    "getpfp": [],
+    "ping": ["pong"],
+    "restart": [],
+    "say": [],
+    "sing": ["play", "stream"],
+    "tts": []
+}

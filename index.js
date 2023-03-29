@@ -1,4 +1,5 @@
 const { Client, Events, GatewayIntentBits } = require("discord.js");
+const aliases = require("./commands/aliases.json")
 const responses = require("./resources/responses.json");
 const reactions = require("./resources/reactions.json");
 const { token, prefix } = require("./resources/config.json");
@@ -78,11 +79,21 @@ client.on("messageCreate", async (msg) => {
   var args = msg.content.split(" ");
   var cmd = args.shift().slice(prefix.length).toLowerCase();
 
+  if (!Object.keys(aliases).includes(cmd)) {
+    Object.entries(aliases).forEach(([k, v]) => {
+      if (v.includes(cmd)) {
+        cmd = k;
+      }
+    })
+  }
+
   try {
     var file = require(`./commands/${cmd}.js`);
     file.run(client, msg, args);
   } catch (err) {
-    console.error(err);
+    if (err.code && err.code !== "MODULE_NOT_FOUND") {
+      console.error(err);
+    }
   }
 });
 
