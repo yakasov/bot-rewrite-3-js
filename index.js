@@ -31,10 +31,12 @@ function checkMessageResponse(msg) {
       }
 
       if (res.includes("{FOLLOWING}")) {
-        const following = msg.content.toLowerCase().split(k)[1];
+        const following = msg.content.toLowerCase().split(k).slice(1).join(k);
         res = res.replace(
           "{FOLLOWING}",
-          msg.content.trim() === k ? msg.author.username : following.trim()
+          msg.content.trim() === k || !following.trim()
+          ? msg.author.username
+          : following.trim()
         );
       }
 
