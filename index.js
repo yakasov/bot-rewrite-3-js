@@ -1,5 +1,5 @@
 const { Client, Events, GatewayIntentBits } = require("discord.js");
-const aliases = require("./commands/aliases.json")
+const aliases = require("./commands/aliases.json");
 const responses = require("./resources/responses.json");
 const reactions = require("./resources/reactions.json");
 const { token, prefix } = require("./resources/config.json");
@@ -40,8 +40,8 @@ function checkMessageResponse(msg) {
         res = res.replace(
           "{FOLLOWING}",
           msg.content.trim() === k || !following.trim()
-          ? msg.author.username
-          : following.trim()
+            ? msg.author.username
+            : following.trim()
         );
       }
 
@@ -88,7 +88,7 @@ client.on("messageCreate", async (msg) => {
       if (v.includes(cmd)) {
         cmd = k;
       }
-    })
+    });
   }
 
   try {
