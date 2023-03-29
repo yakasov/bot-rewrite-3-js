@@ -18,8 +18,12 @@ const client = new Client({
 var date = new Date().toLocaleDateString("en-GB").slice(0, -5);
 
 async function checkBirthdays(force = false) {
-  var birthdays = require("./tasks/birthdays.js");
-  date = await birthdays.run(client, date, force);
+  try {
+    var birthdays = require("./tasks/birthdays.js");
+    date = await birthdays.run(client, date, force);
+  } catch {
+    return;
+  }
 }
 
 function checkMessageResponse(msg) {
