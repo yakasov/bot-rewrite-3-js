@@ -25,7 +25,7 @@ function buildAliases() {
   cmdFiles.forEach((file) => {
     const cmd = require(`./commands/${file}`);
     aliases[file.slice(0, -3)] = cmd.aliases;
-  })
+  });
   return aliases;
 }
 
@@ -80,8 +80,8 @@ client.once(Events.ClientReady, async (c) => {
       `logged in as ${c.user.tag}`
   );
   
-  const npFile = require("./commands/np.js")
-  splash = await npFile.run(client, null, null)
+  const npFile = require("./commands/np.js");
+  splash = await npFile.run(client, null, null);
   checkBirthdays(true);
   setInterval(checkBirthdays, 900000);
 });

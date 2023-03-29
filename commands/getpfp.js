@@ -18,4 +18,4 @@ module.exports = {
       .setAuthor({ name: msg.author.username });
     msg.channel.send({ embeds: [embed] });
   }
-}
+};

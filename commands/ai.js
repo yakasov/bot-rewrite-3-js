@@ -1,5 +1,6 @@
 const { ActivityType } = require("discord.js");
 const { Configuration, OpenAIApi } = require("openai");
+const fs = require("fs");
 const { openaiToken } = require("./../resources/config.json");
 
 const config = new Configuration({

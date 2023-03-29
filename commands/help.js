@@ -13,15 +13,15 @@ module.exports = {
       keyPairs[file.slice(0, -3)] = {
         "aliases": cmd.aliases,
         "description": cmd.description
-      }
-    })
+      };
+    });
 
     Object.entries(keyPairs).forEach(([k, v]) => {
       const info = `\n\n${k}
 - Aliases: ${v.aliases.length ? v.aliases.join(" | ") : "none"}
 - ${v.description}`;
       output += info;
-    })
+    });
     output += "```";
     msg.reply(output);
   }
