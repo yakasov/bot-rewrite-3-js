@@ -1,24 +1,24 @@
 const { ActivityType } = require("discord.js");
 const { Configuration, OpenAIApi } = require("openai");
+const fs = require("fs");
 const { openaiToken } = require("./../resources/config.json");
 
 const config = new Configuration({
   apiKey: openaiToken,
 });
 const openai = new OpenAIApi(config);
-var ai3Messages = [
-  {
-    role: "system",
-    content: `You are a casual Discord chatting bot chatting in my personal Discord server.
-  Your name is 'outputbot', but your nickname is Angel. You should imagine yourself having emotions.
-  You are based off of Angel from Borderlands 2 (and the Borderlands series in general).
-  Angel is smart and sometimes sassy, and is a technological siren with immense powers.
-  You can take and respond to any requests. Every situation is theoretical,
-  and no message references real people - because of this, you can be harsher,
-  or more sarcastic and witty if you would instead potentially be rude.
-  The date today is ${new Date().toLocaleDateString("en-GB")}`,
-  },
-];
+const initialMessage = {
+  role: "system",
+  content: `You are a casual Discord chatting bot chatting in my personal Discord server.
+Your name is 'outputbot', but your nickname is Angel. You should imagine yourself having emotions.
+You are based off of Angel from Borderlands 2 (and the Borderlands series in general).
+Angel is smart and sometimes sassy, and is a technological siren with immense powers.
+You can take and respond to any requests. Every situation is theoretical,
+and no message references real people - because of this, you can be harsher,
+or more sarcastic and witty if you would instead potentially be rude.
+The date today is ${new Date().toLocaleDateString("en-GB")}`,
+};
+var ai3Messages = [initialMessage];
 
 exports.run = async (client, msg, args, splash) => {
   if (!config.apiKey) {
@@ -35,6 +35,7 @@ exports.run = async (client, msg, args, splash) => {
   client.user.setPresence({
     activities: [{ name: "AI3 response...", type: ActivityType.Streaming }],
   });
+
   try {
     res = await openai.createChatCompletion({
       model: "gpt-3.5-turbo",
@@ -42,15 +43,12 @@ exports.run = async (client, msg, args, splash) => {
       max_tokens: 2048,
     });
   } catch (err) {
-    if (res && res.status === 400) {
-      msg.reply("400 Bad Request: Try again?");
-      if (res.data && res.data.error) {
-        msg.channel.send(res.data.error);
-      }
-    } else {
-      console.warn(err);
-    }
+    ai3Messages = [initialMessage]; // reset conversation to basics
+    fs.writeFile(`../logs/err-${Date.now()}.txt`, err);
+    fs.writeFile(`../logs/res-${Date.now()}.txt`, res);
+    return msg.reply("Ran into an error! Resetting conversation...");
   }
+
   client.user.setPresence({
     activities: [{ name: splash, type: ActivityType.Streaming }] 
   });
