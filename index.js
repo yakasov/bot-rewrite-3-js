@@ -1,5 +1,4 @@
-const { ActivityType, Client, Events, GatewayIntentBits } = require("discord.js");
-const fs = require("fs");
+const { Client, Events, GatewayIntentBits } = require("discord.js");
 const aliases = require("./commands/aliases.json");
 const responses = require("./resources/responses.json");
 const reactions = require("./resources/reactions.json");
@@ -21,7 +20,7 @@ var splash;
 
 async function checkBirthdays(force = false) {
   try {
-    var birthdays = require("./tasks/birthdays.js");
+    const birthdays = require("./tasks/birthdays.js");
     date = await birthdays.run(client, date, force);
   } catch {
     return;
@@ -63,22 +62,15 @@ function checkMessageReactions(msg) {
   });
 }
 
-function setPresence() {
-  const splashes = fs.readFileSync("./resources/splashes.txt", "utf-8").split("\n");
-  splash = splashes[Math.floor(Math.random() * splashes.length)];
-  client.user.setPresence({
-    activities: [{ name: splash, type: ActivityType.Streaming }],
-  });
-}
-
-client.once(Events.ClientReady, (c) => {
+client.once(Events.ClientReady, async (c) => {
   console.log(
     "Connected and ready to go!\n" +
       `Current date is ${date}, ` +
       `logged in as ${c.user.tag}`
   );
-
-  setPresence();
+  
+  const npFile = require("./commands/np.js")
+  splash = await npFile.run(client, null, null)
   checkBirthdays(true);
   setInterval(checkBirthdays, 900000);
 });
@@ -105,9 +97,9 @@ client.on("messageCreate", async (msg) => {
   try {
     var file = require(`./commands/${cmd}.js`);
     if (["ai", "ai3"].includes(cmd)) {
-      file.run(client, msg, args, splash);
+      return file.run(client, msg, args, splash);
     } else {
-      file.run(client, msg, args);
+      return file.run(client, msg, args);
     }
   } catch (err) {
     if (err.code && err.code !== "MODULE_NOT_FOUND") {

@@ -3,6 +3,7 @@
     "ai3": ["aix"],
     "dc": ["disconnect", "leave"],
     "getpfp": [],
+    "np": ["newpresence", "presence"],
     "ping": ["pong"],
     "restart": [],
     "say": [],
