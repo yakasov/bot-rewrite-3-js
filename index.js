@@ -39,17 +39,16 @@ async function checkBirthdays(force = false) {
 }
 
 function checkMessageResponse(msg) {
-  Object.keys(responses).some((k) => {
+  Object.entries(responses).some(([k, v]) => {
     if (` ${msg.content.toLowerCase()} `.includes(` ${k} `)) {
-      var res = responses[k];
 
-      if (res.includes("{AUTHOR}")) {
-        res = res.replace("{AUTHOR}", msg.author.username);
+      if (v.includes("{AUTHOR}")) {
+        v = v.replace("{AUTHOR}", msg.author.username);
       }
 
-      if (res.includes("{FOLLOWING}")) {
+      if (v.includes("{FOLLOWING}")) {
         const following = msg.content.toLowerCase().split(k).slice(1).join(k);
-        res = res.replace(
+        v = v.replace(
           "{FOLLOWING}",
           msg.content.trim() === k || !following.trim()
             ? msg.author.username
@@ -57,7 +56,7 @@ function checkMessageResponse(msg) {
         );
       }
 
-      return msg.channel.send(res);
+      return msg.channel.send(v);
     }
   });
 }
@@ -87,8 +86,7 @@ client.once(Events.ClientReady, async (c) => {
 });
 
 client.on("messageCreate", async (msg) => {
-  if (msg.author.bot) return;
-  if (!msg.guild) return;
+  if (msg.author.bot || !msg.guild) return;
 
   checkMessageResponse(msg);
   checkMessageReactions(msg);
