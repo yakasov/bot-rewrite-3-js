@@ -107,7 +107,7 @@ client.on("messageCreate", async (msg) => {
 
   try {
     var file = require(`./commands/${cmd}.js`);
-    if (["ai", "ai3"].includes(cmd)) {
+    if (["ai", "ai3"].includes(cmd) && ["bot", "chat-with-outputbot"].includes(msg.channel.name)) {
       return file.run(client, msg, args, splash);
     } else {
       return file.run(client, msg, args);
