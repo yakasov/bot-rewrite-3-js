@@ -25,7 +25,11 @@ exports.run = async (client, date, force = false) => {
       }
     });
     guildMembers.forEach((m) => {
-      if (birthdays[m.id] && birthdays[m.id].date === today) {
+      if (
+        birthdays[m.id] &&
+        birthdays[m.id].date === today &&
+        !roleMembers[m]
+      ) {
         m.roles.add(bdayRoleId);
         bdayChannel.send(
           `Happy Birthday, ${birthdays[m.id].name}! (<@${m.id}>)`
