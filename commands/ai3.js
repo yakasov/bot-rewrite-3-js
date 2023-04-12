@@ -47,8 +47,8 @@ module.exports = {
       });
     } catch (err) {
       ai3Messages = [initialMessage]; // reset conversation to basics
-      fs.writeFile(`../logs/err-${Date.now()}.txt`, err, "utf8", () => {});
-      fs.writeFile(`../logs/res-${Date.now()}.txt`, res, "utf8", () => {});
+      fs.writeFile(`../logs/err-${Date.now()}.txt`, err.message, "utf8", () => {});
+      fs.writeFile(`../logs/msgs-${Date.now()}.txt`, ai3Messages.toString(), "utf8", () => {});
       return msg.reply("Ran into an error! Resetting conversation...");
     }
   
