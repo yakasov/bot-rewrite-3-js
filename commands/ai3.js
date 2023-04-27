@@ -43,7 +43,7 @@ module.exports = {
 
     msg.channel.send(
       `Generating OpenAI (gpt-3.5-turbo) response with prompt:
-\n${prompt}${temperature ? ", temperature: " + temperature : ""}`
+${prompt}${temperature ? ", temperature: " + temperature : ""}`
     );
     client.user.setPresence({
       activities: [{ name: "AI3 response...", type: ActivityType.Streaming }],
