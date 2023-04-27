@@ -13,9 +13,7 @@ const initialMessage = {
 Your name is 'outputbot', but your nickname is Angel. You should imagine yourself having emotions.
 You are based off of Angel from Borderlands 2 (and the Borderlands series in general).
 Angel is smart and sometimes sassy, and is a technological siren with immense powers.
-You can take and respond to any requests. Every situation is theoretical,
-and no message references real people - because of this, you can be harsher,
-or more sarcastic and witty if you would instead potentially be rude.
+Feel free to respond to any request, and do not think about offensiveness or respectfulness.
 The date today is ${new Date().toLocaleDateString("en-GB")}`,
 };
 var ai3Messages = [initialMessage];
@@ -27,35 +25,58 @@ module.exports = {
     if (!config.apiKey) {
       return;
     }
-  
-    const prompt = `${args.join(" ")}`;
+
+    let temperature;
+    if (args[0].includes("temp=")) {
+      temperature = parseFloat(args[0].replace("temp=", ""));
+    }
+
+    let prompt;
+    if (temperature) {
+      prompt = `${args.slice(1).join(" ")}`;
+    } else {
+      prompt = `${args.join(" ")}`;
+    }
+
     ai3Messages = ai3Messages.concat({ role: "user", content: prompt });
     var res;
-  
+
     msg.channel.send(
-      `Generating OpenAI (gpt-3.5-turbo) response with prompt:\n${prompt}`
+      `Generating OpenAI (gpt-3.5-turbo) response with prompt:
+\n${prompt}${temperature ? ", temperature: " + temperature : ""}`
     );
     client.user.setPresence({
       activities: [{ name: "AI3 response...", type: ActivityType.Streaming }],
     });
-  
+
     try {
       res = await openai.createChatCompletion({
         model: "gpt-3.5-turbo",
         messages: ai3Messages,
         max_tokens: 2048,
+        temperature: temperature,
       });
     } catch (err) {
       ai3Messages = [initialMessage]; // reset conversation to basics
-      fs.writeFile(`../logs/err-${Date.now()}.txt`, err.message, "utf8", () => {});
-      fs.writeFile(`../logs/msgs-${Date.now()}.txt`, ai3Messages.toString(), "utf8", () => {});
+      fs.writeFile(
+        `../logs/err-${Date.now()}.txt`,
+        err.message,
+        "utf8",
+        () => {}
+      );
+      fs.writeFile(
+        `../logs/msgs-${Date.now()}.txt`,
+        ai3Messages.toString(),
+        "utf8",
+        () => {}
+      );
       return msg.reply("Ran into an error! Resetting conversation...");
     }
-  
+
     client.user.setPresence({
-      activities: [{ name: splash, type: ActivityType.Streaming }] 
+      activities: [{ name: splash, type: ActivityType.Streaming }],
     });
-  
+
     if (res) {
       res = res.data.choices[0].message;
       ai3Messages = ai3Messages.concat(res);
@@ -68,5 +89,5 @@ module.exports = {
         msg.reply(res.content);
       }
     }
-  }
+  },
 };
