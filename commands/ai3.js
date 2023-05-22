@@ -57,20 +57,14 @@ ${prompt}${temperature ? ", temperature: " + temperature : ""}`
         temperature: temperature,
       });
     } catch (err) {
-      ai3Messages = [initialMessage]; // reset conversation to basics
       fs.writeFile(
-        `../logs/err-${Date.now()}.txt`,
-        err.message,
+        `./logs/msgs-${Date.now()}.txt`,
+        module.exports.formatMsgs(err, ai3Messages),
         "utf8",
-        () => {}
+        (e) => { if (e) { console.error(e); } }
       );
-      fs.writeFile(
-        `../logs/msgs-${Date.now()}.txt`,
-        ai3Messages.toString(),
-        "utf8",
-        () => {}
-      );
-      return msg.reply("Ran into an error! Resetting conversation...");
+      ai3Messages = [initialMessage].concat(ai3Messages.slice(1, Math.floor(ai3Messages.length / 2))); // shorten conversation
+      return msg.reply(`Ran into error [${err}], please try again - your conversation shouldn't be affected!`);
     }
 
     client.user.setPresence({
@@ -90,4 +84,11 @@ ${prompt}${temperature ? ", temperature: " + temperature : ""}`
       }
     }
   },
+  formatMsgs: (err, msgs) => {
+    let s = `${err}\n\n`;
+    msgs.forEach((m) => {
+      s += `Role: ${m.role}\nContent: ${m.content}\n\n`;
+    });
+    return s;
+  }
 };
