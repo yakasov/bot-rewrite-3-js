@@ -65,11 +65,11 @@ ${prompt}${temperature ? ", temperature: " + temperature : ""}`
       );
       ai3Messages = [initialMessage].concat(ai3Messages.slice(1, Math.floor(ai3Messages.length / 2))); // shorten conversation
       return msg.reply(`Ran into error [${err}], please try again - your conversation shouldn't be affected!`);
+    } finally {
+      client.user.setPresence({
+        activities: [{ name: splash, type: ActivityType.Streaming }],
+      });
     }
-
-    client.user.setPresence({
-      activities: [{ name: splash, type: ActivityType.Streaming }],
-    });
 
     if (res) {
       res = res.data.choices[0].message;
