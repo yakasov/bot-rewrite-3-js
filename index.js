@@ -56,6 +56,16 @@ function checkMessageResponse(msg) {
         );
       }
 
+      if (v.includes("{STICKER:")) {
+        const stickerId = v.split(":")[1].slice(0, -1);
+        const sticker = msg.guild.stickers.cache.filter(s => s.id === stickerId);
+        if (sticker) {
+          return msg.channel.send({
+            stickers: sticker
+          });
+        }
+      }
+
       return msg.channel.send(v);
     }
   });
