@@ -15,10 +15,10 @@ module.exports = {
     if (!config.apiKey) {
       return;
     }
-  
+
     const prompt = `${args.join(" ")}`;
     var res;
-  
+
     msg.channel.send(
       `Generating OpenAI (text-davinci-002) response with prompt:\n${prompt}`
     );
@@ -36,15 +36,19 @@ module.exports = {
         stop: ["<|endoftext|>"],
       });
     } catch (err) {
-      fs.writeFile(`../logs/err-${Date.now()}.txt`, err);
-      fs.writeFile(`../logs/res-${Date.now()}.txt`, res);
+      fs.writeFile(
+        `./logs/ai2-${msg.author.id}-${Date.now()}.txt`,
+        `${err}\n\n${msg.content}`,
+        "utf8",
+        () => {}
+      );
       return msg.reply("Ran into an error! Try again?");
     }
 
     client.user.setPresence({
-      activities: [{ name: splash, type: ActivityType.Streaming }] 
+      activities: [{ name: splash, type: ActivityType.Streaming }],
     });
-  
+
     if (res) {
       res = res.data.choices[0].text;
       if (res.length > 2000) {
@@ -56,5 +60,5 @@ module.exports = {
         msg.reply(res);
       }
     }
-  }
+  },
 };

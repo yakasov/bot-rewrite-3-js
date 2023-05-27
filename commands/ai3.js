@@ -29,6 +29,9 @@ module.exports = {
     let temperature;
     if (args[0].includes("temp=")) {
       temperature = parseFloat(args[0].replace("temp=", ""));
+      if (temperature > 2 || temperature < 0) {
+        return msg.reply("Invalid temperature specified!");
+      }
     }
 
     let prompt;
@@ -39,7 +42,9 @@ module.exports = {
     }
 
     ai3Messages = ai3Messages.concat({ role: "user", content: prompt });
-    var res;
+    let res;
+    let attempts = 0;
+    let timestamp = Date.now();
 
     msg.channel.send(
       `Generating OpenAI (gpt-3.5-turbo) response with prompt:
@@ -49,27 +54,31 @@ ${prompt}${temperature ? ", temperature: " + temperature : ""}`
       activities: [{ name: "AI3 response...", type: ActivityType.Streaming }],
     });
 
-    try {
-      res = await openai.createChatCompletion({
-        model: "gpt-3.5-turbo",
-        messages: ai3Messages,
-        max_tokens: 2048,
-        temperature: temperature,
-      });
-    } catch (err) {
-      fs.writeFile(
-        `./logs/msgs-${Date.now()}.txt`,
-        module.exports.formatMsgs(err, ai3Messages),
-        "utf8",
-        (e) => { if (e) { console.error(e); } }
-      );
-      ai3Messages = [initialMessage].concat(ai3Messages.slice(1, Math.floor(ai3Messages.length / 2))); // shorten conversation
-      return msg.reply(`Ran into error [${err}], please try again - your conversation shouldn't be affected!`);
-    } finally {
-      client.user.setPresence({
-        activities: [{ name: splash, type: ActivityType.Streaming }],
-      });
+    while (attempts < 3 && !res) {
+      try {
+        attempts++;
+        res = await openai.createChatCompletion({
+          model: "gpt-3.5-turbo",
+          messages: ai3Messages,
+          max_tokens: 2048,
+          temperature: temperature,
+        });
+      } catch (err) {
+        fs.writeFile(
+          `./logs/ai3-${msg.author.id}-${timestamp}-${attempts}.txt`,
+          module.exports.formatMsgs(err, ai3Messages),
+          "utf8",
+          () => {}
+        );
+        ai3Messages = [initialMessage].concat(
+          ai3Messages.slice(1, Math.floor(ai3Messages.length / 2))
+        ); // shorten conversation
+      }
     }
+
+    client.user.setPresence({
+      activities: [{ name: splash, type: ActivityType.Streaming }],
+    });
 
     if (res) {
       res = res.data.choices[0].message;
@@ -82,6 +91,10 @@ ${prompt}${temperature ? ", temperature: " + temperature : ""}`
       } else {
         msg.reply(res.content);
       }
+    } else {
+      return msg.reply(
+        "Failed after 3 attempts, please try again - your conversation shouldn't be affected!"
+      );
     }
   },
   formatMsgs: (err, msgs) => {
@@ -90,5 +103,5 @@ ${prompt}${temperature ? ", temperature: " + temperature : ""}`
       s += `Role: ${m.role}\nContent: ${m.content}\n\n`;
     });
     return s;
-  }
+  },
 };
