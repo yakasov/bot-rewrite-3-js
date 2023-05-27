@@ -9,7 +9,7 @@ module.exports = {
       exec("node index.js", (err, stdout, stderr) => {
         console.log(stdout);
       });
-      client.destroy();    
+      client.destroy();
     }
-  }
+  },
 };

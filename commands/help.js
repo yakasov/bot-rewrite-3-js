@@ -11,8 +11,8 @@ module.exports = {
     cmdFiles.forEach((file) => {
       const cmd = require(`./${file}`);
       keyPairs[file.slice(0, -3)] = {
-        "aliases": cmd.aliases,
-        "description": cmd.description
+        aliases: cmd.aliases,
+        description: cmd.description,
       };
     });
 
@@ -24,5 +24,5 @@ module.exports = {
     });
     output += "```";
     msg.reply(output);
-  }
+  },
 };

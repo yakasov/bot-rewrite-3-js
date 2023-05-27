@@ -41,7 +41,6 @@ async function checkBirthdays(force = false) {
 function checkMessageResponse(msg) {
   Object.entries(responses).some(([k, v]) => {
     if (` ${msg.content.toLowerCase()} `.includes(` ${k} `)) {
-
       if (v.includes("{AUTHOR}")) {
         v = v.replace("{AUTHOR}", msg.author.username);
       }
@@ -58,10 +57,12 @@ function checkMessageResponse(msg) {
 
       if (v.includes("{STICKER:")) {
         const stickerId = v.split(":")[1].slice(0, -1);
-        const sticker = msg.guild.stickers.cache.filter(s => s.id === stickerId);
+        const sticker = msg.guild.stickers.cache.filter(
+          (s) => s.id === stickerId
+        );
         if (sticker) {
           return msg.channel.send({
-            stickers: sticker
+            stickers: sticker,
           });
         }
       }
@@ -74,7 +75,9 @@ function checkMessageResponse(msg) {
 function checkMessageReactions(msg) {
   Object.keys(reactions).some((k) => {
     if (k === msg.author.id) {
-      const reaction = msg.guild.emojis.cache.find(e => e.name === reactions[k]);
+      const reaction = msg.guild.emojis.cache.find(
+        (e) => e.name === reactions[k]
+      );
       if (reaction) {
         msg.react(reaction);
       }
@@ -88,7 +91,7 @@ client.once(Events.ClientReady, async (c) => {
       `Current date is ${date}, ` +
       `logged in as ${c.user.tag}`
   );
-  
+
   const npFile = require("./commands/np.js");
   splash = await npFile.run(client, null, null);
   checkBirthdays(true);
@@ -115,7 +118,10 @@ client.on("messageCreate", async (msg) => {
 
   try {
     var file = require(`./commands/${cmd}.js`);
-    if (["ai", "ai3"].includes(cmd) && ["bot", "chat-with-outputbot"].includes(msg.channel.name)) {
+    if (
+      ["ai", "ai3"].includes(cmd) &&
+      ["bot", "chat-with-outputbot"].includes(msg.channel.name)
+    ) {
       return file.run(client, msg, args, splash);
     } else {
       return file.run(client, msg, args);
