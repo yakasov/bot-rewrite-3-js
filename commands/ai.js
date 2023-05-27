@@ -17,14 +17,10 @@ module.exports = {
     }
 
     const prompt = `${args.join(" ")}`;
-    var res;
+    let res;
 
-    msg.channel.send(
-      `Generating OpenAI (text-davinci-002) response with prompt:\n${prompt}`
-    );
-    client.user.setPresence({
-      activities: [{ name: "AI2 response...", type: ActivityType.Streaming }],
-    });
+    await msg.react(module.exports.reactions["start"]);
+    await module.exports.setPresence(client, "AI2 response...");
 
     try {
       res = await openai.createCompletion({
@@ -42,23 +38,31 @@ module.exports = {
         "utf8",
         () => {}
       );
+      await msg.react(module.exports.reactions["fail"]);
       return msg.reply("Ran into an error! Try again?");
     }
 
-    client.user.setPresence({
-      activities: [{ name: splash, type: ActivityType.Streaming }],
-    });
+    await module.exports.setPresence(client, splash);
 
     if (res) {
+      await msg.reactions.removeAll();
+      await msg.react(module.exports.reactions["success"]);
+
       res = res.data.choices[0].text;
-      if (res.length > 2000) {
-        const resArray = res.match(/[\s\S]{1,2000}(?!\S)/g);
-        resArray.forEach((r) => {
-          msg.reply(r);
-        });
-      } else {
-        msg.reply(res);
-      }
+      const resArray = res.content.match(/[\s\S]{1,2000}(?!\S)/g);
+      resArray.forEach((r) => {
+        msg.reply(r);
+      });
     }
+  },
+  reactions: {
+    start: "🤔",
+    success: "✅",
+    fail: "❌",
+  },
+  setPresence: (client, p) => {
+    return client.user.setPresence({
+      activities: [{ name: p, type: ActivityType.Streaming }],
+    });
   },
 };

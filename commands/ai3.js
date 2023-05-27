@@ -23,40 +23,38 @@ module.exports = {
   description: "Uses OpenAI API (gpt-3.5-turbo) to generate an AI response",
   run: async (client, msg, args, splash) => {
     if (!config.apiKey) {
-      return;
+      return await module.exports.returnFail(msg, "No API key found!");
     }
 
-    let temperature;
+    let temperature, prompt, res;
+    let attempts = 0;
+    let timestamp = Date.now();
+
     if (args[0].includes("temp=")) {
       temperature = parseFloat(args[0].replace("temp=", ""));
       if (temperature > 2 || temperature < 0) {
-        return msg.reply("Invalid temperature specified!");
+        return await module.exports.returnFail(
+          msg,
+          "Invalid temperature specified!"
+        );
       }
     }
 
-    let prompt;
     if (temperature) {
+      await msg.react(module.exports.reactions["temp"]);
       prompt = `${args.slice(1).join(" ")}`;
     } else {
       prompt = `${args.join(" ")}`;
     }
 
     ai3Messages = ai3Messages.concat({ role: "user", content: prompt });
-    let res;
-    let attempts = 0;
-    let timestamp = Date.now();
+    await msg.react(module.exports.reactions["start"]);
+    await module.exports.setPresence(client, "AI3 response...");
 
-    msg.channel.send(
-      `Generating OpenAI (gpt-3.5-turbo) response with prompt:
-${prompt}${temperature ? ", temperature: " + temperature : ""}`
-    );
-    client.user.setPresence({
-      activities: [{ name: "AI3 response...", type: ActivityType.Streaming }],
-    });
-
-    while (attempts < 3 && !res) {
+    while (attempts < 4 && !res) {
       try {
         attempts++;
+        await msg.react(module.exports.reactions[attempts]);
         res = await openai.createChatCompletion({
           model: "gpt-3.5-turbo",
           messages: ai3Messages,
@@ -64,35 +62,35 @@ ${prompt}${temperature ? ", temperature: " + temperature : ""}`
           temperature: temperature,
         });
       } catch (err) {
-        fs.writeFile(
-          `./logs/ai3-${msg.author.id}-${timestamp}-${attempts}.txt`,
-          module.exports.formatMsgs(err, ai3Messages),
-          "utf8",
-          () => {}
-        );
+        if (attempts === 3) {
+          fs.writeFile(
+            `./logs/ai3-${msg.author.id}-${timestamp}-${attempts}.txt`,
+            module.exports.formatMsgs(err, ai3Messages),
+            "utf8",
+            () => {}
+          );
+        }
         ai3Messages = [initialMessage].concat(
           ai3Messages.slice(1, Math.floor(ai3Messages.length / 2))
         ); // shorten conversation
       }
     }
 
-    client.user.setPresence({
-      activities: [{ name: splash, type: ActivityType.Streaming }],
-    });
+    await module.exports.setPresence(client, splash);
 
     if (res) {
+      await msg.reactions.removeAll();
+      await msg.react(module.exports.reactions["success"]);
+
       res = res.data.choices[0].message;
       ai3Messages = ai3Messages.concat(res);
-      if (res.content.length > 2000) {
-        const resArray = res.content.match(/[\s\S]{1,2000}(?!\S)/g);
-        resArray.forEach((r) => {
-          msg.reply(r);
-        });
-      } else {
-        msg.reply(res.content);
-      }
+      const resArray = res.content.match(/[\s\S]{1,2000}(?!\S)/g);
+      resArray.forEach((r) => {
+        msg.reply(r);
+      });
     } else {
-      return msg.reply(
+      return await module.exports.returnFail(
+        msg,
         "Failed after 3 attempts, please try again - your conversation shouldn't be affected!"
       );
     }
@@ -103,5 +101,23 @@ ${prompt}${temperature ? ", temperature: " + temperature : ""}`
       s += `Role: ${m.role}\nContent: ${m.content}\n\n`;
     });
     return s;
+  },
+  reactions: {
+    start: "🤔",
+    temp: "🔥",
+    1: "1️⃣",
+    2: "2️⃣",
+    3: "3️⃣",
+    success: "✅",
+    fail: "❌",
+  },
+  returnFail: async (msg, reason) => {
+    await msg.react(module.exports.reactions["fail"]);
+    return msg.reply(reason);
+  },
+  setPresence: (client, p) => {
+    return client.user.setPresence({
+      activities: [{ name: p, type: ActivityType.Streaming }],
+    });
   },
 };
