@@ -95,9 +95,9 @@ module.exports = {
       );
     }
   },
-  formatMsgs: (err, msgs) => {
-    let s = `${err}\n\n`;
-    msgs.forEach((m) => {
+  formatMsgs: (e, ms) => {
+    let s = `${e}\n\n`;
+    ms.forEach((m) => {
       s += `Role: ${m.role}\nContent: ${m.content}\n\n`;
     });
     return s;
@@ -111,12 +111,12 @@ module.exports = {
     success: "✅",
     fail: "❌",
   },
-  returnFail: async (msg, reason) => {
-    await msg.react(module.exports.reactions["fail"]);
-    return msg.reply(reason);
+  returnFail: async (m, r) => {
+    await m.react(module.exports.reactions["fail"]);
+    return m.reply(r);
   },
-  setPresence: (client, p) => {
-    return client.user.setPresence({
+  setPresence: (c, p) => {
+    return c.user.setPresence({
       activities: [{ name: p, type: ActivityType.Streaming }],
     });
   },

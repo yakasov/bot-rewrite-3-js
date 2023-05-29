@@ -60,11 +60,12 @@ function checkMessageResponse(msg) {
         const sticker = msg.guild.stickers.cache.filter(
           (s) => s.id === stickerId
         );
-        if (sticker) {
+        if (sticker.length) {
           return msg.channel.send({
             stickers: sticker,
           });
         }
+        return;
       }
 
       return msg.channel.send(v);

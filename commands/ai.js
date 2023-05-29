@@ -49,7 +49,7 @@ module.exports = {
       await msg.react(module.exports.reactions["success"]);
 
       res = res.data.choices[0].text;
-      const resArray = res.content.match(/[\s\S]{1,2000}(?!\S)/g);
+      const resArray = res.match(/[\s\S]{1,2000}(?!\S)/g);
       resArray.forEach((r) => {
         msg.reply(r);
       });
@@ -60,8 +60,8 @@ module.exports = {
     success: "✅",
     fail: "❌",
   },
-  setPresence: (client, p) => {
-    return client.user.setPresence({
+  setPresence: (c, p) => {
+    return c.user.setPresence({
       activities: [{ name: p, type: ActivityType.Streaming }],
     });
   },
