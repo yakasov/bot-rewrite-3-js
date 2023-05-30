@@ -113,6 +113,7 @@ module.exports = {
     fail: "❌",
   },
   returnFail: async (m, r) => {
+    await m.reactions.removeAll();
     await m.react(module.exports.reactions["fail"]);
     return m.reply(r);
   },

@@ -43,7 +43,7 @@ module.exports = {
         model: "text-davinci-002",
         prompt: prompt,
         temperature: temperature ?? 0.9,
-        top_p: 0.3,
+        top_p: temperature ? null : 0.3,
         max_tokens: 1024,
         stop: ["<|endoftext|>"],
       });
@@ -80,6 +80,7 @@ module.exports = {
     fail: "❌",
   },
   returnFail: async (m, r) => {
+    await m.reactions.removeAll();
     await m.react(module.exports.reactions["fail"]);
     return m.reply(r);
   },
