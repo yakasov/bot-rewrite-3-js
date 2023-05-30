@@ -16,8 +16,24 @@ module.exports = {
       return;
     }
 
-    const prompt = `${args.join(" ")}`;
-    let res;
+    let temperature, prompt, res;
+
+    if (args[0].includes("temp=")) {
+      temperature = parseFloat(args[0].replace("temp=", ""));
+      if (temperature > 2 || temperature < 0) {
+        return await module.exports.returnFail(
+          msg,
+          "Invalid temperature specified!"
+        );
+      }
+    }
+
+    if (temperature) {
+      await msg.react(module.exports.reactions["temp"]);
+      prompt = `${args.slice(1).join(" ")}`;
+    } else {
+      prompt = `${args.join(" ")}`;
+    }
 
     await msg.react(module.exports.reactions["start"]);
     await module.exports.setPresence(client, "AI2 response...");
@@ -26,8 +42,8 @@ module.exports = {
       res = await openai.createCompletion({
         model: "text-davinci-002",
         prompt: prompt,
-        temperature: 0.9,
-        top_p: 0.9,
+        temperature: temperature ?? 0.9,
+        top_p: 0.3,
         max_tokens: 1024,
         stop: ["<|endoftext|>"],
       });
@@ -38,8 +54,10 @@ module.exports = {
         "utf8",
         () => {}
       );
-      await msg.react(module.exports.reactions["fail"]);
-      return msg.reply("Ran into an error! Try again?");
+      return await module.exports.returnFail(
+        msg,
+        "Ran into an error! Try again?"
+      );
     }
 
     await module.exports.setPresence(client, splash);
@@ -57,8 +75,13 @@ module.exports = {
   },
   reactions: {
     start: "🤔",
+    temp: "🔥",
     success: "✅",
     fail: "❌",
+  },
+  returnFail: async (m, r) => {
+    await m.react(module.exports.reactions["fail"]);
+    return m.reply(r);
   },
   setPresence: (c, p) => {
     return c.user.setPresence({

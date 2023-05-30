@@ -59,7 +59,8 @@ module.exports = {
           model: "gpt-3.5-turbo",
           messages: ai3Messages,
           max_tokens: 2048,
-          temperature: temperature,
+          temperature: temperature ?? 0.9,
+          top_p: temperature ? null : 0.3,
         });
       } catch (err) {
         if (attempts === 3) {
