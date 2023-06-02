@@ -60,7 +60,7 @@ function checkMessageResponse(msg) {
         const sticker = msg.guild.stickers.cache.filter(
           (s) => s.id === stickerId
         );
-        if (sticker.length) {
+        if (sticker.size) {
           return msg.channel.send({
             stickers: sticker,
           });
