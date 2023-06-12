@@ -38,6 +38,11 @@ async function checkBirthdays(force = false) {
   }
 }
 
+async function checkMinecraftServer() {
+  const minecraftServer = require("./tasks/minecraft.js");
+  await minecraftServer.run(client);
+}
+
 function checkMessageResponse(msg) {
   Object.entries(responses).some(([k, v]) => {
     if (` ${msg.content.toLowerCase()} `.includes(` ${k} `)) {
@@ -95,8 +100,10 @@ client.once(Events.ClientReady, async (c) => {
 
   const npFile = require("./commands/np.js");
   splash = await npFile.run(client, null, null);
+
   checkBirthdays(true);
   setInterval(checkBirthdays, 900000);
+  setInterval(checkMinecraftServer, 11000);
 });
 
 client.on("messageCreate", async (msg) => {
