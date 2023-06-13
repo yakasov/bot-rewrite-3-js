@@ -6,9 +6,11 @@ const {
 } = require("./../resources/config.json");
 
 exports.run = async (client) => {
-  if (!(minecraftServerIp.length && minecraftServerPort)) {
+  if (!(minecraftServerIp && minecraftServerPort)) {
     return;
   }
+
+  var result;
 
   queryFull(minecraftServerIp, minecraftServerPort)
     .then(async (res) => {
@@ -32,8 +34,13 @@ exports.run = async (client) => {
           ],
         });
       }
+
+      result = true;
     })
     .catch((e) => {
-      console.error(e);
+      console.error(`\n${e}`);
+      result = false;
     });
+
+  return result;
 };
