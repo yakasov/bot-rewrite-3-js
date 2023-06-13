@@ -119,7 +119,7 @@ module.exports = {
   },
   setPresence: (c, p) => {
     return c.user.setPresence({
-      activities: [{ name: p, type: ActivityType.Streaming }],
+      activities: [{ name: p, type: ActivityType.Watching }],
     });
   },
 };

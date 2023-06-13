@@ -10,7 +10,7 @@ module.exports = {
   run: async (client, msg, args) => {
     var splash = splashes[Math.floor(Math.random() * splashes.length)];
     client.user.setPresence({
-      activities: [{ name: splash, type: ActivityType.Streaming }],
+      activities: [{ name: splash, type: ActivityType.Watching }],
     });
     return splash;
   },

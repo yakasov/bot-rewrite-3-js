@@ -19,7 +19,7 @@ exports.run = async (client) => {
 
       client.user.setPresence({
         activities: [
-          { name: `MC Online: ${online}`, type: ActivityType.Streaming },
+          { name: `MC Online: ${online}`, type: ActivityType.Watching },
         ],
       });
 
@@ -29,7 +29,7 @@ exports.run = async (client) => {
           activities: [
             {
               name: `MC Players: ${players.join(" | ")}`,
-              type: ActivityType.Streaming,
+              type: ActivityType.Watching,
             },
           ],
         });
