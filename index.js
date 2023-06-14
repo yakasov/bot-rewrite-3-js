@@ -18,7 +18,6 @@ const client = new Client({
 const aliases = buildAliases();
 var date = new Date().toLocaleDateString("en-GB").slice(0, -5);
 var splash;
-var minecraftResult = 1; // 1 = online, -1 = players, 0 = errored
 
 function buildAliases() {
   var aliases = {};
@@ -40,10 +39,8 @@ async function checkBirthdays(force = false) {
 }
 
 async function checkMinecraftServer() {
-  if (minecraftResult) {
-    const minecraftServer = require("./tasks/minecraft.js");
-    minecraftResult = await minecraftServer.run(client, minecraftResult);
-  }
+  const minecraftServer = require("./tasks/minecraft.js");
+  await minecraftServer.run(client);
 }
 
 function checkMessageResponse(msg) {
@@ -115,10 +112,6 @@ client.on("messageCreate", async (msg) => {
   checkMessageResponse(msg);
   checkMessageReactions(msg);
   if (!msg.content.toLowerCase().startsWith(prefix)) return;
-  if (msg.content === "*checkMinecraftServer") {
-    minecraftResult = true;
-    return;
-  }
 
   var args = msg.content.split(" ");
   var cmd = args.shift().slice(prefix.length).toLowerCase();

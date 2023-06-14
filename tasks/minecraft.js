@@ -5,27 +5,28 @@ const {
   minecraftServerPort,
 } = require("./../resources/config.json");
 
-exports.run = async (client, minecraftResult) => {
-  if (!(minecraftServerIp && minecraftServerPort)) {
-    return;
-  }
+exports.run = async (client) => {
+  if (!(minecraftServerIp && minecraftServerPort)) return;
 
   queryFull(minecraftServerIp, minecraftServerPort)
     .then(async (res) => {
       const online = res.players.online;
+      if (!online) return;
+
       const players = res.players.list;
-      const activity = online && minecraftResult === -1 ? `MC Players: ${players.join(" | ")}` : `MC Online: ${online}`;
+      const playersString = `${players.length}` + players.length > 1 
+        ? players
+          .map(e => e.substring(0, 5).toUpperCase())
+          .join(", ") 
+        : players[0];
 
       client.user.setPresence({
         activities: [
-          { name: activity, type: ActivityType.Watching },
+          { name: playersString, type: ActivityType.Watching },
         ],
       });
     })
     .catch((e) => {
-      console.error(`\n${e}`);
-      return 0;
+      return;
     });
-
-  return  minecraftResult * -1;
 };
