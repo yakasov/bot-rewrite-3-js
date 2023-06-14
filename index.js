@@ -40,7 +40,7 @@ async function checkBirthdays(force = false) {
 
 async function checkMinecraftServer() {
   const minecraftServer = require("./tasks/minecraft.js");
-  await minecraftServer.run(client);
+  await minecraftServer.run(client, splash);
 }
 
 function checkMessageResponse(msg) {
