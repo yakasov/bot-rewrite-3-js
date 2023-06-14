@@ -18,7 +18,7 @@ const client = new Client({
 const aliases = buildAliases();
 var date = new Date().toLocaleDateString("en-GB").slice(0, -5);
 var splash;
-var minecraftResult = true;
+var minecraftResult = 1; // 1 = online, -1 = players, 0 = errored
 
 function buildAliases() {
   var aliases = {};
@@ -42,7 +42,7 @@ async function checkBirthdays(force = false) {
 async function checkMinecraftServer() {
   if (minecraftResult) {
     const minecraftServer = require("./tasks/minecraft.js");
-    minecraftResult = await minecraftServer.run(client);
+    minecraftResult = await minecraftServer.run(client, minecraftResult);
   }
 }
 
@@ -106,7 +106,7 @@ client.once(Events.ClientReady, async (c) => {
 
   checkBirthdays(true);
   setInterval(checkBirthdays, 900000);
-  setInterval(checkMinecraftServer, 11000);
+  setInterval(checkMinecraftServer, 5000);
 });
 
 client.on("messageCreate", async (msg) => {

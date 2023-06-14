@@ -5,42 +5,27 @@ const {
   minecraftServerPort,
 } = require("./../resources/config.json");
 
-exports.run = async (client) => {
+exports.run = async (client, minecraftResult) => {
   if (!(minecraftServerIp && minecraftServerPort)) {
     return;
   }
-
-  var result;
 
   queryFull(minecraftServerIp, minecraftServerPort)
     .then(async (res) => {
       const online = res.players.online;
       const players = res.players.list;
+      const activity = online && minecraftResult === -1 ? `MC Players: ${players.join(" | ")}` : `MC Online: ${online}`;
 
       client.user.setPresence({
         activities: [
-          { name: `MC Online: ${online}`, type: ActivityType.Watching },
+          { name: activity, type: ActivityType.Watching },
         ],
       });
-
-      if (online) {
-        await new Promise((r) => setTimeout(r, 5000));
-        client.user.setPresence({
-          activities: [
-            {
-              name: `MC Players: ${players.join(" | ")}`,
-              type: ActivityType.Watching,
-            },
-          ],
-        });
-      }
-
-      result = true;
     })
     .catch((e) => {
       console.error(`\n${e}`);
-      result = false;
+      return 0;
     });
 
-  return result;
+  return  minecraftResult * -1;
 };
