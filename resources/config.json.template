@@ -8,5 +8,6 @@
   "bdayRoleId": "892388551671574568",
 
   "minecraftServerIp": "",
-  "minecraftServerPort": 25565
+  "minecraftServerPort": 25565,
+  "minecraftServerOwnerId": 204448971009007600
 }
