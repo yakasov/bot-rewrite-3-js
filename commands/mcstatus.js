@@ -12,7 +12,8 @@ exports.run = async (client, msg, args) => {
 
   status(minecraftServerIp, minecraftServerPort)
     .then((res) => {
-      msg.reply("```\n" + res + "\n```");
+      res.favicon = null; // favicon is a base64 encoded image, remove it
+      msg.reply("```\n" + JSON.stringify(res, null, 4) + "\n```");
     })
     .catch((e) => {
       var str = e.message;
