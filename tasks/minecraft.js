@@ -14,16 +14,13 @@ exports.run = async (client) => {
       if (!online) return;
 
       const players = res.players.list;
-      const playersString = `${players.length}` + players.length > 1 
-        ? players
-          .map(e => e.substring(0, 5).toUpperCase())
-          .join(", ") 
-        : players[0];
+      const playersString =
+        `(${players.length})` + players.length > 1
+          ? players.map((e) => e.substring(0, 5).toUpperCase()).join(", ")
+          : players[0];
 
       client.user.setPresence({
-        activities: [
-          { name: playersString, type: ActivityType.Watching },
-        ],
+        activities: [{ name: playersString, type: ActivityType.Watching }],
       });
     })
     .catch((e) => {
