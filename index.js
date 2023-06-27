@@ -43,6 +43,11 @@ async function checkMinecraftServer() {
   await minecraftServer.run(client, splash);
 }
 
+async function checkOWTweets() {
+  const OWTwitter = require("./tasks/owtwitter.js");
+  await OWTwitter.run(client);
+}
+
 function checkMessageResponse(msg) {
   Object.entries(responses).some(([k, v]) => {
     if (` ${msg.content.toLowerCase()} `.includes(` ${k} `)) {
@@ -104,6 +109,7 @@ client.once(Events.ClientReady, async (c) => {
   checkBirthdays(true);
   setInterval(checkBirthdays, 900000);
   setInterval(checkMinecraftServer, 5000);
+  setInterval(checkOWTweets, 900000);
 });
 
 client.on("messageCreate", async (msg) => {

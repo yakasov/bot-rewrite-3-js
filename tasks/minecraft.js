@@ -19,12 +19,7 @@ exports.run = async (client, splash) => {
         activityString = splash;
       } else {
         const players = res.players.list;
-        const playersString =
-          players.length > 1
-            ? players.map((e) => e.substring(0, 5).toUpperCase()).join(", ")
-            : players[0];
-
-        activityString = `(${players.length}) ${playersString}`;
+        activityString = `(${players.length}) ${players.join(", ")}`;
       }
 
       client.user.setPresence({
