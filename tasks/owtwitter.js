@@ -54,7 +54,6 @@ module.exports = {
     return fs.readFileSync("./tasks/owtwitter.urls").toString().split("\n");
   },
   writeLinks: (links) => {
-    console.error(links);
     const linkString = links.join("\n");
     return fs.writeFileSync("./tasks/owtwitter.urls", linkString);
   }
