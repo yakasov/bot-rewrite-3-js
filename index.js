@@ -107,6 +107,8 @@ client.once(Events.ClientReady, async (c) => {
   splash = await npFile.run(client, null, null);
 
   checkBirthdays(true);
+  checkMinecraftServer();
+  checkOWTweets();
   setInterval(checkBirthdays, 900000);
   setInterval(checkMinecraftServer, 5000);
   setInterval(checkOWTweets, 900000);
@@ -124,7 +126,7 @@ client.on("messageCreate", async (msg) => {
 
   if (!Object.keys(aliases).includes(cmd)) {
     Object.entries(aliases).forEach(([k, v]) => {
-      if (v.includes(cmd)) {
+      if (v && v.includes(cmd)) {
         cmd = k;
       }
     });
