@@ -25,7 +25,7 @@ module.exports = {
         throw res;
       })
       .catch(function (res) {
-        console.warn(res);
+        console.warn(`${cavalryUrl} => ${res.status}: ${res.statusText}`);
         return null;
       });
 

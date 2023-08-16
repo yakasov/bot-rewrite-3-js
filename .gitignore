@@ -8,4 +8,5 @@ cache
 config.json
 *.log
 tts.mp3
+owtwitter.urls
 !run.bat

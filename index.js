@@ -100,7 +100,7 @@ client.once(Events.ClientReady, async (c) => {
   console.log(
     "Connected and ready to go!\n" +
       `Current date is ${date}, ` +
-      `logged in as ${c.user.tag}`
+      `logged in as ${c.user.tag}\n`
   );
 
   const npFile = require("./commands/np.js");
