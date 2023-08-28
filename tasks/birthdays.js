@@ -28,7 +28,7 @@ exports.run = async (client, date, force = false) => {
       if (
         birthdays[m.id] &&
         birthdays[m.id].date === today &&
-        !roleMembers.includes(m.id)
+        !roleMembers.some((me) => me.user.id == m.id)
       ) {
         m.roles.add(bdayRoleId);
         bdayChannel.send(

@@ -33,7 +33,8 @@ async function checkBirthdays(force = false) {
   try {
     const birthdays = require("./tasks/birthdays.js");
     date = await birthdays.run(client, date, force);
-  } catch {
+  } catch (e) {
+    console.error(e);
     return;
   }
 }
