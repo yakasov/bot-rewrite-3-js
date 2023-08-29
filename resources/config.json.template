@@ -3,11 +3,14 @@
   "openaiToken": "",
   "prefix": "*",
 
-  "mainGuildId": "271381095990296576",
-  "bdayChannelId": "509089139853885440",
-  "bdayRoleId": "892388551671574568",
+  "mainGuildId": "271300005990296576",
+  "bdayChannelId": "500009139853885440",
+  "bdayRoleId": "892388000000574568",
 
   "minecraftServerIp": "",
   "minecraftServerPort": 25565,
-  "minecraftServerOwnerId": 204448971009007600
+  "minecraftServerOwnerId": 204448971009007600,
+
+  "twitterUrl": "",
+  "twitterChannelId": "541920000268900006"
 }

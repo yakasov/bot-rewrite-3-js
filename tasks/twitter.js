@@ -1,9 +1,15 @@
 const fs = require("fs");
 const { parse } = require("node-html-parser");
-const { mainGuildId } = require("./../resources/config.json");
+const {
+  mainGuildId,
+  twitterUrl,
+  twitterChannelId,
+} = require("./../resources/config.json");
 
 module.exports = {
   run: async (client) => {
+    if (!twitterUrl) return;
+
     const keywords = [
       "patch",
       "bug",
@@ -13,8 +19,7 @@ module.exports = {
       "nerf",
       "buff",
     ];
-    const cavalryUrl = "https://nitter.net/OWCavalry";
-    const cavalryPage = await fetch(cavalryUrl, {
+    const twitterPage = await fetch(twitterUrl, {
       redirect: "follow",
       follow: 100,
     })
@@ -25,19 +30,19 @@ module.exports = {
         throw res;
       })
       .catch(function (res) {
-        console.warn(`${cavalryUrl} => ${res.status}: ${res.statusText}`);
+        console.warn(`${twitterUrl} => ${res.status}: ${res.statusText}`);
         return null;
       });
 
-    if (!cavalryPage) return;
+    if (!twitterPage) return;
 
     var existingLinks = module.exports.getLinks();
-    const parsedPage = parse(cavalryPage);
+    const parsedPage = parse(twitterPage);
     const allEls = parsedPage.querySelectorAll("*");
     const tweets = allEls.filter((el) => el.rawAttrs == 'class="tweet-body"');
 
     const guild = await client.guilds.fetch(mainGuildId);
-    const owChannel = await guild.channels.fetch("541926728268906506");
+    const twitterChannel = await guild.channels.fetch(twitterChannelId);
 
     tweets.forEach((t) => {
       var bodyText;
@@ -64,7 +69,7 @@ module.exports = {
         "https://twitter.com" + linkEl.substring(25, linkEl.length - 3);
 
       if (!existingLinks.includes(link)) {
-        owChannel.send(link);
+        twitterChannel.send(link);
         existingLinks = existingLinks.concat(link);
       }
     });
@@ -72,10 +77,10 @@ module.exports = {
     module.exports.writeLinks(existingLinks);
   },
   getLinks: () => {
-    return fs.readFileSync("./tasks/owtwitter.urls").toString().split("\n");
+    return fs.readFileSync("./tasks/twitter.urls").toString().split("\n");
   },
   writeLinks: (links) => {
     const linkString = links.join("\n");
-    return fs.writeFileSync("./tasks/owtwitter.urls", linkString);
+    return fs.writeFileSync("./tasks/twitter.urls", linkString);
   },
 };

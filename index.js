@@ -34,19 +34,26 @@ async function checkBirthdays(force = false) {
     const birthdays = require("./tasks/birthdays.js");
     date = await birthdays.run(client, date, force);
   } catch (e) {
-    console.error(e);
-    return;
+    return console.error(e);
   }
 }
 
 async function checkMinecraftServer() {
-  const minecraftServer = require("./tasks/minecraft.js");
-  await minecraftServer.run(client, splash);
+  try {
+    const minecraftServer = require("./tasks/minecraft.js");
+    await minecraftServer.run(client, splash);
+  } catch (e) {
+    return console.error(e);
+  }
 }
 
-async function checkOWTweets() {
-  const OWTwitter = require("./tasks/owtwitter.js");
-  await OWTwitter.run(client);
+async function checkTweets() {
+  try {
+    const twitterCheck = require("./tasks/twitter.js");
+    await twitterCheck.run(client);
+  } catch (e) {
+    return console.error(e);
+  }
 }
 
 function checkMessageResponse(msg) {
@@ -109,10 +116,10 @@ client.once(Events.ClientReady, async (c) => {
 
   checkBirthdays(true);
   checkMinecraftServer();
-  checkOWTweets();
+  checkTweets();
   setInterval(checkBirthdays, 900000);
   setInterval(checkMinecraftServer, 5000);
-  setInterval(checkOWTweets, 900000);
+  setInterval(checkTweets, 900000);
 });
 
 client.on("messageCreate", async (msg) => {
