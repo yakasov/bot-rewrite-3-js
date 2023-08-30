@@ -56,37 +56,47 @@ async function checkTweets() {
   }
 }
 
-function checkMessageResponse(msg) {
-  Object.entries(responses).some(([k, v]) => {
+async function checkMessageResponse(msg) {
+  async function f(k, v) {
+    if (v.includes("{AUTHOR}")) {
+      v = v.replace("{AUTHOR}", msg.author.username);
+    }
+
+    if (v.includes("{FOLLOWING}")) {
+      var lastMsg;
+      if (msg.content.trim() === k) {
+        lastMsg = await msg.channel.messages
+          .fetch({ limit: 2 })
+          .then((c) => [...c.values()].pop().author.username);
+      }
+      const following = msg.content.toLowerCase().split(k).slice(1).join(k);
+      v = v.replace(
+        "{FOLLOWING}",
+        lastMsg || !following.trim()
+          ? lastMsg ?? msg.author.username
+          : following.trim()
+      );
+    }
+
+    if (v.includes("{STICKER:")) {
+      const stickerId = v.split(":")[1].slice(0, -1);
+      const sticker = msg.guild.stickers.cache.filter(
+        (s) => s.id === stickerId
+      );
+      if (sticker.size) {
+        return msg.channel.send({
+          stickers: sticker,
+        });
+      }
+      return;
+    }
+
+    return msg.channel.send(v);
+  }
+
+  Object.entries(responses).forEach(async ([k, v]) => {
     if (` ${msg.content.toLowerCase()} `.includes(` ${k} `)) {
-      if (v.includes("{AUTHOR}")) {
-        v = v.replace("{AUTHOR}", msg.author.username);
-      }
-
-      if (v.includes("{FOLLOWING}")) {
-        const following = msg.content.toLowerCase().split(k).slice(1).join(k);
-        v = v.replace(
-          "{FOLLOWING}",
-          msg.content.trim() === k || !following.trim()
-            ? msg.author.username
-            : following.trim()
-        );
-      }
-
-      if (v.includes("{STICKER:")) {
-        const stickerId = v.split(":")[1].slice(0, -1);
-        const sticker = msg.guild.stickers.cache.filter(
-          (s) => s.id === stickerId
-        );
-        if (sticker.size) {
-          return msg.channel.send({
-            stickers: sticker,
-          });
-        }
-        return;
-      }
-
-      return msg.channel.send(v);
+      await f(k, v);
     }
   });
 }
@@ -125,7 +135,7 @@ client.once(Events.ClientReady, async (c) => {
 client.on("messageCreate", async (msg) => {
   if (msg.author.bot || !msg.guild) return;
 
-  checkMessageResponse(msg);
+  await checkMessageResponse(msg);
   checkMessageReactions(msg);
   if (!msg.content.toLowerCase().startsWith(prefix)) return;
 
