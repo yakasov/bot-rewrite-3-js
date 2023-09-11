@@ -24,6 +24,7 @@ exports.run = async (client, date, force = false) => {
         m.roles.remove(bdayRoleId);
       }
     });
+
     guildMembers.forEach((m) => {
       if (
         birthdays[m.id] &&

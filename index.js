@@ -57,6 +57,8 @@ async function checkTweets() {
 }
 
 async function checkMessageResponse(msg) {
+  var kMet = false;
+
   async function f(k, v) {
     if (v.includes("{AUTHOR}")) {
       v = v.replace("{AUTHOR}", msg.author.username);
@@ -69,6 +71,7 @@ async function checkMessageResponse(msg) {
           .fetch({ limit: 2 })
           .then((c) => [...c.values()].pop().author.username);
       }
+
       const following = msg.content.toLowerCase().split(k).slice(1).join(k);
       v = v.replace(
         "{FOLLOWING}",
@@ -95,7 +98,8 @@ async function checkMessageResponse(msg) {
   }
 
   Object.entries(responses).forEach(async ([k, v]) => {
-    if (` ${msg.content.toLowerCase()} `.includes(` ${k} `)) {
+    if (` ${msg.content.toLowerCase()} `.includes(` ${k} `) && !kMet) {
+      kMet = true;
       await f(k, v);
     }
   });
