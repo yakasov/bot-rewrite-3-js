@@ -107,7 +107,7 @@ async function checkMessageResponse(msg) {
 
 function checkMessageReactions(msg) {
   Object.keys(reactions).some((k) => {
-    if (k === msg.author.id) {
+    if (k === msg.author.id && Math.random() < 0.25) {
       const reaction = msg.guild.emojis.cache.find(
         (e) => e.name === reactions[k]
       );
