@@ -56,12 +56,19 @@ async function checkTweets() {
   }
 }
 
+function getNickname(msg) {
+  return (
+    msg.guild.members.cache.filter((m) => m.id == msg.author.id).first()
+      .nickname ?? msg.author.username
+  );
+}
+
 async function checkMessageResponse(msg) {
   var kMet = false;
 
   async function f(k, v) {
     if (v.includes("{AUTHOR}")) {
-      v = v.replace("{AUTHOR}", msg.author.username);
+      v = v.replace("{AUTHOR}", getNickname(msg));
     }
 
     if (v.includes("{FOLLOWING}")) {
@@ -69,14 +76,14 @@ async function checkMessageResponse(msg) {
       if (msg.content.trim() === k) {
         lastMsg = await msg.channel.messages
           .fetch({ limit: 2 })
-          .then((c) => [...c.values()].pop().author.username);
+          .then((c) => getNickname([...c.values()].pop()));
       }
 
       const following = msg.content.toLowerCase().split(k).slice(1).join(k);
       v = v.replace(
         "{FOLLOWING}",
         lastMsg || !following.trim()
-          ? lastMsg ?? msg.author.username
+          ? lastMsg ?? getNickname(msg)
           : following.trim()
       );
     }
