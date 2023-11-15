@@ -36,7 +36,6 @@ module.exports = {
     }
 
     await msg.react(module.exports.reactions["start"]);
-    await module.exports.setPresence(client, "AI2 response...");
 
     try {
       res = await openai.createCompletion({
@@ -60,8 +59,6 @@ module.exports = {
       );
     }
 
-    await module.exports.setPresence(client, splash);
-
     if (res) {
       await msg.reactions.removeAll();
       await msg.react(module.exports.reactions["success"]);
@@ -83,10 +80,5 @@ module.exports = {
     await m.reactions.removeAll();
     await m.react(module.exports.reactions["fail"]);
     return m.reply(r);
-  },
-  setPresence: (c, p) => {
-    return c.user.setPresence({
-      activities: [{ name: p, type: ActivityType.Watching }],
-    });
   },
 };

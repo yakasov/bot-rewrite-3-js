@@ -6,6 +6,7 @@ module.exports = {
   run: async (client, msg, args) => {
     await client.application.fetch();
     if (msg.author === client.application.owner) {
+      console.log("Restarting...\n\n");
       exec("node index.js", (err, stdout, stderr) => {
         console.log(stdout);
       });

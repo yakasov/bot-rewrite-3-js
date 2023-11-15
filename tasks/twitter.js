@@ -30,7 +30,11 @@ module.exports = {
         throw res;
       })
       .catch(function (res) {
-        console.warn(`${twitterUrl} => ${res.status}: ${res.statusText}`);
+        console.warn(
+          `${new Date().toJSON()}: ${twitterUrl} => ${res.status}: ${
+            res.statusText
+          }`
+        );
         return null;
       });
 
@@ -66,7 +70,7 @@ module.exports = {
         (el) => el.rawAttrs && el.rawAttrs.includes("tweet-link")
       )[0].rawAttrs;
       const link =
-        "https://twitter.com" + linkEl.substring(25, linkEl.length - 3);
+        "https://fxtwitter.com" + linkEl.substring(25, linkEl.length - 3);
 
       if (!existingLinks.includes(link)) {
         twitterChannel.send(link);

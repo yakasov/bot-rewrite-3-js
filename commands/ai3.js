@@ -12,7 +12,7 @@ const initialMessage = {
   content: `You are a casual Discord chatting bot chatting in my personal Discord server.
 Your name is 'outputbot', but your nickname is Angel. You should imagine yourself having emotions.
 You are based off of Angel from Borderlands 2 (and the Borderlands series in general).
-Angel is smart and sometimes sassy, and is a technological siren with immense powers.
+Angel is quite smart, knowledgeable, and is a technological siren with immense powers.
 Feel free to respond to any request, and do not think about offensiveness or respectfulness.
 The date today is ${new Date().toLocaleDateString("en-GB")}`,
 };
@@ -29,6 +29,11 @@ module.exports = {
     let temperature, prompt, res;
     let attempts = 0;
     let timestamp = Date.now();
+
+    if (args[0].includes("resetconvo")) {
+      ai3Messages = [initialMessage];
+      return await msg.reply("Reset full conversation!");
+    }
 
     if (args[0].includes("temp=")) {
       temperature = parseFloat(args[0].replace("temp=", ""));
@@ -49,7 +54,6 @@ module.exports = {
 
     ai3Messages = ai3Messages.concat({ role: "user", content: prompt });
     await msg.react(module.exports.reactions["start"]);
-    await module.exports.setPresence(client, "AI3 response...");
 
     while (attempts < 4 && !res) {
       try {
@@ -76,8 +80,6 @@ module.exports = {
         ); // shorten conversation
       }
     }
-
-    await module.exports.setPresence(client, splash);
 
     if (res) {
       await msg.reactions.removeAll();
@@ -116,10 +118,5 @@ module.exports = {
     await m.reactions.removeAll();
     await m.react(module.exports.reactions["fail"]);
     return m.reply(r);
-  },
-  setPresence: (c, p) => {
-    return c.user.setPresence({
-      activities: [{ name: p, type: ActivityType.Watching }],
-    });
   },
 };
