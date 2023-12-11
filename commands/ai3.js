@@ -1,7 +1,11 @@
-const { ActivityType } = require("discord.js");
 const { Configuration, OpenAIApi } = require("openai");
 const fs = require("fs");
-const { openaiToken } = require("./../resources/config.json");
+const {
+  openaiToken,
+  aiChannel,
+  testAiChannel1,
+  testAiChannel2,
+} = require("./../resources/config.json");
 
 const config = new Configuration({
   apiKey: openaiToken,
@@ -22,8 +26,11 @@ module.exports = {
   aliases: ["aix"],
   description: "Uses OpenAI API (gpt-3.5-turbo) to generate an AI response",
   run: async (client, msg, args, splash) => {
-    if (!config.apiKey) {
-      return await module.exports.returnFail(msg, "No API key found!");
+    if (
+      !config.apiKey ||
+      ![aiChannel, testAiChannel1, testAiChannel2].includes(msg.channelId)
+    ) {
+      return;
     }
 
     let temperature, prompt, res;
