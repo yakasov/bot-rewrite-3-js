@@ -66,6 +66,21 @@ function getNickname(msg) {
 async function checkMessageResponse(msg) {
   var kMet = false;
 
+  if (
+    ["https://x.com/", "https://twitter.com/"].find((l) =>
+      msg.content.includes(l)
+    )
+  ) {
+    msg.channel.send(
+      `${getNickname(msg)} sent:\n${msg.content
+        .replace("https://x.com/", "https://fixupx.com/")
+        .replace("https://twitter.com/", "https://fxtwitter.com/")}`
+    );
+
+    msg.delete();
+    kMet = true;
+  }
+
   async function f(k, v) {
     if (v.includes("{AUTHOR}")) {
       v = v.replace("{AUTHOR}", getNickname(msg));
