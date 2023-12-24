@@ -66,6 +66,7 @@ function getNickname(msg) {
 async function checkMessageResponse(msg) {
   var kMet = false;
 
+  // swap Twitter/X URLs for proper embedding ones
   if (
     ["https://x.com/", "https://twitter.com/"].find((l) =>
       msg.content.includes(l)
