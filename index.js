@@ -3,6 +3,8 @@ const fs = require("fs");
 const responses = require("./resources/responses.json");
 const reactions = require("./resources/reactions.json");
 const { token, prefix } = require("./resources/config.json");
+const fetch = require("node-fetch");
+globalThis.fetch = fetch;
 
 const client = new Client({
   intents: [
