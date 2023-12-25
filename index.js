@@ -16,6 +16,7 @@ const client = new Client({
     GatewayIntentBits.GuildVoiceStates,
     GatewayIntentBits.MessageContent,
   ],
+  allowedMentions: { parse: ["users", "roles"], repliedUser: true },
 });
 const aliases = buildAliases();
 var date = new Date().toLocaleDateString("en-GB").slice(0, -5);
