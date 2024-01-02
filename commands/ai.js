@@ -18,7 +18,8 @@ module.exports = {
   run: async (client, msg, args, splash) => {
     if (
       !config.apiKey ||
-      ![aiChannel, testAiChannel1, testAiChannel2].includes(msg.channelId)
+      ![aiChannel, testAiChannel1, testAiChannel2].includes(msg.channelId) ||
+      !args
     ) {
       return;
     }
