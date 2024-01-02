@@ -23,7 +23,7 @@ The date today is ${new Date().toLocaleDateString("en-GB")}`,
 var ai3Messages = [initialMessage];
 
 module.exports = {
-  aliases: ["aix"],
+  aliases: ["aix", "ai4"],
   description: "Uses OpenAI API (gpt-3.5-turbo) to generate an AI response",
   run: async (client, msg, args, splash) => {
     if (
@@ -68,7 +68,7 @@ module.exports = {
         attempts++;
         await msg.react(module.exports.reactions[attempts]);
         res = await openai.createChatCompletion({
-          model: "gpt-3.5-turbo-1106",
+          model: "gpt-4",
           messages: ai3Messages,
           max_tokens: 2048,
           temperature: temperature ?? 0.9,

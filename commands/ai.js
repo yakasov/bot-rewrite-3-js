@@ -47,7 +47,7 @@ module.exports = {
 
     try {
       res = await openai.createCompletion({
-        model: "davinci-002",
+        model: "babbage-002",
         prompt: prompt,
         temperature: temperature ?? 0.9,
         top_p: temperature ? null : 0.3,
