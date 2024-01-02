@@ -14,7 +14,7 @@ const openai = new OpenAIApi(config);
 
 module.exports = {
   aliases: ["ai2"],
-  description: "Uses OpenAI API (text-davinci-002) to generate an AI response",
+  description: "Uses OpenAI API (davinci-002) to generate an AI response",
   run: async (client, msg, args, splash) => {
     if (
       !config.apiKey ||
@@ -47,7 +47,7 @@ module.exports = {
 
     try {
       res = await openai.createCompletion({
-        model: "babbage-002",
+        model: "davinci-002",
         prompt: prompt,
         temperature: temperature ?? 0.9,
         top_p: temperature ? null : 0.3,

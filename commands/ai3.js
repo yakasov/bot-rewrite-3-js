@@ -24,7 +24,7 @@ var ai3Messages = [initialMessage];
 
 module.exports = {
   aliases: ["aix", "ai4"],
-  description: "Uses OpenAI API (gpt-3.5-turbo) to generate an AI response",
+  description: "Uses OpenAI API (gpt-4) to generate an AI response",
   run: async (client, msg, args, splash) => {
     if (
       !config.apiKey ||
