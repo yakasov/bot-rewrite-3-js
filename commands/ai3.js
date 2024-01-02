@@ -68,7 +68,7 @@ module.exports = {
         attempts++;
         await msg.react(module.exports.reactions[attempts]);
         res = await openai.createChatCompletion({
-          model: "gpt-3.5-turbo",
+          model: "gpt-3.5-turbo-1106",
           messages: ai3Messages,
           max_tokens: 2048,
           temperature: temperature ?? 0.9,
