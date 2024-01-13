@@ -70,7 +70,7 @@ module.exports = {
         res = await openai.createChatCompletion({
           model: "gpt-3.5-turbo",
           messages: ai3Messages,
-          max_tokens: 4096,
+          max_tokens: 2048,
           temperature: temperature ?? 0.9,
         });
       } catch (err) {
