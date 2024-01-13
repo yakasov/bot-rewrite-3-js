@@ -24,8 +24,7 @@ var ai3Messages = [initialMessage];
 
 module.exports = {
   aliases: [],
-  description:
-    "Uses OpenAI API (gpt-3.5-turbo-1106) to generate an AI response",
+  description: "Uses OpenAI API (gpt-3.5-turbo) to generate an AI response",
   run: async (client, msg, args, splash) => {
     if (
       !config.apiKey ||
@@ -69,11 +68,10 @@ module.exports = {
         attempts++;
         await msg.react(module.exports.reactions[attempts]);
         res = await openai.createChatCompletion({
-          model: "gpt-3.5-turbo-1106",
+          model: "gpt-3.5-turbo",
           messages: ai3Messages,
-          max_tokens: 2048,
+          max_tokens: 4096,
           temperature: temperature ?? 0.9,
-          top_p: temperature ? null : 0.3,
         });
       } catch (err) {
         if (attempts === 3) {

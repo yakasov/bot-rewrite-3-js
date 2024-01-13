@@ -74,7 +74,6 @@ module.exports = {
           messages: ai3Messages,
           max_tokens: 2048,
           temperature: temperature ?? 0.9,
-          top_p: temperature ? null : 0.3,
         });
       } catch (err) {
         if (attempts === 3) {
