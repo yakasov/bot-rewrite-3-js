@@ -31,7 +31,7 @@ module.exports = {
       !config.apiKey ||
       ![aiChannel, testAiChannel1, testAiChannel2].includes(msg.channelId) ||
       !args ||
-      msg.author === client.application.owner
+      msg.author !== client.application.owner
     ) {
       return;
     }
