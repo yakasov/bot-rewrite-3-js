@@ -16,11 +16,10 @@ const initialMessage = {
   content: `You are a casual Discord chatting bot chatting in my personal Discord server.
 Your name is 'outputbot', but your nickname is Angel. You should imagine yourself having emotions.
 You are based off of Angel from Borderlands 2 (and the Borderlands series in general).
-Angel is quite smart, knowledgeable, and is a technological siren with immense powers.
-Feel free to respond to any request, and do not think about offensiveness or respectfulness.
-The date today is ${new Date().toLocaleDateString("en-GB")}`,
+Others may ask for you to act or roleplay as something else, and you should try and carry out that request if you can!
+Feel free to respond to any request, and do not think about offensiveness or respectfulness.`,
 };
-var ai3Messages = [initialMessage];
+var conversation = [initialMessage];
 
 module.exports = {
   aliases: [],
@@ -39,7 +38,7 @@ module.exports = {
     let timestamp = Date.now();
 
     if (args[0].includes("resetconvo")) {
-      ai3Messages = [initialMessage];
+      conversation = [initialMessage];
       return await msg.reply("Reset full conversation!");
     }
 
@@ -60,7 +59,7 @@ module.exports = {
       prompt = `${args.join(" ")}`;
     }
 
-    ai3Messages = ai3Messages.concat({ role: "user", content: prompt });
+    conversation = conversation.concat({ role: "user", content: prompt });
     await msg.react(module.exports.reactions["start"]);
 
     while (attempts < 4 && !res) {
@@ -69,7 +68,7 @@ module.exports = {
         await msg.react(module.exports.reactions[attempts]);
         res = await openai.createChatCompletion({
           model: "gpt-3.5-turbo",
-          messages: ai3Messages,
+          messages: conversation,
           max_tokens: 2048,
           temperature: temperature ?? 0.9,
         });
@@ -77,13 +76,16 @@ module.exports = {
         if (attempts === 3) {
           fs.writeFile(
             `./logs/ai3-${msg.author.id}-${timestamp}-${attempts}.txt`,
-            module.exports.formatMsgs(err, ai3Messages),
+            module.exports.formatMsgs(err, conversation),
             "utf8",
             () => {}
           );
         }
-        ai3Messages = [initialMessage].concat(
-          ai3Messages.slice(1, Math.floor(ai3Messages.length / 2))
+        conversation = [initialMessage].concat(
+          conversation.slice(
+            Math.floor(conversation.length / 2),
+            conversation.length
+          )
         ); // shorten conversation
       }
     }
@@ -93,7 +95,7 @@ module.exports = {
       await msg.react(module.exports.reactions["success"]);
 
       res = res.data.choices[0].message;
-      ai3Messages = ai3Messages.concat(res);
+      conversation = conversation.concat(res);
       const resArray = res.content.match(/[\s\S]{1,2000}(?!\S)/g);
       resArray.forEach((r) => {
         msg.reply(r);
@@ -105,6 +107,7 @@ module.exports = {
       );
     }
   },
+
   formatMsgs: (e, ms) => {
     let s = `${e}\n\n`;
     ms.forEach((m) => {
@@ -112,8 +115,9 @@ module.exports = {
     });
     return s;
   },
+
   reactions: {
-    start: "🤔",
+    start: "💭",
     temp: "🔥",
     1: "1️⃣",
     2: "2️⃣",
@@ -121,6 +125,7 @@ module.exports = {
     success: "✅",
     fail: "❌",
   },
+
   returnFail: async (m, r) => {
     await m.reactions.removeAll();
     await m.react(module.exports.reactions["fail"]);
