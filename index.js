@@ -131,7 +131,7 @@ async function checkMessageResponse(msg) {
   });
 }
 
-function checkMessageReactions(msg) {
+async function checkMessageReactions(msg) {
   Object.keys(reactions).some((k) => {
     if (k === msg.author.id && Math.random() < 0.25) {
       const reaction = msg.guild.emojis.cache.find(
@@ -142,6 +142,10 @@ function checkMessageReactions(msg) {
       }
     }
   });
+
+  if (Math.random() < 1 / 50) {
+    await msg.react("🤓");
+  }
 }
 
 client.once(Events.ClientReady, async (c) => {
@@ -166,7 +170,7 @@ client.on("messageCreate", async (msg) => {
   if (msg.author.bot || !msg.guild) return;
 
   await checkMessageResponse(msg);
-  checkMessageReactions(msg);
+  await checkMessageReactions(msg);
   if (!msg.content.toLowerCase().startsWith(prefix)) return;
 
   var args = msg.content.split(" ");
