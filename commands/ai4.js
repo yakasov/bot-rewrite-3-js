@@ -1,11 +1,6 @@
 const { Configuration, OpenAIApi } = require("openai");
 const fs = require("fs");
-const {
-  openaiToken,
-  aiChannel,
-  testAiChannel1,
-  testAiChannel2,
-} = require("./../resources/config.json");
+const { openaiToken, ai4Channels } = require("./../resources/config.json");
 
 const config = new Configuration({
   apiKey: openaiToken,
@@ -25,14 +20,7 @@ module.exports = {
   aliases: [],
   description: "Uses OpenAI API (gpt-4) to generate an AI response",
   run: async (client, msg, args, splash) => {
-    await client.application.fetch();
-    if (
-      !config.apiKey ||
-      ![aiChannel, testAiChannel1, testAiChannel2].includes(msg.channelId) ||
-      !args ||
-      !args[0] ||
-      msg.author !== client.application.owner
-    ) {
+    if (!config.apiKey || !ai4Channels.includes(msg.channelId) || !args[0]) {
       return;
     }
 
@@ -76,14 +64,12 @@ module.exports = {
           temperature: temperature ?? 0.9,
         });
       } catch (err) {
-        if (attempts === 3) {
-          fs.writeFile(
-            `./logs/ai4-${msg.author.id}-${timestamp}-${attempts}.txt`,
-            module.exports.formatMsgs(err, conversation),
-            "utf8",
-            () => {}
-          );
-        }
+        fs.writeFile(
+          `./logs/ai4-${msg.author.id}-${timestamp}-${attempts}.txt`,
+          module.exports.formatMsgs(err, conversation),
+          "utf8",
+          () => {}
+        );
         conversation = [initialMessage].concat(
           conversation.slice(
             Math.floor(conversation.length / 2),
