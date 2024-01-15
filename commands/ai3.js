@@ -28,7 +28,8 @@ module.exports = {
     if (
       !config.apiKey ||
       ![aiChannel, testAiChannel1, testAiChannel2].includes(msg.channelId) ||
-      !args
+      !args ||
+      args[0]
     ) {
       return;
     }

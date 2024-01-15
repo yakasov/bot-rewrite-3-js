@@ -30,6 +30,7 @@ module.exports = {
       !config.apiKey ||
       ![aiChannel, testAiChannel1, testAiChannel2].includes(msg.channelId) ||
       !args ||
+      !args[0] ||
       msg.author !== client.application.owner
     ) {
       return;
@@ -77,7 +78,7 @@ module.exports = {
       } catch (err) {
         if (attempts === 3) {
           fs.writeFile(
-            `./logs/ai3-${msg.author.id}-${timestamp}-${attempts}.txt`,
+            `./logs/ai4-${msg.author.id}-${timestamp}-${attempts}.txt`,
             module.exports.formatMsgs(err, conversation),
             "utf8",
             () => {}
