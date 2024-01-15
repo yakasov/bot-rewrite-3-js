@@ -2,9 +2,8 @@
   "token": "",
   "openaiToken": "",
   "prefix": "*",
-  "aiChannel": "1087133384758792272",
-  "testAiChannel1": "542034119274790912",
-  "testAiChannel2": "1179748599429595136",
+  "aiChannels": ["1087133384758792272"],
+  "elevatedPermsAiChannels": ["542034119274790912"],
 
   "mainGuildId": "271300005990296576",
   "bdayChannelId": "500009139853885440",

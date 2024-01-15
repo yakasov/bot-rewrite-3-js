@@ -1,6 +1,9 @@
 const { Configuration, OpenAIApi } = require("openai");
 const fs = require("fs");
-const { openaiToken, ai4Channels } = require("./../resources/config.json");
+const {
+  openaiToken,
+  elevatedPermsAiChannels,
+} = require("./../resources/config.json");
 
 const config = new Configuration({
   apiKey: openaiToken,
@@ -20,7 +23,11 @@ module.exports = {
   aliases: [],
   description: "Uses OpenAI API (gpt-4) to generate an AI response",
   run: async (client, msg, args, splash) => {
-    if (!config.apiKey || !ai4Channels.includes(msg.channelId) || !args[0]) {
+    if (
+      !config.apiKey ||
+      !elevatedPermsAiChannels.includes(msg.channelId) ||
+      !args[0]
+    ) {
       return;
     }
 
@@ -90,10 +97,12 @@ module.exports = {
         msg.reply(r);
       });
     } else {
-      return await module.exports.returnFail(
-        msg,
-        "Failed after 3 attempts, please try again - your conversation shouldn't be affected!"
-      );
+      if (attempts == 3) {
+        return await module.exports.returnFail(
+          msg,
+          "Failed after 3 attempts, please try again - your conversation shouldn't be affected!"
+        );
+      }
     }
   },
 

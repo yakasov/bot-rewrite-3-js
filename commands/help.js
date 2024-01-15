@@ -18,8 +18,9 @@ module.exports = {
 
     Object.entries(keyPairs).forEach(([k, v]) => {
       const info = `\n\n${k}
-- Aliases: ${v.aliases.length ? v.aliases.join(" | ") : "none"}
-- ${v.description}`;
+${v.aliases.length ? "- Aliases: " + v.aliases.join(" | ") + "\n" : ""} - ${
+        v.description
+      }`;
       output += info;
     });
     output += "```";

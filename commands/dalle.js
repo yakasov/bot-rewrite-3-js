@@ -1,6 +1,9 @@
 const { Configuration, OpenAIApi } = require("openai");
 const fs = require("fs");
-const { openaiToken, aiChannels } = require("./../resources/config.json");
+const {
+  openaiToken,
+  elevatedPermsAiChannels,
+} = require("./../resources/config.json");
 
 const config = new Configuration({
   apiKey: openaiToken,
@@ -11,7 +14,11 @@ module.exports = {
   aliases: [],
   description: "Uses OpenAI API (dall-e-2) to generate an image",
   run: async (client, msg, args, splash) => {
-    if (!config.apiKey || !aiChannels.includes(msg.channelId) || !args[0]) {
+    if (
+      !config.apiKey ||
+      !elevatedPermsAiChannels.includes(msg.channelId) ||
+      !args[0]
+    ) {
       return;
     }
 
@@ -30,7 +37,7 @@ module.exports = {
           model: "dall-e-2",
           prompt: prompt,
           n: 1,
-          size: "512x512",
+          size: "1024x1024",
         });
       } catch (err) {
         fs.writeFile(
@@ -49,10 +56,12 @@ module.exports = {
       res = res.data.data[0].url;
       msg.reply(res);
     } else {
-      return await module.exports.returnFail(
-        msg,
-        "Failed after 3 attempts, no response returned."
-      );
+      if (attempts == 3) {
+        return await module.exports.returnFail(
+          msg,
+          "Failed after 3 attempts, no response returned."
+        );
+      }
     }
   },
 
@@ -66,7 +75,6 @@ module.exports = {
 
   reactions: {
     start: "💭",
-    temp: "🔥",
     1: "1️⃣",
     2: "2️⃣",
     3: "3️⃣",

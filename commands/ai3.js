@@ -90,10 +90,12 @@ module.exports = {
         msg.reply(r);
       });
     } else {
-      return await module.exports.returnFail(
-        msg,
-        "Failed after 3 attempts, please try again - your conversation shouldn't be affected!"
-      );
+      if (attempts == 3) {
+        return await module.exports.returnFail(
+          msg,
+          "Failed after 3 attempts, please try again - your conversation shouldn't be affected!"
+        );
+      }
     }
   },
 
