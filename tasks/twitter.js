@@ -24,6 +24,9 @@ module.exports = {
     const twitterPage = await fetch(proxyUrl, {
       redirect: "follow",
       follow: 100,
+      headers: {
+        Origin: "https://yakasov-cors-proxy-1225ecf41e1c.herokuapp.com/",
+      },
     })
       .then(function (res) {
         if (res.status == 200) {
