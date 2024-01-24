@@ -9,6 +9,8 @@ const {
 module.exports = {
   run: async (client) => {
     if (!twitterUrl) return;
+    const proxyUrl =
+      "https://yakasov-cors-proxy-1225ecf41e1c.herokuapp.com/" + twitterUrl;
 
     const keywords = [
       "patch",
@@ -19,7 +21,7 @@ module.exports = {
       "nerf",
       "buff",
     ];
-    const twitterPage = await fetch(twitterUrl, {
+    const twitterPage = await fetch(proxyUrl, {
       redirect: "follow",
       follow: 100,
     })
@@ -31,7 +33,7 @@ module.exports = {
       })
       .catch(function (res) {
         console.warn(
-          `${new Date().toJSON()}: ${twitterUrl} => ${res.status}: ${
+          `${new Date().toJSON()}: ${proxyUrl} => ${res.status}: ${
             res.statusText
           }`
         );
