@@ -9,9 +9,9 @@ module.exports = {
   aliases: [],
   description: "Generate a TTS output from a given input",
   run: async (client, msg, args) => {
-    // if (!args.length) {
-    //   return;
-    // }
+    if (!args.length) {
+      return;
+    }
 
     const player = createAudioPlayer();
     joinVoiceChannel({
@@ -25,25 +25,18 @@ module.exports = {
       {
         method: "post",
         body: JSON.stringify({
-          text: "The fungus among us",
+          text: args.join(" "),
           voice: "en_us_001",
         }),
         headers: { "Content-Type": "application/json" },
       }
     );
-    const data = await response.json();
 
-    const res = createAudioResource(
-      await module.exports.audioToBase64(`data:audio/mpeg;base64,${data.data}`)
-    );
-    player.play(res);
-  },
-  audioToBase64: async (audioFile) => {
-    return new Promise((resolve, reject) => {
-      let reader = new fs();
-      reader.onerror = reject;
-      reader.onload = (e) => resolve(e.target.result);
-      reader.readAsDataURL(audioFile);
+    await response.json().then((r) => {
+      fs.writeFileSync("resources/tts.mp3", r.data, { encoding: "base64" });
     });
+
+    const res = createAudioResource("resources/tts.mp3");
+    player.play(res);
   },
 };
