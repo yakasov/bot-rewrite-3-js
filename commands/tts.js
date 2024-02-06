@@ -38,7 +38,7 @@ module.exports = {
         const res = createAudioResource("resources/tts.mp3");
         player.play(res);
       } else {
-        msg.reply("Maybe too long - try again?");
+        msg.reply(r.error);
       }
     });
   },
