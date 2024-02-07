@@ -21,12 +21,12 @@ module.exports = {
       "nerf",
       "buff",
     ];
-    const twitterPage = await fetch(proxyUrl, {
+    const twitterPage = await fetch(twitterUrl, {
       redirect: "follow",
       follow: 100,
-      headers: {
-        Origin: "https://yakasov-cors-proxy-1225ecf41e1c.herokuapp.com/",
-      },
+      // headers: {
+      //   Origin: "https://yakasov-cors-proxy-1225ecf41e1c.herokuapp.com/",
+      // },
     })
       .then(function (res) {
         if (res.status == 200) {
@@ -36,7 +36,7 @@ module.exports = {
       })
       .catch(function (res) {
         console.warn(
-          `${new Date().toJSON()}: ${proxyUrl} => ${res.status}: ${
+          `${new Date().toJSON()}: ${twitterUrl} => ${res.status}: ${
             res.statusText
           }`
         );
