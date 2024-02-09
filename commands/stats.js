@@ -37,9 +37,9 @@ module.exports = {
     // does this formatting method suck? yea
     // there is an easier way surely with Object.keys(units)
     // TODO: above
-    return `${units["h"] ? units["h"] + "h " : ""}
-       ${units["m"] ? units["m"] + "m " : ""}
-       ${units["s"] ? units["s"] + "s " : ""}`;
+    return `${units["h"] ? units["h"] + "h " : ""}${
+      units["m"] ? units["m"] + "m " : ""
+    }${units["s"] ? units["s"] + "s " : ""}`;
   },
   getNickname: (msg, id) => {
     const member = msg.guild.members.cache.filter((m) => m.id == id).first();
