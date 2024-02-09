@@ -163,23 +163,49 @@ async function checkMessageReactions(msg) {
   }
 }
 
-function addToStats(id, guild, type) {
+async function addToStats(id, guild, type, msgId = null) {
+  function f() {
+    return Math.floor(Date.now() / 1000);
+  }
+
+  if (Number.isInteger(msgId)) msgId = msgId.toString();
+
   if (!stats[guild]) stats[guild] = {};
   if (!stats[guild][id]) {
-    stats[guild][id] = { messages: 0, voiceTime: 0, joinTime: 0 };
+    stats[guild][id] = {
+      messages: 0,
+      voiceTime: 0,
+      joinTime: 0,
+      lastGainTime: 0,
+      decay: 0,
+      nerdEmojis: {},
+    };
   }
+
+  if (f() - stats[guild][id]["lastGainTime"] < 15) return;
+  stats[guild][id]["lastGainTime"] = f();
 
   switch (type) {
     case "message":
       stats[guild][id]["messages"] += 1;
     case "joinedVoiceChannel":
-      stats[guild][id]["joinTime"] = Math.floor(Date.now() / 1000);
+      stats[guild][id]["joinTime"] = f();
     case "leftVoiceChannel":
-      stats[guild][id]["voiceTime"] +=
-        Math.floor(Date.now() / 1000) - stats[guild][id]["joinTime"];
-    default:
-      return;
+      stats[guild][id]["voiceTime"] += f() - stats[guild][id]["joinTime"];
+    case "nerdEmojiAdded":
+      if (!stats[guild][id]["nerdEmojis"][msgId])
+        stats[guild][id]["nerdEmojis"][msgId] = 0;
+      stats[guild][id]["nerdEmojis"][msgId] += 1;
+    case "nerdEmojiRemoved":
+      if (!stats[guild][id]["nerdEmojis"][msgId])
+        stats[guild][id]["nerdEmojis"][msgId] = 0;
+      stats[guild][id]["nerdEmojis"][msgId] = Math.max(
+        0,
+        stats[guild][id]["nerdEmojis"][msgId] - 1
+      );
   }
+
+  await saveStats();
 }
 
 client.once(Events.ClientReady, async (c) => {
@@ -207,10 +233,12 @@ client.on("messageCreate", async (msg) => {
     console.log(`${getNickname(msg)} in ${msg.guild}: ${msg.content}`);
   }
 
-  addToStats(msg.author.id, msg.guild.id, "message");
   await checkMessageResponse(msg);
   await checkMessageReactions(msg);
-  if (!msg.content.toLowerCase().startsWith(prefix)) return;
+  if (!msg.content.toLowerCase().startsWith(prefix)) {
+    await addToStats(msg.author.id, msg.guild.id, "message");
+    return;
+  }
 
   var args = msg.content.split(" ");
   var cmd = args.shift().slice(prefix.length).toLowerCase();
@@ -240,11 +268,37 @@ client.on("messageCreate", async (msg) => {
   }
 });
 
-client.on("voiceStateUpdate", (oldState, newState) => {
+client.on("voiceStateUpdate", async (oldState, newState) => {
   if (oldState.channel && !newState.channel) {
-    addToStats(newState.member.id, newState.guild.id, "leftVoiceChannel");
+    await addToStats(newState.member.id, newState.guild.id, "leftVoiceChannel");
   } else if (!oldState.channel && newState.channel) {
-    addToStats(newState.member.id, newState.guild.id, "joinedVoiceChannel");
+    await addToStats(
+      newState.member.id,
+      newState.guild.id,
+      "joinedVoiceChannel"
+    );
+  }
+});
+
+client.on("messageReactionAdd", async (reaction, user) => {
+  if (reaction.emoji.name == "🤓") {
+    await addToStats(
+      user.id,
+      reaction.message.guild.id,
+      "nerdEmojiAdded",
+      reaction.message.id
+    );
+  }
+});
+
+client.on("messageReactionRemove", async (reaction, user) => {
+  if (reaction.emoji.name == "🤓") {
+    await addToStats(
+      user.id,
+      reaction.message.guild.id,
+      "nerdEmojiRemoved",
+      reaction.message.id
+    );
   }
 });
 

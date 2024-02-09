@@ -1,0 +1,11 @@
+{
+  "Bronze": 0,
+  "Silver": 2500,
+  "Gold": 5000,
+  "Platinum": 7500,
+  "Diamond": 10000,
+  "Masters": 12500,
+  "Grandmasters": 15000,
+  "Champion": 20000,
+  "Ultimate": 30000
+}
