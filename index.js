@@ -1,8 +1,10 @@
 const { Client, Events, GatewayIntentBits } = require("discord.js");
 const fs = require("fs");
+const npFile = require("./commands/np.js");
+const { token, prefix } = require("./resources/config.json");
 const responses = require("./resources/responses.json");
 const reactions = require("./resources/reactions.json");
-const { token, prefix } = require("./resources/config.json");
+const stats = require("./resources/stats.json");
 const fetch = require("node-fetch");
 globalThis.fetch = fetch;
 
@@ -59,11 +61,24 @@ async function checkTweets() {
   }
 }
 
+async function getNewSplash() {
+  splash = await npFile.run(client, null, null);
+}
+
 function getNickname(msg) {
   return (
     msg.guild.members.cache.filter((m) => m.id == msg.author.id).first()
       .nickname ?? msg.author.username
   );
+}
+
+async function saveStats() {
+  try {
+    const saveStats = require("./tasks/saveStats.js");
+    await saveStats.run(stats);
+  } catch (e) {
+    return console.error(e);
+  }
 }
 
 async function checkMessageResponse(msg) {
@@ -148,6 +163,25 @@ async function checkMessageReactions(msg) {
   }
 }
 
+function addToStats(id, guild, type) {
+  if (!stats[guild]) stats[guild] = {};
+  if (!stats[guild][id]) {
+    stats[guild][id] = { messages: 0, voiceTime: 0, joinTime: 0 };
+  }
+
+  switch (type) {
+    case "message":
+      stats[guild][id]["messages"] += 1;
+    case "joinedVoiceChannel":
+      stats[guild][id]["joinTime"] = Math.floor(Date.now() / 1000);
+    case "leftVoiceChannel":
+      stats[guild][id]["voiceTime"] +=
+        Math.floor(Date.now() / 1000) - stats[guild][id]["joinTime"];
+    default:
+      return;
+  }
+}
+
 client.once(Events.ClientReady, async (c) => {
   console.log(
     "Connected and ready to go!\n" +
@@ -155,15 +189,16 @@ client.once(Events.ClientReady, async (c) => {
       `logged in as ${c.user.tag}\n`
   );
 
-  const npFile = require("./commands/np.js");
-  splash = await npFile.run(client, null, null);
+  await checkBirthdays(true);
+  await checkMinecraftServer();
+  await checkTweets();
+  await getNewSplash();
 
-  checkBirthdays(true);
-  checkMinecraftServer();
-  checkTweets();
   setInterval(checkBirthdays, 900000);
   setInterval(checkMinecraftServer, 5000);
   setInterval(checkTweets, 900000);
+  setInterval(getNewSplash, 3600000);
+  setInterval(saveStats, 15000);
 });
 
 client.on("messageCreate", async (msg) => {
@@ -172,6 +207,7 @@ client.on("messageCreate", async (msg) => {
     console.log(`${getNickname(msg)} in ${msg.guild}: ${msg.content}`);
   }
 
+  addToStats(msg.author.id, msg.guild.id, "message");
   await checkMessageResponse(msg);
   await checkMessageReactions(msg);
   if (!msg.content.toLowerCase().startsWith(prefix)) return;
@@ -201,6 +237,14 @@ client.on("messageCreate", async (msg) => {
     if (err.code && err.code !== "MODULE_NOT_FOUND") {
       console.error(err);
     }
+  }
+});
+
+client.on("voiceStateUpdate", (oldState, newState) => {
+  if (oldState.channel && !newState.channel) {
+    addToStats(newState.member.id, newState.guild.id, "leftVoiceChannel");
+  } else if (!oldState.channel && newState.channel) {
+    addToStats(newState.member.id, newState.guild.id, "joinedVoiceChannel");
   }
 });
 
