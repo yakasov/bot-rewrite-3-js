@@ -25,15 +25,12 @@ module.exports = {
       );
       return [k, v["score"]];
     });
-    // sortedScores.forEach((a) => {
-    //   a["score"] = a > 2500 ? a - v["decay"] : a;
-    // });
     sortedScores.sort(function (f, s) {
       return s[1] - f[1];
     });
 
     sortedScores.forEach((a, i) => {
-      outputMessage += `${module.exports.getNickname(
+      outputMessage += `#${i + 1}: ${module.exports.getNickname(
         msg,
         a[0]
       )}\n    Messages: ${
@@ -42,7 +39,7 @@ module.exports = {
         guildStats[a[0]]["voiceTime"]
       )}\n    Ranking: ${module.exports.getRanking(guildStats[a[0]])} (${
         a[1]
-      }SR, #${i + 1} of friends)\n\n`;
+      }SR)\n\n`;
     });
 
     msg.reply("```\n" + outputMessage + "\n```");
@@ -74,7 +71,7 @@ module.exports = {
   getNickname: (msg, id) => {
     const member = msg.guild.members.cache.filter((m) => m.id == id).first();
     return `${member.nickname ?? member.user.username}${
-      msg.author.id == id ? " <----" : ""
+      msg.author.id == id ? "        <-----" : ""
     }`;
   },
   getRanking: (memberStats) => {
