@@ -7,6 +7,6 @@ module.exports = {
     const guildStats = stats[msg.guild.id];
     if (!guildStats) return;
 
-    msg.reply("```" + JSON.stringify(guildStats, null, 4) + "```");
+    msg.reply("```json\n" + JSON.stringify(guildStats, null, 4) + "\n```");
   },
 };
