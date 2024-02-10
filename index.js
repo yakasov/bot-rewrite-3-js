@@ -81,8 +81,23 @@ async function saveStats() {
   }
 }
 
+async function addDecayToStats() {
+  // This function should really be a separate task!!!
+  Object.entries(stats).forEach(([guild, gv]) => {
+    Object.keys(gv).forEach((member) => {
+      if (stats[guild][member][score] > 2500) {
+        stats[guild][member][decay] += 250;
+      }
+    });
+  });
+}
+
+function getTime(seconds = 0, minutes = 0, hours = 0) {
+  return 1000 * seconds + 1000 * 60 * minutes + 1000 * 60 * 60 * hours;
+}
+
 async function checkMessageResponse(msg) {
-  var kMet = false;
+  var stopProcessing = false;
 
   // swap Twitter/X URLs for proper embedding ones
   if (
@@ -97,7 +112,7 @@ async function checkMessageResponse(msg) {
     );
 
     msg.delete();
-    kMet = true;
+    stopProcessing = true;
   }
 
   async function f(k, v) {
@@ -139,8 +154,11 @@ async function checkMessageResponse(msg) {
   }
 
   Object.entries(responses).forEach(async ([k, v]) => {
-    if (` ${msg.content.toLowerCase()} `.includes(` ${k} `) && !kMet) {
-      kMet = true;
+    if (
+      ` ${msg.content.toLowerCase()} `.includes(` ${k} `) &&
+      !stopProcessing
+    ) {
+      stopProcessing = true;
       await f(k, v);
     }
   });
@@ -168,8 +186,6 @@ async function addToStats(id, guild, type, msgId = null) {
     return Math.floor(Date.now() / 1000);
   }
 
-  if (Number.isInteger(msgId)) msgId = msgId.toString();
-
   if (!stats[guild]) stats[guild] = {};
   if (!stats[guild][id]) {
     stats[guild][id] = {
@@ -182,27 +198,40 @@ async function addToStats(id, guild, type, msgId = null) {
     };
   }
 
-  if (f() - stats[guild][id]["lastGainTime"] < 15) return;
-  stats[guild][id]["lastGainTime"] = f();
-
   switch (type) {
     case "message":
+      if (f() - stats[guild][id]["lastGainTime"] < 15) return;
+      stats[guild][id]["lastGainTime"] = f();
       stats[guild][id]["messages"] += 1;
+      break;
+
     case "joinedVoiceChannel":
       stats[guild][id]["joinTime"] = f();
+      break;
+
     case "leftVoiceChannel":
       stats[guild][id]["voiceTime"] += f() - stats[guild][id]["joinTime"];
+      break;
+
     case "nerdEmojiAdded":
+      if (!msgId) return;
       if (!stats[guild][id]["nerdEmojis"][msgId])
         stats[guild][id]["nerdEmojis"][msgId] = 0;
       stats[guild][id]["nerdEmojis"][msgId] += 1;
+      break;
+
     case "nerdEmojiRemoved":
+      if (!msgId) return;
       if (!stats[guild][id]["nerdEmojis"][msgId])
         stats[guild][id]["nerdEmojis"][msgId] = 0;
       stats[guild][id]["nerdEmojis"][msgId] = Math.max(
         0,
         stats[guild][id]["nerdEmojis"][msgId] - 1
       );
+      break;
+
+    default:
+      break;
   }
 
   await saveStats();
@@ -220,11 +249,12 @@ client.once(Events.ClientReady, async (c) => {
   await checkTweets();
   await getNewSplash();
 
-  setInterval(checkBirthdays, 900000);
-  setInterval(checkMinecraftServer, 5000);
-  setInterval(checkTweets, 900000);
-  setInterval(getNewSplash, 3600000);
-  setInterval(saveStats, 15000);
+  setInterval(checkBirthdays, getTime(0, 15));
+  setInterval(checkMinecraftServer, getTime(5));
+  setInterval(checkTweets, getTime(0, 15));
+  setInterval(getNewSplash, getTime(0, 0, 1));
+  setInterval(saveStats, getTime(15));
+  setInterval(addDecayToStats, getTime(0, 0, 24));
 });
 
 client.on("messageCreate", async (msg) => {
@@ -280,22 +310,22 @@ client.on("voiceStateUpdate", async (oldState, newState) => {
   }
 });
 
-client.on("messageReactionAdd", async (reaction, user) => {
+client.on("messageReactionAdd", async (reaction, _) => {
   if (reaction.emoji.name == "🤓") {
     await addToStats(
-      user.id,
-      reaction.message.guild.id,
+      reaction.message.author.id,
+      reaction.message.guildId,
       "nerdEmojiAdded",
       reaction.message.id
     );
   }
 });
 
-client.on("messageReactionRemove", async (reaction, user) => {
+client.on("messageReactionRemove", async (reaction, _) => {
   if (reaction.emoji.name == "🤓") {
     await addToStats(
-      user.id,
-      reaction.message.guild.id,
+      reaction.message.author.id,
+      reaction.message.guildId,
       "nerdEmojiRemoved",
       reaction.message.id
     );

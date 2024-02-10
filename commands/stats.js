@@ -6,26 +6,28 @@ module.exports = {
   description: "Show server statistics.",
   run: async (client, msg, args) => {
     const guildStats = stats[msg.guild.id];
-    if (!guildStats) return;
+    if (!guildStats) {
+      msg.reply("This server has no statistics yet!");
+      return;
+    }
     var outputMessage = "";
 
     var sortedScores = Object.entries(guildStats).map(([k, v]) => {
-      return [
-        k,
-        (v["score"] = Math.max(
-          0,
-          v["voiceTime"] +
-            v["messages"] * 20 -
-            Object.values(v["nerdEmojis"]).reduce(
-              (sum, a) => sum + 2 ** a - 1,
-              0
-            )
-        )),
-      ];
+      v["score"] = Math.max(
+        0,
+        v["voiceTime"] +
+          v["messages"] * 20 -
+          Object.values(v["nerdEmojis"]).reduce(
+            (sum, a) => sum + 2 ** a - 1,
+            0
+          ) -
+          v["decay"]
+      );
+      return [k, v["score"]];
     });
-    sortedScores.forEach((a) => {
-      a["score"] = a > 2500 ? a - v["decay"] : a;
-    });
+    // sortedScores.forEach((a) => {
+    //   a["score"] = a > 2500 ? a - v["decay"] : a;
+    // });
     sortedScores.sort(function (f, s) {
       return s[1] - f[1];
     });
