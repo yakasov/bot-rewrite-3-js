@@ -42,7 +42,10 @@ module.exports = {
       }SR)\n\n`;
     });
 
-    msg.reply("```\n" + outputMessage + "\n```");
+    const outputArray = outputMessage.match(/[\s\S]{1,1990}(?!\S)/g);
+    outputArray.forEach((r) => {
+      msg.reply("```\n" + r + "\n```");
+    });
   },
   formatTime: (time) => {
     if (time == 0) return "0s";
