@@ -1,3 +1,4 @@
+const statsConfig = require("./../resources/config.json");
 const stats = require("./../resources/stats.json");
 const ranks = require("./../resources/ranks.json");
 
@@ -16,7 +17,7 @@ module.exports = {
       v["score"] = Math.max(
         0,
         v["voiceTime"] +
-          v["messages"] * 20 -
+          v["messages"] * statsConfig["messageSRGain"] -
           Object.values(v["nerdEmojis"]).reduce(
             (sum, a) => sum + 2 ** a - 1,
             0

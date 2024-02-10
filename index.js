@@ -1,7 +1,7 @@
 const { Client, Events, GatewayIntentBits } = require("discord.js");
 const fs = require("fs");
 const npFile = require("./commands/np.js");
-const { token, prefix } = require("./resources/config.json");
+const { token, prefix, statsConfig } = require("./resources/config.json");
 const responses = require("./resources/responses.json");
 const reactions = require("./resources/reactions.json");
 const stats = require("./resources/stats.json");
@@ -85,8 +85,8 @@ async function addDecayToStats() {
   // This function should really be a separate task!!!
   Object.entries(stats).forEach(([guild, gv]) => {
     Object.keys(gv).forEach((member) => {
-      if (stats[guild][member][score] > 2500) {
-        stats[guild][member][decay] += 250;
+      if (stats[guild][member][score] > statsConfig["decaySRLossThreshold"]) {
+        stats[guild][member][decay] += statsConfig["decaySRLoss"];
       }
     });
   });
@@ -200,7 +200,11 @@ async function addToStats(id, guild, type, msgId = null) {
 
   switch (type) {
     case "message":
-      if (f() - stats[guild][id]["lastGainTime"] < 15) return;
+      if (
+        f() - stats[guild][id]["lastGainTime"] <
+        statsConfig["messageSRGainCooldown"]
+      )
+        return;
       stats[guild][id]["lastGainTime"] = f();
       stats[guild][id]["messages"] += 1;
       break;
@@ -210,7 +214,9 @@ async function addToStats(id, guild, type, msgId = null) {
       break;
 
     case "leftVoiceChannel":
-      stats[guild][id]["voiceTime"] += f() - stats[guild][id]["joinTime"];
+      stats[guild][id]["voiceTime"] += Math.floor(
+        (f() - stats[guild][id]["joinTime"]) / statsConfig["voiceChatSRGain"]
+      );
       break;
 
     case "nerdEmojiAdded":

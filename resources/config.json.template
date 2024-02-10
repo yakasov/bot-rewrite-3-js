@@ -13,6 +13,14 @@
   "minecraftServerPort": 25565,
   "minecraftServerOwnerId": 204448971009007600,
 
+  "statsConfig": {
+    "messageSRGain": 5,
+    "messageSRGainCooldown": 10,
+    "voiceChatSRGain": 0.2,
+    "decaySRLoss": 250,
+    "decaySRLossThreshold": 2500
+  },
+
   "twitterUrl": "",
   "twitterChannelId": "541920000268900006"
 }
