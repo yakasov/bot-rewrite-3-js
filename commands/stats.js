@@ -1,4 +1,4 @@
-const statsConfig = require("./../resources/config.json");
+const { statsConfig } = require("./../resources/config.json");
 const stats = require("./../resources/stats.json");
 const ranks = require("./../resources/ranks.json");
 
@@ -48,29 +48,11 @@ module.exports = {
       msg.reply("```\n" + r + "\n```");
     });
   },
-  formatTime: (time) => {
-    if (time == 0) return "0s";
-
-    var units = { h: 0, m: 0, s: 0 };
-
-    while (time >= 3600) {
-      time -= 3600;
-      units["h"] += 1;
-    }
-
-    while (time >= 60) {
-      time -= 60;
-      units["m"] += 1;
-    }
-
-    units["s"] = time; // for consistency
-
-    // does this formatting method suck? yea
-    // there is an easier way surely with Object.keys(units)
-    // TODO: above
-    return `${units["h"] ? units["h"] + "h " : ""}${
-      units["m"] ? units["m"] + "m " : ""
-    }${units["s"] ? units["s"] + "s " : ""}`;
+  formatTime: (seconds) => {
+    var date = new Date(null);
+    date.setSeconds(seconds);
+    const unitArray = date.toISOString().substr(11, 8).split(":");
+    return `${unitArray[0]}h ${unitArray[1]}m ${unitArray[2]}s`;
   },
   getNickname: (msg, id) => {
     const member = msg.guild.members.cache.filter((m) => m.id == id).first();
