@@ -4,36 +4,13 @@ const stats = require("./../resources/stats.json");
 const ranks = require("./../resources/ranks.json");
 
 module.exports = {
-  aliases: ["statistics", "leaderboard", "scores"],
+  aliases: ["mystats"],
   description: "Show server statistics.",
-  run: async (client, msg, args, start = 0) => {
-    // 'start' is the start index of the scores to show
-    // this is in case I let people scroll the leaderboard later
-    // otherwise it works as top 5
-
+  run: async (client, msg, args) => {
     const guildStats = stats[msg.guild.id];
     if (!guildStats) return msg.reply("This server has no statistics yet!");
 
-    const topNerder = Object.entries(guildStats)
-      .map(([k, v]) => {
-        return [k, v["nerdsGiven"] ?? 0];
-      })
-      .sort(function (f, s) {
-        return s[1] - f[1];
-      })[0];
-
-    const topNerded = Object.entries(guildStats)
-      .map(([k, v]) => {
-        return [
-          k,
-          Object.values(v["nerdEmojis"]).reduce((sum, a) => sum + a, 0) ?? 0,
-        ];
-      })
-      .sort(function (f, s) {
-        return s[1] - f[1];
-      })[0];
-
-    const topScores = Object.entries(guildStats)
+    const userStats = Object.entries(guildStats)
       .map(([k, v]) => {
         v["score"] = Math.max(
           0,
@@ -51,32 +28,31 @@ module.exports = {
       })
       .sort(function (f, s) {
         return s[1] - f[1];
-      });
+      })
+      .map((a, i) => [a[0], a[1], i])
+      .filter((a) => a[0] == msg.author.id)[0];
 
-    var outputMessage = `Top Nerder: ${module.exports.getNickname(
+    const allUserStats = guildStats[userStats[0]];
+    const outputMessage = `=== Profile for ${module.exports.getNickname(
       msg,
-      topNerder[0]
-    )} - ${
-      topNerder[1]
-    } emojis given\nMost Nerded: ${module.exports.getNickname(
-      msg,
-      topNerded[0]
-    )} - ${topNerded[1]} emojis received\n\n`;
-
-    topScores
-      .slice(start, Math.min(start + 5, topScores.length))
-      .forEach((a, i) => {
-        outputMessage += `#${i + 1}: ${module.exports.getNickname(
-          msg,
-          a[0]
-        )}\n    Messages: ${
-          guildStats[a[0]]["messages"]
-        }\n    Voice Time: ${module.exports.formatTime(
-          guildStats[a[0]]["voiceTime"]
-        )}\n    Ranking: ${module.exports.getRanking(guildStats[a[0]])} (${
-          a[1]
-        }SR)${!i ? "\n    == #1 of friends! ==" : ""}\n\n`;
-      });
+      userStats[0]
+    )}, #${userStats[2] + 1} on server ===\n    Messages: ${
+      allUserStats["messages"]
+    }\n    Voice Time: ${module.exports.formatTime(
+      allUserStats["voiceTime"]
+    )}\n\n    Ranking: ${module.exports.getRanking(allUserStats)} (${
+      userStats[1]
+    }SR)\n    Ranking before penalties: ${
+      allUserStats["voiceTime"] * statsConfig["voiceChatSRGain"] +
+      allUserStats["messages"] * statsConfig["messageSRGain"]
+    }SR\n    Decay: ${allUserStats["decay"]}\n\n    Nerd Emojis given: ${
+      allUserStats["nerdsGiven"]
+    }\n    Nerd Emojis received: ${
+      Object.values(allUserStats["nerdEmojis"]).reduce(
+        (sum, a) => sum + a,
+        0
+      ) ?? 0
+    }${!userStats[2] ? "\n    == #1 of friends! ==" : ""}\n\n`;
 
     const outputArray = outputMessage.match(/[\s\S]{1,1990}(?!\S)/g);
     outputArray.forEach((r) => {
