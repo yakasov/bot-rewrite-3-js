@@ -229,24 +229,23 @@ async function addToStats(a) {
 
     case "nerdEmojiAdded":
       if (!messageId) return;
-      stats[guildId][giverId]["nerdsGiven"] += 1;
+      stats[guildId][giverId]["nerdsGiven"] =
+        (stats[guildId][giverId]["nerdsGiven"] ?? 0) + 1;
 
-      if (!stats[guildId][userId]["nerdEmojis"][messageId])
-        stats[guildId][userId]["nerdEmojis"][messageId] = 0;
-      stats[guildId][userId]["nerdEmojis"][messageId] += 1;
+      stats[guildId][userId]["nerdEmojis"][messageId] =
+        (stats[guildId][userId]["nerdEmojis"][messageId] ?? 0) + 1;
       break;
 
     case "nerdEmojiRemoved":
       if (!messageId) return;
       stats[guildId][giverId]["nerdsGiven"] = Math.max(
         0,
-        stats[guildId][userId]["nerdsGiven"] - 1
+        (stats[guildId][giverId]["nerdsGiven"] ?? 0) - 1
       );
-      if (!stats[guildId][userId]["nerdEmojis"][messageId])
-        stats[guildId][userId]["nerdEmojis"][messageId] = 0;
+
       stats[guildId][userId]["nerdEmojis"][messageId] = Math.max(
         0,
-        stats[guildId][userId]["nerdEmojis"][messageId] - 1
+        (stats[guildId][userId]["nerdEmojis"][messageId] ?? 0) - 1
       );
       break;
 
