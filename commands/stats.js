@@ -41,12 +41,12 @@ module.exports = {
         guildStats[a[0]]["voiceTime"]
       )}\n    Ranking: ${module.exports.getRanking(guildStats[a[0]])} (${
         a[1]
-      }SR)\n\n`;
+      }SR)${!i ? "\n    == #1 of friends! ==" : ""}\n\n`;
     });
 
     const outputArray = outputMessage.match(/[\s\S]{1,1990}(?!\S)/g);
     outputArray.forEach((r) => {
-      msg.reply("```\n" + r + "\n```");
+      msg.reply("```ansi\n" + r + "\n```");
     });
   },
   formatTime: (seconds) => {
@@ -62,12 +62,12 @@ module.exports = {
     }`;
   },
   getRanking: (memberStats) => {
-    var bestRank;
+    var rankString = "MISSINGNO";
     Object.entries(ranks).forEach(([k, v]) => {
-      if (v < memberStats["score"]) {
-        bestRank = k;
+      if (v[0] <= memberStats["score"]) {
+        rankString = `${v[1]}${k}\u001b[0m`;
       }
     });
-    return bestRank;
+    return rankString;
   },
 };

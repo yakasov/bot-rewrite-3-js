@@ -1,11 +1,11 @@
 {
-  "Bronze": 0,
-  "Silver": 2500,
-  "Gold": 5000,
-  "Platinum": 7500,
-  "Diamond": 10000,
-  "Masters": 12500,
-  "Grandmasters": 15000,
-  "Champion": 20000,
-  "Ultimate": 30000
+  "Bronze": [0, "\u001b[30m"],
+  "Silver": [2500, "\u001b[0m"],
+  "Gold": [5000, "\u001b[32m"],
+  "Platinum": [7500, "\u001b[37m"],
+  "Diamond": [10000, "\u001b[34m"],
+  "Masters": [12500, "\u001b[31m"],
+  "Grandmasters": [15000, "\u001b[33m"],
+  "Champion": [20000, "\u001b[36m"],
+  "Ultimate": [30000, "\u001b[35m"]
 }
