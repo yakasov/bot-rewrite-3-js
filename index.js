@@ -183,6 +183,7 @@ async function checkMessageReactions(msg) {
 
 async function addToStats(id, guild, type, msgId = null) {
   function f() {
+    // Returns UNIX time in seconds.
     return Math.floor(Date.now() / 1000);
   }
 
@@ -255,12 +256,12 @@ client.once(Events.ClientReady, async (c) => {
   await checkTweets();
   await getNewSplash();
 
-  setInterval(checkBirthdays, getTime(0, 15));
-  setInterval(checkMinecraftServer, getTime(5));
-  setInterval(checkTweets, getTime(0, 15));
-  setInterval(getNewSplash, getTime(0, 0, 1));
-  setInterval(saveStats, getTime(15));
-  setInterval(addDecayToStats, getTime(0, 0, 1));
+  setInterval(checkBirthdays, getTime(0, 15)); // 15 minutes
+  setInterval(checkMinecraftServer, getTime(5)); // 5 seconds
+  setInterval(checkTweets, getTime(0, 15)); // 15 minutes
+  setInterval(getNewSplash, getTime(0, 0, 1)); // 1 hour
+  setInterval(saveStats, getTime(15)); // 15 seconds
+  setInterval(addDecayToStats, getTime(0, 0, 1)); // 1 hour
 });
 
 client.on("messageCreate", async (msg) => {

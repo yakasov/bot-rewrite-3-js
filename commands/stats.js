@@ -8,8 +8,7 @@ module.exports = {
   run: async (client, msg, args) => {
     const guildStats = stats[msg.guild.id];
     if (!guildStats) {
-      msg.reply("This server has no statistics yet!");
-      return;
+      return msg.reply("This server has no statistics yet!");
     }
     var outputMessage = "";
 
