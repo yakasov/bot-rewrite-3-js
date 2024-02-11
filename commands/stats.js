@@ -78,6 +78,14 @@ module.exports = {
         }SR)${!i ? "\n    == #1 of friends! ==" : ""}\n\n`;
       });
 
+    const userRanking = topScores
+      .map((a, i) => [a[0], a[1], i])
+      .filter((a) => a[0] == msg.author.id)[0];
+    outputMessage += `\nYour ranking (${module.exports.getNickname(
+      msg,
+      userRanking[0]
+    )}): #${userRanking[2] + 1}`;
+
     const outputArray = outputMessage.match(/[\s\S]{1,1990}(?!\S)/g);
     outputArray.forEach((r) => {
       msg.reply("```ansi\n" + r + "\n```");
