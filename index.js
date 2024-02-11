@@ -1,3 +1,4 @@
+/* eslint-disable indent */
 const { Client, Events, GatewayIntentBits } = require("discord.js");
 const fs = require("fs");
 const npFile = require("./commands/np.js");
@@ -85,8 +86,8 @@ async function addDecayToStats() {
   // This function should really be a separate task!!!
   Object.entries(stats).forEach(([guild, gv]) => {
     Object.keys(gv).forEach((member) => {
-      if (stats[guild][member][score] > statsConfig["decaySRLossThreshold"]) {
-        stats[guild][member][decay] += statsConfig["decaySRLoss"];
+      if (stats[guild][member]["score"] > statsConfig["decaySRLossThreshold"]) {
+        stats[guild][member]["decay"] += statsConfig["decaySRLoss"];
       }
     });
   });
@@ -216,7 +217,7 @@ async function addToStats(id, guild, type, msgId = null) {
 
     case "leftVoiceChannel":
       stats[guild][id]["voiceTime"] += Math.floor(
-        (f() - stats[guild][id]["joinTime"]) / statsConfig["voiceChatSRGain"]
+        f() - stats[guild][id]["joinTime"]
       );
       break;
 

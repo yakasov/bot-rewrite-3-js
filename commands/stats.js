@@ -15,13 +15,15 @@ module.exports = {
     var sortedScores = Object.entries(guildStats).map(([k, v]) => {
       v["score"] = Math.max(
         0,
-        v["voiceTime"] +
-          v["messages"] * statsConfig["messageSRGain"] -
-          Object.values(v["nerdEmojis"]).reduce(
-            (sum, a) => sum + 2 ** a - 1,
-            0
-          ) -
-          v["decay"]
+        Math.floor(
+          v["voiceTime"] * statsConfig["voiceChatSRGain"] +
+            v["messages"] * statsConfig["messageSRGain"] -
+            Object.values(v["nerdEmojis"]).reduce(
+              (sum, a) => sum + 2 ** a - 1,
+              0
+            ) -
+            v["decay"]
+        )
       );
       return [k, v["score"]];
     });
