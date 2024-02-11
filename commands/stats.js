@@ -12,6 +12,36 @@ module.exports = {
     }
     var outputMessage = "";
 
+    var sortedNerders = Object.entries(guildStats).map(([k, v]) => {
+      return [k, v["nerdsGiven"]];
+    });
+    sortedNerders.sort(function (f, s) {
+      return s[1] - f[1];
+    });
+
+    outputMessage += `Top Nerder: ${module.exports.getPlainNickname(
+      msg,
+      sortedNerders[0][0]
+    )} - ${sortedNerders[0][1]} emojis given \n`;
+
+    var sortedNerded = Object.entries(guildStats).map(([k, v]) => {
+      var nerdsTaken = 0;
+      for (var messageId in v["nerdEmojis"]) {
+        // Add the number of reactions for the current message ID to the total
+        nerdsTaken += v["nerdEmojis"][messageId];
+      }
+      v["nerdsTaken"] = nerdsTaken;
+      return [k, (v["nerdsTaken"])];
+    });
+    sortedNerded.sort(function (f, s) {
+      return s[1] - f[1];
+    });
+
+    outputMessage += `Most Nerded: ${module.exports.getPlainNickname(
+      msg,
+      sortedNerded[0][0]
+    )} - ${sortedNerded[0][1]} emojis received\n\n`;
+
     var sortedScores = Object.entries(guildStats).map(([k, v]) => {
       v["score"] = Math.max(
         0,
@@ -60,6 +90,10 @@ module.exports = {
     return `${member.nickname ?? member.user.username}${
       msg.author.id == id ? "        <-----" : ""
     }`;
+  },
+  getPlainNickname: (msg, id) => {
+    const member = msg.guild.members.cache.filter((m) => m.id == id).first();
+    return `${member.nickname ?? member.user.username}`;
   },
   getRanking: (memberStats) => {
     var rankString = "MISSINGNO";
