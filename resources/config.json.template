@@ -1,13 +1,19 @@
 {
   "token": "",
+  "_token": "REQUIRED: Your Discord auth token.",
   "openaiToken": "",
+  "_openaiToken": "Your OpenAI token (for AI commands).",
   "prefix": "*",
+  "_prefix": "REQUIRED: Prefix for all commands.",
   "aiChannels": ["1087133384758792272"],
+  "_aiChannels": "Channel IDs for AI3 to run in.",
   "elevatedPermsAiChannels": ["542034119274790912"],
+  "_elevatedPermsAiChannels": "Channel IDs for DALLE and AI4 to run in.",
 
   "mainGuildId": "271300005990296576",
   "bdayChannelId": "500009139853885440",
   "bdayRoleId": "892388000000574568",
+  "_bdayConfig": "All of these are related to wishing people a happy birthday!",
 
   "minecraftServerIp": "",
   "minecraftServerPort": 25565,
@@ -15,10 +21,15 @@
 
   "statsConfig": {
     "messageSRGain": 5,
+    "_messageSRGain": "The amount of SR to gain per message sent.",
     "messageSRGainCooldown": 10,
+    "_messageSRGainCooldown": "The cooldown (in seconds) to wait before message SR can be gained again.",
     "voiceChatSRGain": 0.2,
-    "decaySRLoss": 250,
-    "decaySRLossThreshold": 2500
+    "_voiceChatSRGain": "The amount of SR to gain per second whilst in voice chat.",
+    "decaySRLoss": 10,
+    "_decaySRLoss": "How much SR to lose per hour.",
+    "decaySRLossThreshold": 2500,
+    "_decaySRLossThreshold": "The amount of SR required for decay to start."
   },
 
   "twitterUrl": "",

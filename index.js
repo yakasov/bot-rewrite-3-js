@@ -260,7 +260,7 @@ client.once(Events.ClientReady, async (c) => {
   setInterval(checkTweets, getTime(0, 15));
   setInterval(getNewSplash, getTime(0, 0, 1));
   setInterval(saveStats, getTime(15));
-  setInterval(addDecayToStats, getTime(0, 0, 24));
+  setInterval(addDecayToStats, getTime(0, 0, 1));
 });
 
 client.on("messageCreate", async (msg) => {
