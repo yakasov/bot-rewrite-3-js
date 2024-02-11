@@ -3,13 +3,12 @@ const stats = require("./../resources/stats.json");
 const ranks = require("./../resources/ranks.json");
 
 module.exports = {
-  aliases: [],
+  aliases: ["statistics", "leaderboard", "scores"],
   description: "Show server statistics.",
   run: async (client, msg, args) => {
     const guildStats = stats[msg.guild.id];
-    if (!guildStats) {
-      return msg.reply("This server has no statistics yet!");
-    }
+    if (!guildStats) return msg.reply("This server has no statistics yet!");
+
     var outputMessage = "";
 
     var sortedNerders = Object.entries(guildStats).map(([k, v]) => {
@@ -58,11 +57,10 @@ module.exports = {
       return s[1] - f[1];
     });
 
-    sortedScores.forEach((a, i) => {
+    sortedScores.slice(0, 5).forEach((a, i) => {
       outputMessage += `#${i + 1}: ${module.exports.getNickname(
         msg,
-        a[0],
-        true
+        a[0]
       )}\n    Messages: ${
         guildStats[a[0]]["messages"]
       }\n    Voice Time: ${module.exports.formatTime(
@@ -83,11 +81,9 @@ module.exports = {
     const unitArray = date.toISOString().substr(11, 8).split(":");
     return `${unitArray[0]}h ${unitArray[1]}m ${unitArray[2]}s`;
   },
-  getNickname: (msg, id, arrow = false) => {
+  getNickname: (msg, id) => {
     const member = msg.guild.members.cache.filter((m) => m.id == id).first();
-    return `${member.nickname ?? member.user.username}${
-      msg.author.id == id && arrow ? "        <-----" : ""
-    }`;
+    return `${member.nickname ?? member.user.username}`;
   },
   getRanking: (memberStats) => {
     var rankString = "MISSINGNO";
