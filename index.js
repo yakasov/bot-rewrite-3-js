@@ -182,7 +182,7 @@ async function checkMessageReactions(msg) {
   }
 }
 
-async function addToStats(id, guild, type, msgId = null) {
+async function addToStats(id, guild, type, msgId = null, userId) {
   function f() {
     // Returns UNIX time in seconds.
     return Math.floor(Date.now() / 1000);
@@ -223,9 +223,9 @@ async function addToStats(id, guild, type, msgId = null) {
 
     case "nerdEmojiAdded":
       if (!msgId) return;
-      if (!stats[guild][id]["nerdsGiven"])
-        stats[guild][id]["nerdsGiven"] = 0;
-      stats[guild][id]["nerdsGiven"] += 1;
+      if (!stats[guild][userId]["nerdsGiven"])
+        stats[guild][userId]["nerdsGiven"] = 0;
+      stats[guild][userId]["nerdsGiven"] += 1;
 
       if (!stats[guild][id]["nerdEmojis"][msgId])
         stats[guild][id]["nerdEmojis"][msgId] = 0;
@@ -234,9 +234,9 @@ async function addToStats(id, guild, type, msgId = null) {
 
     case "nerdEmojiRemoved":
       if (!msgId) return;
-      if (!stats[guild][id]["nerdsGiven"])
-        stats[guild][id]["nerdsGiven"] = 0;
-      stats[guild][id]["nerdsGiven"] = Math.max(
+      if (!stats[guild][userId]["nerdsGiven"])
+        stats[guild][userId]["nerdsGiven"] = 0;
+      stats[guild][userId]["nerdsGiven"] = Math.max(
           0,
           stats[guild][id]["nerdsGiven"] - 1
       );
@@ -328,24 +328,26 @@ client.on("voiceStateUpdate", async (oldState, newState) => {
   }
 });
 
-client.on("messageReactionAdd", async (reaction, _) => {
+client.on("messageReactionAdd", async (reaction, user) => {
   if (reaction.emoji.name == "🤓") {
     await addToStats(
       reaction.message.author.id,
       reaction.message.guildId,
       "nerdEmojiAdded",
-      reaction.message.id
+      reaction.message.id,
+      user.id
     );
   }
 });
 
-client.on("messageReactionRemove", async (reaction, _) => {
+client.on("messageReactionRemove", async (reaction, user) => {
   if (reaction.emoji.name == "🤓") {
     await addToStats(
       reaction.message.author.id,
       reaction.message.guildId,
       "nerdEmojiRemoved",
-      reaction.message.id
+      reaction.message.id,
+      user.id
     );
   }
 });
