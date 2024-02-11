@@ -12,6 +12,33 @@ module.exports = {
     }
     var outputMessage = "";
 
+    var sortedNerders = Object.entries(guildStats).map(([k, v]) => {
+      return [k, v["nerdsGiven"] ?? 0];
+    });
+    sortedNerders.sort(function (f, s) {
+      return s[1] - f[1];
+    });
+
+    outputMessage += `Top Nerder: ${module.exports.getNickname(
+      msg,
+      sortedNerders[0][0]
+    )} - ${sortedNerders[0][1]} emojis given \n`;
+
+    var sortedNerded = Object.entries(guildStats).map(([k, v]) => {
+      return [
+        k,
+        Object.values(v["nerdEmojis"]).reduce((sum, a) => sum + a, 0) ?? 0,
+      ];
+    });
+    sortedNerded.sort(function (f, s) {
+      return s[1] - f[1];
+    });
+
+    outputMessage += `Most Nerded: ${module.exports.getNickname(
+      msg,
+      sortedNerded[0][0]
+    )} - ${sortedNerded[0][1]} emojis received\n\n`;
+
     var sortedScores = Object.entries(guildStats).map(([k, v]) => {
       v["score"] = Math.max(
         0,
@@ -34,7 +61,8 @@ module.exports = {
     sortedScores.forEach((a, i) => {
       outputMessage += `#${i + 1}: ${module.exports.getNickname(
         msg,
-        a[0]
+        a[0],
+        true
       )}\n    Messages: ${
         guildStats[a[0]]["messages"]
       }\n    Voice Time: ${module.exports.formatTime(
@@ -55,10 +83,10 @@ module.exports = {
     const unitArray = date.toISOString().substr(11, 8).split(":");
     return `${unitArray[0]}h ${unitArray[1]}m ${unitArray[2]}s`;
   },
-  getNickname: (msg, id) => {
+  getNickname: (msg, id, arrow = false) => {
     const member = msg.guild.members.cache.filter((m) => m.id == id).first();
     return `${member.nickname ?? member.user.username}${
-      msg.author.id == id ? "        <-----" : ""
+      msg.author.id == id && arrow ? "        <-----" : ""
     }`;
   },
   getRanking: (memberStats) => {

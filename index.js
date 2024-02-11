@@ -223,6 +223,10 @@ async function addToStats(id, guild, type, msgId = null) {
 
     case "nerdEmojiAdded":
       if (!msgId) return;
+      if (!stats[guild][id]["nerdsGiven"])
+        stats[guild][id]["nerdsGiven"] = 0;
+      stats[guild][id]["nerdsGiven"] += 1;
+
       if (!stats[guild][id]["nerdEmojis"][msgId])
         stats[guild][id]["nerdEmojis"][msgId] = 0;
       stats[guild][id]["nerdEmojis"][msgId] += 1;
@@ -230,6 +234,12 @@ async function addToStats(id, guild, type, msgId = null) {
 
     case "nerdEmojiRemoved":
       if (!msgId) return;
+      if (!stats[guild][id]["nerdsGiven"])
+        stats[guild][id]["nerdsGiven"] = 0;
+      stats[guild][id]["nerdsGiven"] = Math.max(
+          0,
+          stats[guild][id]["nerdsGiven"] - 1
+      );
       if (!stats[guild][id]["nerdEmojis"][msgId])
         stats[guild][id]["nerdEmojis"][msgId] = 0;
       stats[guild][id]["nerdEmojis"][msgId] = Math.max(
