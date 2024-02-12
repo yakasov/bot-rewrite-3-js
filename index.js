@@ -188,7 +188,8 @@ async function addToStats(a) {
     return Math.floor(Date.now() / 1000);
   }
 
-  const { type, userId, guildId, messageId, giverId } = a;
+  const { type, userId, guildId, messageId, giver } = a;
+  const giverId = giver ? giver.id : 0;
 
   if (!stats[guildId]) stats[guildId] = {};
   if (!stats[guildId][userId]) {
@@ -229,8 +230,10 @@ async function addToStats(a) {
 
     case "nerdEmojiAdded":
       if (!messageId) return;
-      stats[guildId][giverId]["nerdsGiven"] =
-        (stats[guildId][giverId]["nerdsGiven"] ?? 0) + 1;
+      if (!giver.bot) {
+        stats[guildId][giverId]["nerdsGiven"] =
+          (stats[guildId][giverId]["nerdsGiven"] ?? 0) + 1;
+      }
 
       stats[guildId][userId]["nerdEmojis"][messageId] =
         (stats[guildId][userId]["nerdEmojis"][messageId] ?? 0) + 1;
@@ -238,10 +241,12 @@ async function addToStats(a) {
 
     case "nerdEmojiRemoved":
       if (!messageId) return;
-      stats[guildId][giverId]["nerdsGiven"] = Math.max(
-        0,
-        (stats[guildId][giverId]["nerdsGiven"] ?? 0) - 1
-      );
+      if (!giver.bot) {
+        stats[guildId][giverId]["nerdsGiven"] = Math.max(
+          0,
+          (stats[guildId][giverId]["nerdsGiven"] ?? 0) - 1
+        );
+      }
 
       stats[guildId][userId]["nerdEmojis"][messageId] = Math.max(
         0,
@@ -267,6 +272,7 @@ client.once(Events.ClientReady, async (c) => {
   await checkMinecraftServer();
   await checkTweets();
   await getNewSplash();
+  await addDecayToStats();
 
   setInterval(checkBirthdays, getTime(0, 15)); // 15 minutes
   setInterval(checkMinecraftServer, getTime(5)); // 5 seconds
@@ -322,6 +328,8 @@ client.on("messageCreate", async (msg) => {
 });
 
 client.on("voiceStateUpdate", async (oldState, newState) => {
+  if (newState.member.bot) return;
+
   if (oldState.channel && !newState.channel) {
     await addToStats({
       type: "leftVoiceChannel",
@@ -344,7 +352,7 @@ client.on("messageReactionAdd", async (reaction, user) => {
       userId: reaction.message.author.id,
       guildId: reaction.message.guildId,
       messageId: reaction.message.id,
-      giverId: user.id,
+      giver: user,
     });
   }
 });
@@ -356,7 +364,7 @@ client.on("messageReactionRemove", async (reaction, user) => {
       userId: reaction.message.author.id,
       guildId: reaction.message.guildId,
       messageId: reaction.message.id,
-      giverId: user.id,
+      giver: user,
     });
   }
 });
