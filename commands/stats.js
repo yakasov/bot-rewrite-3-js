@@ -44,7 +44,8 @@ module.exports = {
                 (sum, a) => sum + 2 ** a - 1,
                 0
               ) -
-              v["decay"]
+              v["decay"] +
+              v["reputation"] * statsConfig["reputationGain"]
           )
         );
         return [k, v["score"]];
