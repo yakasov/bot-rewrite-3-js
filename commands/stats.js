@@ -54,6 +54,16 @@ module.exports = {
         return s[1] - f[1];
       });
 
+    const reputations = Object.entries(guildStats).map(([k, v]) => {
+      return [k, v["reputation"] ?? 0];
+    });
+    const topReputation = reputations.sort(function (f, s) {
+      return s[1] - f[1];
+    })[0];
+    const bottomReputation = reputations.sort(function (f, s) {
+      return f[1] - s[1];
+    })[0];
+
     var outputMessage = `Top Nerder: ${module.exports.getNickname(
       msg,
       topNerder[0]
@@ -62,7 +72,15 @@ module.exports = {
     } emojis given\nMost Nerded: ${module.exports.getNickname(
       msg,
       topNerded[0]
-    )} - ${topNerded[1]} emojis received\n\n`;
+    )} - ${
+      topNerded[1]
+    } emojis received\nHighest reputation: ${module.exports.getNickname(
+      msg,
+      topReputation[0]
+    )}\nLowest reputation: ${module.exports.getNickname(
+      msg,
+      bottomReputation[0]
+    )}\n\n`;
 
     topScores
       .slice(start, Math.min(start + 5, topScores.length))
