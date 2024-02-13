@@ -15,7 +15,6 @@ module.exports = {
         ? args[0]
         : args[0].match(/<@(.*)>/)[1]
       : null;
-    console.log(specificUser);
     if (specificUser && !guildStats[specificUser])
       return msg.reply("This user has no statistics yet!");
 
@@ -39,8 +38,8 @@ module.exports = {
       .sort(function (f, s) {
         return s[1] - f[1];
       })
-      .map((a, i) => [specificUser ?? a[0], a[1], i])
-      .filter((a) => a[0] == msg.author.id)[0];
+      .map((a, i) => [a[0], a[1], i])
+      .filter((a) => a[0] == (specificUser ?? msg.author.id))[0];
 
     const allUserStats = guildStats[userStats[0]];
     const outputMessage = `=== Profile for ${module.exports.getNickname(
