@@ -82,7 +82,7 @@ module.exports = {
     } reputation\nLowest reputation: ${module.exports.getNickname(
       msg,
       bottomReputation[0]
-    )} - ${topReputation[1]} reputation\n\n`;
+    )} - ${bottomReputation[1]} reputation\n\n`;
 
     topScores
       .slice(start, Math.min(start + 5, topScores.length))
