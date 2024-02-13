@@ -329,18 +329,20 @@ client.on("messageCreate", async (msg) => {
     (msg.content.includes("+rep") || msg.content.includes("-rep")) &&
     msg.content.match(/<@(.*)>/)
   ) {
-    return await addToStats(
-      {
-        type: msg.content.includes("+rep")
-          ? "reputationGain"
-          : "reputationLoss",
-        userId: msg.content.match(/<@(.*)>/)[1],
-        guildId: msg.guild.id,
-        messageId: 0,
-        giver: { id: msg.author.id },
-      },
-      msg
-    );
+    if (!msg.content.includes("&")) {
+      return await addToStats(
+        {
+          type: msg.content.includes("+rep")
+            ? "reputationGain"
+            : "reputationLoss",
+          userId: msg.content.match(/<@(.*)>/)[1],
+          guildId: msg.guild.id,
+          messageId: 0,
+          giver: { id: msg.author.id },
+        },
+        msg
+      );
+    }
   }
 
   if (!msg.content.toLowerCase().startsWith(prefix)) {
