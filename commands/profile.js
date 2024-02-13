@@ -10,6 +10,15 @@ module.exports = {
     const guildStats = stats[msg.guild.id];
     if (!guildStats) return msg.reply("This server has no statistics yet!");
 
+    const specificUser = args[0]
+      ? args[0].length == 18
+        ? args[0]
+        : args[0].match(/<@(.*)>/)[1]
+      : null;
+    console.log(specificUser);
+    if (specificUser && !guildStats[specificUser])
+      return msg.reply("This user has no statistics yet!");
+
     const userStats = Object.entries(guildStats)
       .map(([k, v]) => {
         v["score"] = Math.max(
@@ -30,7 +39,7 @@ module.exports = {
       .sort(function (f, s) {
         return s[1] - f[1];
       })
-      .map((a, i) => [a[0], a[1], i])
+      .map((a, i) => [specificUser ?? a[0], a[1], i])
       .filter((a) => a[0] == msg.author.id)[0];
 
     const allUserStats = guildStats[userStats[0]];
