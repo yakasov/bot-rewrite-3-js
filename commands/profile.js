@@ -21,7 +21,8 @@ module.exports = {
                 (sum, a) => sum + 2 ** a - 1,
                 0
               ) -
-              v["decay"]
+              v["decay"] +
+              v["reputation"] * statsConfig["reputationGain"]
           )
         );
         return [k, v["score"]];
@@ -44,9 +45,12 @@ module.exports = {
       userStats[1]
     }SR)\n    Ranking before penalties: ${
       allUserStats["voiceTime"] * statsConfig["voiceChatSRGain"] +
-      allUserStats["messages"] * statsConfig["messageSRGain"]
-    }SR\n    Decay: ${allUserStats["decay"]}\n\n    Nerd Emojis given: ${
-      allUserStats["nerdsGiven"]
+      allUserStats["messages"] * statsConfig["messageSRGain"] +
+      Math.max(0, allUserStats["reputation"] * statsConfig["reputationGain"])
+    }SR\n    Reputation: ${allUserStats["reputation"]}\n    Decay: ${
+      allUserStats["decay"]
+    }\n\n    Nerd Emojis given: ${
+      allUserStats["nerdsGiven"] ?? 0
     }\n    Nerd Emojis received: ${
       Object.values(allUserStats["nerdEmojis"]).reduce(
         (sum, a) => sum + a,

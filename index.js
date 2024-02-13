@@ -202,6 +202,8 @@ async function addToStats(a) {
       nerdEmojis: {},
       nerdsGiven: 0,
       score: 0,
+      reputation: 0,
+      reputationTime: 0,
     };
   }
 
@@ -254,6 +256,30 @@ async function addToStats(a) {
       );
       break;
 
+    case "reputationGain":
+      if (
+        f() - (stats[guildId][giverId]["reputationTime"] ?? 0) <
+        statsConfig["reputationGainCooldown"]
+      )
+        return;
+      stats[guildId][userId]["reputation"] =
+        (stats[guildId][userId]["reputation"] ?? 0) + 1;
+      stats[guildId][giverId]["reputationTime"] = f();
+
+      break;
+
+    case "reputationLoss":
+      if (
+        f() - (stats[guildId][giverId]["reputationTime"] ?? 0) <
+        statsConfig["reputationGainCooldown"]
+      )
+        return;
+      stats[guildId][userId]["reputation"] =
+        (stats[guildId][userId]["reputation"] ?? 0) - 1;
+      stats[guildId][giverId]["reputationTime"] = f();
+
+      break;
+
     default:
       break;
   }
@@ -290,13 +316,26 @@ client.on("messageCreate", async (msg) => {
 
   await checkMessageResponse(msg);
   await checkMessageReactions(msg);
+
+  if (
+    (msg.content.includes("+rep") || msg.content.includes("-rep")) &&
+    msg.content.match(/<@(.*)>/)
+  ) {
+    return await addToStats({
+      type: msg.content.includes("+rep") ? "reputationGain" : "reputationLoss",
+      userId: msg.content.match(/<@(.*)>/)[1],
+      guildId: msg.guild.id,
+      messageId: 0,
+      giver: { id: msg.author.id },
+    });
+  }
+
   if (!msg.content.toLowerCase().startsWith(prefix)) {
-    await addToStats({
+    return await addToStats({
       type: "message",
       userId: msg.author.id,
       guildId: msg.guild.id,
     });
-    return;
   }
 
   var args = msg.content.split(" ");

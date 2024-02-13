@@ -29,7 +29,9 @@
     "decaySRLoss": 10,
     "_decaySRLoss": "How much SR to lose per hour.",
     "decaySRLossThreshold": 2500,
-    "_decaySRLossThreshold": "The amount of SR required for decay to start."
+    "_decaySRLossThreshold": "The amount of SR required for decay to start.",
+    "reputationGain": 75,
+    "reputationGainCooldown": 900
   },
 
   "twitterUrl": "",
