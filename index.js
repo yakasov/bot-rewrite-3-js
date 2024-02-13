@@ -182,7 +182,7 @@ async function checkMessageReactions(msg) {
   }
 }
 
-async function addToStats(a) {
+async function addToStats(a, msg = null) {
   function f() {
     // Returns UNIX time in seconds.
     return Math.floor(Date.now() / 1000);
@@ -259,11 +259,15 @@ async function addToStats(a) {
         f() - (stats[guildId][giverId]["reputationTime"] ?? 0) <
           statsConfig["reputationGainCooldown"] ||
         giverId == userId
-      )
+      ) {
+        if (giverId != userId) await msg.react("🕑");
         return;
+      }
       stats[guildId][userId]["reputation"] =
         (stats[guildId][userId]["reputation"] ?? 0) + 1;
       stats[guildId][giverId]["reputationTime"] = f();
+
+      await msg.react("✅");
 
       break;
 
@@ -272,11 +276,15 @@ async function addToStats(a) {
         f() - (stats[guildId][giverId]["reputationTime"] ?? 0) <
           statsConfig["reputationGainCooldown"] ||
         giverId == userId
-      )
+      ) {
+        if (giverId != userId) await msg.react("🕑");
         return;
+      }
       stats[guildId][userId]["reputation"] =
         (stats[guildId][userId]["reputation"] ?? 0) - 1;
       stats[guildId][giverId]["reputationTime"] = f();
+
+      await msg.react("✅");
 
       break;
 
@@ -321,13 +329,18 @@ client.on("messageCreate", async (msg) => {
     (msg.content.includes("+rep") || msg.content.includes("-rep")) &&
     msg.content.match(/<@(.*)>/)
   ) {
-    return await addToStats({
-      type: msg.content.includes("+rep") ? "reputationGain" : "reputationLoss",
-      userId: msg.content.match(/<@(.*)>/)[1],
-      guildId: msg.guild.id,
-      messageId: 0,
-      giver: { id: msg.author.id },
-    });
+    return await addToStats(
+      {
+        type: msg.content.includes("+rep")
+          ? "reputationGain"
+          : "reputationLoss",
+        userId: msg.content.match(/<@(.*)>/)[1],
+        guildId: msg.guild.id,
+        messageId: 0,
+        giver: { id: msg.author.id },
+      },
+      msg
+    );
   }
 
   if (!msg.content.toLowerCase().startsWith(prefix)) {

@@ -13,7 +13,9 @@ module.exports = {
     const specificUser = args[0]
       ? args[0].length == 18
         ? args[0]
-        : args[0].match(/<@(.*)>/)[1]
+        : args[0].match(/<@(.*)>/)
+        ? args[0].match(/<@(.*)>/)[1]
+        : null
       : null;
     if (specificUser && !guildStats[specificUser])
       return msg.reply("This user has no statistics yet!");
