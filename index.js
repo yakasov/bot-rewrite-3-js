@@ -223,11 +223,9 @@ async function addToStats(a) {
       break;
 
     case "leftVoiceChannel":
-      if (stats[guildId][userId]["voiceTime"]) {
-        stats[guildId][userId]["voiceTime"] += Math.floor(
-          f() - stats[guildId][userId]["joinTime"]
-        );
-      }
+      stats[guildId][userId]["voiceTime"] =
+        (stats[guildId][userId]["voiceTime"] ?? 0) +
+        Math.floor(f() - stats[guildId][userId]["joinTime"]);
       break;
 
     case "nerdEmojiAdded":
