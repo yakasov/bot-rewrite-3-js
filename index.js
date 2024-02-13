@@ -259,7 +259,8 @@ async function addToStats(a) {
     case "reputationGain":
       if (
         f() - (stats[guildId][giverId]["reputationTime"] ?? 0) <
-        statsConfig["reputationGainCooldown"]
+          statsConfig["reputationGainCooldown"] ||
+        giverId == userId
       )
         return;
       stats[guildId][userId]["reputation"] =
@@ -271,7 +272,8 @@ async function addToStats(a) {
     case "reputationLoss":
       if (
         f() - (stats[guildId][giverId]["reputationTime"] ?? 0) <
-        statsConfig["reputationGainCooldown"]
+          statsConfig["reputationGainCooldown"] ||
+        giverId == userId
       )
         return;
       stats[guildId][userId]["reputation"] =
