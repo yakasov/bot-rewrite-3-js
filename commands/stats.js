@@ -77,10 +77,12 @@ module.exports = {
     } emojis received\nHighest reputation: ${module.exports.getNickname(
       msg,
       topReputation[0]
-    )}\nLowest reputation: ${module.exports.getNickname(
+    )} - ${
+      topReputation[1]
+    } reputation\nLowest reputation: ${module.exports.getNickname(
       msg,
       bottomReputation[0]
-    )}\n\n`;
+    )} - ${topReputation[1]} reputation\n\n`;
 
     topScores
       .slice(start, Math.min(start + 5, topScores.length))
