@@ -46,8 +46,11 @@ module.exports = {
     }SR)\n    Ranking before penalties: ${
       allUserStats["voiceTime"] * statsConfig["voiceChatSRGain"] +
       allUserStats["messages"] * statsConfig["messageSRGain"] +
-      Math.max(0, allUserStats["reputation"] * statsConfig["reputationGain"])
-    }SR\n    Reputation: ${allUserStats["reputation"]}\n    Decay: ${
+      Math.max(
+        0,
+        (allUserStats["reputation"] ?? 0) * statsConfig["reputationGain"]
+      )
+    }SR\n    Reputation: ${allUserStats["reputation"] ?? 0}\n    Decay: ${
       allUserStats["decay"]
     }\n\n    Nerd Emojis given: ${
       allUserStats["nerdsGiven"] ?? 0
