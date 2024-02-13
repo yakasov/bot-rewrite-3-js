@@ -22,7 +22,7 @@ module.exports = {
                 0
               ) -
               v["decay"] +
-              v["reputation"] * statsConfig["reputationGain"]
+              (v["reputation"] ?? 0) * statsConfig["reputationGain"]
           )
         );
         return [k, v["score"]];
