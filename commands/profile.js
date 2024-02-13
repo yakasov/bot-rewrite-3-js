@@ -17,8 +17,11 @@ module.exports = {
         ? args[0].match(/<@(.*)>/)[1]
         : null
       : null;
-    if (specificUser && !guildStats[specificUser])
-      return msg.reply("This user has no statistics yet!");
+    if (specificUser) {
+      if (specificUser.includes("&")) return; // Fix for roles being tagged
+      if (!guildStats[specificUser])
+        return msg.reply("This user has no statistics yet!");
+    }
 
     const userStats = Object.entries(guildStats)
       .map(([k, v]) => {
