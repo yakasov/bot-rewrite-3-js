@@ -255,6 +255,7 @@ async function addToStats(a, msg = null) {
       break;
 
     case "reputationGain":
+      if (!giverId) return msg ? msg.react("❌") : null;
       if (
         f() - (stats[guildId][giverId]["reputationTime"] ?? 0) <
           statsConfig["reputationGainCooldown"] ||
@@ -272,6 +273,7 @@ async function addToStats(a, msg = null) {
       break;
 
     case "reputationLoss":
+      if (!giverId) return msg ? msg.react("❌") : null;
       if (
         f() - (stats[guildId][giverId]["reputationTime"] ?? 0) <
           statsConfig["reputationGainCooldown"] ||
