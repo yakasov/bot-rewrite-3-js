@@ -112,7 +112,11 @@ async function checkMessageResponse(msg) {
         .replace("https://twitter.com/", "https://fxtwitter.com/")}`
     );
 
-    msg.delete();
+    try {
+      msg.delete();
+    } catch (e) {
+      msg.reply("Missing permissions to delete the above message!!");
+    }
     stopProcessing = true;
   }
 
