@@ -35,19 +35,6 @@ module.exports = {
 
     const topScores = Object.entries(guildStats)
       .map(([k, v]) => {
-        v["score"] = Math.max(
-          0,
-          Math.floor(
-            v["voiceTime"] * statsConfig["voiceChatSRGain"] +
-              v["messages"] * statsConfig["messageSRGain"] -
-              Object.values(v["nerdEmojis"]).reduce(
-                (sum, a) => sum + 2 ** a - 1,
-                0
-              ) -
-              v["decay"] +
-              (v["reputation"] ?? 0) * statsConfig["reputationGain"]
-          )
-        );
         return [k, v["score"]];
       })
       .sort(function (f, s) {

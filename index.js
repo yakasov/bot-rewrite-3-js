@@ -93,6 +93,25 @@ async function addDecayToStats() {
   });
 }
 
+async function checkVoiceChannels() {
+  // This function should ALSO really be a separate task!!!
+  const guilds = client.guilds.cache;
+  guilds.forEach(async (guild) => {
+    const channels = guild.channels.cache.filter(
+      (channel) => channel.type == 2 // voice channel
+    );
+    channels.forEach(async (channel) => {
+      channel.members.forEach(async (member) => {
+        await addToStats({
+          type: "inVoiceChannel",
+          userId: member.user.id,
+          guildId: member.guild.id,
+        });
+      });
+    });
+  });
+}
+
 function getTime(seconds = 0, minutes = 0, hours = 0) {
   return 1000 * seconds + 1000 * 60 * minutes + 1000 * 60 * 60 * hours;
 }
@@ -212,6 +231,10 @@ async function addToStats(a, msg = null) {
   }
 
   switch (type) {
+    case "init":
+      // used for setting up initial stat values
+      return;
+
     case "message":
       if (
         f() - stats[guildId][userId]["lastGainTime"] <
@@ -223,6 +246,18 @@ async function addToStats(a, msg = null) {
       break;
 
     case "joinedVoiceChannel":
+      stats[guildId][userId]["joinTime"] = f();
+      break;
+
+    case "inVoiceChannel":
+      stats[guildId][userId]["voiceTime"] =
+        stats[guildId][userId]["voiceTime"] +
+        Math.floor(
+          f() -
+            (stats[guildId][userId]["joinTime"] == 0
+              ? f()
+              : stats[guildId][userId]["joinTime"])
+        );
       stats[guildId][userId]["joinTime"] = f();
       break;
 
@@ -265,15 +300,13 @@ async function addToStats(a, msg = null) {
           statsConfig["reputationGainCooldown"] ||
         giverId == userId
       ) {
-        if (giverId != userId) await msg.react("🕑");
-        return;
+        if (giverId != userId) return await msg.react("🕑");
       }
       stats[guildId][userId]["reputation"] =
         (stats[guildId][userId]["reputation"] ?? 0) + 1;
       stats[guildId][giverId]["reputationTime"] = f();
 
       await msg.react("✅");
-
       break;
 
     case "reputationLoss":
@@ -283,22 +316,43 @@ async function addToStats(a, msg = null) {
           statsConfig["reputationGainCooldown"] ||
         giverId == userId
       ) {
-        if (giverId != userId) await msg.react("🕑");
-        return;
+        if (giverId != userId) return await msg.react("🕑");
       }
       stats[guildId][userId]["reputation"] =
         (stats[guildId][userId]["reputation"] ?? 0) - 1;
       stats[guildId][giverId]["reputationTime"] = f();
 
       await msg.react("✅");
-
       break;
 
     default:
       break;
   }
 
+  await updateScores();
   await saveStats();
+}
+
+async function updateScores() {
+  Object.entries(stats).forEach(async ([guild, guildStats]) => {
+    Object.keys(guildStats).forEach(async (user) => {
+      await addToStats({ type: "init", userId: user, guildId: guild });
+      stats[guild][user]["score"] = Math.max(
+        0,
+        Math.floor(
+          stats[guild][user]["voiceTime"] * statsConfig["voiceChatSRGain"] +
+            stats[guild][user]["messages"] * statsConfig["messageSRGain"] -
+            Object.values(stats[guild][user]["nerdEmojis"]).reduce(
+              (sum, a) => sum + 2 ** (a + 1) - 1,
+              0
+            ) -
+            stats[guild][user]["decay"] +
+            (stats[guild][user]["reputation"] ?? 0) *
+              statsConfig["reputationGain"]
+        )
+      );
+    });
+  });
 }
 
 client.once(Events.ClientReady, async (c) => {
@@ -308,6 +362,7 @@ client.once(Events.ClientReady, async (c) => {
       `logged in as ${c.user.tag}\n`
   );
 
+  await checkVoiceChannels();
   await checkBirthdays(true);
   await checkMinecraftServer();
   await checkTweets();
@@ -318,8 +373,8 @@ client.once(Events.ClientReady, async (c) => {
   setInterval(checkMinecraftServer, getTime(5)); // 5 seconds
   setInterval(checkTweets, getTime(0, 15)); // 15 minutes
   setInterval(getNewSplash, getTime(0, 0, 1)); // 1 hour
-  setInterval(saveStats, getTime(15)); // 15 seconds
   setInterval(addDecayToStats, getTime(0, 0, 1)); // 1 hour
+  setInterval(checkVoiceChannels, getTime(15)); // 15 seconds
 });
 
 client.on("messageCreate", async (msg) => {
