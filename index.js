@@ -6,6 +6,7 @@ const { token, prefix, statsConfig } = require("./resources/config.json");
 const responses = require("./resources/responses.json");
 const reactions = require("./resources/reactions.json");
 const stats = require("./resources/stats.json");
+const ranks = require("./resources/ranks.json");
 const fetch = require("node-fetch");
 globalThis.fetch = fetch;
 
@@ -24,6 +25,7 @@ const client = new Client({
 const aliases = buildAliases();
 var date = new Date().toLocaleDateString("en-GB").slice(0, -5);
 var splash;
+var lastMessageChannelIds = {};
 
 function buildAliases() {
   var aliases = {};
@@ -227,6 +229,8 @@ async function addToStats(a, msg = null) {
       score: 0,
       reputation: 0,
       reputationTime: 0,
+      bestScore: 0,
+      bestRanking: "",
     };
   }
 
@@ -351,8 +355,48 @@ async function updateScores() {
               statsConfig["reputationGain"]
         )
       );
+
+      if (
+        stats[guild][user]["score"] > (stats[guild][user]["bestScore"] ?? 0)
+      ) {
+        stats[guild][user]["bestScore"] = stats[guild][user]["score"];
+
+        if (
+          stats[guild][user]["bestRanking"] !=
+            (await getRanking(stats[guild][user]["score"])) &&
+          lastMessageChannelIds[guild]
+        ) {
+          const guildObject = await client.guilds.fetch(guild);
+          const userObject = guildObject.members.cache
+            .filter((m) => m.id == user)
+            .first();
+          const channel = await guildObject.channels.fetch(
+            lastMessageChannelIds[guild]
+          );
+          channel.send(
+            "```ansi\n" +
+              (userObject.nickname ?? userObject.username) +
+              " has reached rank " +
+              (await getRanking(stats[guild][user]["score"])) +
+              "!```"
+          );
+        }
+        stats[guild][user]["bestRanking"] = await getRanking(
+          stats[guild][user]["score"]
+        );
+      }
     });
   });
+}
+
+async function getRanking(score) {
+  var rankString = "MISSINGNO";
+  Object.entries(ranks).forEach(([k, v]) => {
+    if (v[0] <= score) {
+      rankString = `${v[1]}${k}\u001b[0m`;
+    }
+  });
+  return rankString;
 }
 
 client.once(Events.ClientReady, async (c) => {
@@ -407,11 +451,14 @@ client.on("messageCreate", async (msg) => {
   }
 
   if (!msg.content.toLowerCase().startsWith(prefix)) {
-    return await addToStats({
+    await addToStats({
       type: "message",
       userId: msg.author.id,
       guildId: msg.guild.id,
     });
+    lastMessageChannelIds[msg.guild.id] = msg.channel.id;
+
+    return;
   }
 
   var args = msg.content.split(" ");
