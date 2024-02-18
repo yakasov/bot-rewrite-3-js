@@ -304,7 +304,15 @@ async function addToStats(a, msg = null) {
           statsConfig["reputationGainCooldown"] ||
         giverId == userId
       ) {
-        if (giverId != userId) return await msg.react("🕑");
+        if (giverId != userId) {
+          msg.reply(
+            `You need to wait ${
+              statsConfig["reputationGainCooldown"] -
+              (f() - (stats[guildId][giverId]["reputationTime"] ?? 0))
+            } more seconds first!`
+          );
+          return await msg.react("🕑");
+        }
       }
       stats[guildId][userId]["reputation"] =
         (stats[guildId][userId]["reputation"] ?? 0) + 1;
@@ -320,7 +328,15 @@ async function addToStats(a, msg = null) {
           statsConfig["reputationGainCooldown"] ||
         giverId == userId
       ) {
-        if (giverId != userId) return await msg.react("🕑");
+        if (giverId != userId) {
+          msg.reply(
+            `You need to wait ${
+              statsConfig["reputationGainCooldown"] -
+              (f() - (stats[guildId][giverId]["reputationTime"] ?? 0))
+            } more seconds first!`
+          );
+          return await msg.react("🕑");
+        }
       }
       stats[guildId][userId]["reputation"] =
         (stats[guildId][userId]["reputation"] ?? 0) - 1;
