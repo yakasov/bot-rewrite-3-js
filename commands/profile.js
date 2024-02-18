@@ -25,19 +25,6 @@ module.exports = {
 
     const userStats = Object.entries(guildStats)
       .map(([k, v]) => {
-        v["score"] = Math.max(
-          0,
-          Math.floor(
-            v["voiceTime"] * statsConfig["voiceChatSRGain"] +
-              v["messages"] * statsConfig["messageSRGain"] -
-              Object.values(v["nerdEmojis"]).reduce(
-                (sum, a) => sum + 2 ** a - 1,
-                0
-              ) -
-              v["decay"] +
-              (v["reputation"] ?? 0) * statsConfig["reputationGain"]
-          )
-        );
         return [k, v["score"]];
       })
       .sort(function (f, s) {
@@ -56,14 +43,14 @@ module.exports = {
       allUserStats["voiceTime"]
     )}\n\n    Ranking: ${module.exports.getRanking(allUserStats)} (${
       userStats[1]
-    }SR)\n    Ranking before penalties: ${
+    }SR)\n    Ranking before penalties: ${Math.floor(
       allUserStats["voiceTime"] * statsConfig["voiceChatSRGain"] +
-      allUserStats["messages"] * statsConfig["messageSRGain"] +
-      Math.max(
-        0,
-        (allUserStats["reputation"] ?? 0) * statsConfig["reputationGain"]
-      )
-    }SR\n    Reputation: ${allUserStats["reputation"] ?? 0}\n    Decay: ${
+        allUserStats["messages"] * statsConfig["messageSRGain"] +
+        Math.max(
+          0,
+          (allUserStats["reputation"] ?? 0) * statsConfig["reputationGain"]
+        )
+    )}SR\n    Reputation: ${allUserStats["reputation"] ?? 0}\n    Decay: ${
       allUserStats["decay"]
     }\n\n    Nerd Emojis given: ${
       allUserStats["nerdsGiven"] ?? 0

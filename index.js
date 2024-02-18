@@ -6,6 +6,7 @@ const { token, prefix, statsConfig } = require("./resources/config.json");
 const responses = require("./resources/responses.json");
 const reactions = require("./resources/reactions.json");
 const stats = require("./resources/stats.json");
+const ranks = require("./resources/ranks.json");
 const fetch = require("node-fetch");
 globalThis.fetch = fetch;
 
@@ -24,6 +25,7 @@ const client = new Client({
 const aliases = buildAliases();
 var date = new Date().toLocaleDateString("en-GB").slice(0, -5);
 var splash;
+var lastMessageChannelIds = {};
 
 function buildAliases() {
   var aliases = {};
@@ -89,6 +91,25 @@ async function addDecayToStats() {
       if (stats[guild][member]["score"] > statsConfig["decaySRLossThreshold"]) {
         stats[guild][member]["decay"] += statsConfig["decaySRLoss"];
       }
+    });
+  });
+}
+
+async function checkVoiceChannels() {
+  // This function should ALSO really be a separate task!!!
+  const guilds = client.guilds.cache;
+  guilds.forEach(async (guild) => {
+    const channels = guild.channels.cache.filter(
+      (channel) => channel.type == 2 // voice channel
+    );
+    channels.forEach(async (channel) => {
+      channel.members.forEach(async (member) => {
+        await addToStats({
+          type: "inVoiceChannel",
+          userId: member.user.id,
+          guildId: member.guild.id,
+        });
+      });
     });
   });
 }
@@ -208,10 +229,16 @@ async function addToStats(a, msg = null) {
       score: 0,
       reputation: 0,
       reputationTime: 0,
+      bestScore: 0,
+      bestRanking: "",
     };
   }
 
   switch (type) {
+    case "init":
+      // used for setting up initial stat values
+      return;
+
     case "message":
       if (
         f() - stats[guildId][userId]["lastGainTime"] <
@@ -223,6 +250,18 @@ async function addToStats(a, msg = null) {
       break;
 
     case "joinedVoiceChannel":
+      stats[guildId][userId]["joinTime"] = f();
+      break;
+
+    case "inVoiceChannel":
+      stats[guildId][userId]["voiceTime"] =
+        stats[guildId][userId]["voiceTime"] +
+        Math.floor(
+          f() -
+            (stats[guildId][userId]["joinTime"] == 0
+              ? f()
+              : stats[guildId][userId]["joinTime"])
+        );
       stats[guildId][userId]["joinTime"] = f();
       break;
 
@@ -265,15 +304,13 @@ async function addToStats(a, msg = null) {
           statsConfig["reputationGainCooldown"] ||
         giverId == userId
       ) {
-        if (giverId != userId) await msg.react("🕑");
-        return;
+        if (giverId != userId) return await msg.react("🕑");
       }
       stats[guildId][userId]["reputation"] =
         (stats[guildId][userId]["reputation"] ?? 0) + 1;
       stats[guildId][giverId]["reputationTime"] = f();
 
       await msg.react("✅");
-
       break;
 
     case "reputationLoss":
@@ -283,22 +320,83 @@ async function addToStats(a, msg = null) {
           statsConfig["reputationGainCooldown"] ||
         giverId == userId
       ) {
-        if (giverId != userId) await msg.react("🕑");
-        return;
+        if (giverId != userId) return await msg.react("🕑");
       }
       stats[guildId][userId]["reputation"] =
         (stats[guildId][userId]["reputation"] ?? 0) - 1;
       stats[guildId][giverId]["reputationTime"] = f();
 
       await msg.react("✅");
-
       break;
 
     default:
       break;
   }
 
+  await updateScores();
   await saveStats();
+}
+
+async function updateScores() {
+  Object.entries(stats).forEach(async ([guild, guildStats]) => {
+    Object.keys(guildStats).forEach(async (user) => {
+      await addToStats({ type: "init", userId: user, guildId: guild });
+      stats[guild][user]["score"] = Math.max(
+        0,
+        Math.floor(
+          stats[guild][user]["voiceTime"] * statsConfig["voiceChatSRGain"] +
+            stats[guild][user]["messages"] * statsConfig["messageSRGain"] -
+            Object.values(stats[guild][user]["nerdEmojis"]).reduce(
+              (sum, a) => sum + 2 ** (a + 1) - 1,
+              0
+            ) -
+            stats[guild][user]["decay"] +
+            (stats[guild][user]["reputation"] ?? 0) *
+              statsConfig["reputationGain"]
+        )
+      );
+
+      if (
+        stats[guild][user]["score"] > (stats[guild][user]["bestScore"] ?? 0)
+      ) {
+        stats[guild][user]["bestScore"] = stats[guild][user]["score"];
+
+        if (
+          stats[guild][user]["bestRanking"] !=
+            (await getRanking(stats[guild][user]["score"])) &&
+          lastMessageChannelIds[guild]
+        ) {
+          const guildObject = await client.guilds.fetch(guild);
+          const userObject = guildObject.members.cache
+            .filter((m) => m.id == user)
+            .first();
+          const channel = await guildObject.channels.fetch(
+            lastMessageChannelIds[guild]
+          );
+          channel.send(
+            "```ansi\n" +
+              (userObject.nickname ?? userObject.username) +
+              " has reached rank " +
+              (await getRanking(stats[guild][user]["score"])) +
+              "!```"
+          );
+        }
+        stats[guild][user]["bestRanking"] = await getRanking(
+          stats[guild][user]["score"]
+        );
+      }
+    });
+  });
+}
+
+async function getRanking(score) {
+  var rankString = "MISSINGNO";
+  Object.entries(ranks).forEach(([k, v]) => {
+    if (v[0] <= score) {
+      rankString = `${v[1]}${k}\u001b[0m`;
+    }
+  });
+  return rankString;
 }
 
 client.once(Events.ClientReady, async (c) => {
@@ -308,6 +406,7 @@ client.once(Events.ClientReady, async (c) => {
       `logged in as ${c.user.tag}\n`
   );
 
+  await checkVoiceChannels();
   await checkBirthdays(true);
   await checkMinecraftServer();
   await checkTweets();
@@ -318,8 +417,8 @@ client.once(Events.ClientReady, async (c) => {
   setInterval(checkMinecraftServer, getTime(5)); // 5 seconds
   setInterval(checkTweets, getTime(0, 15)); // 15 minutes
   setInterval(getNewSplash, getTime(0, 0, 1)); // 1 hour
-  setInterval(saveStats, getTime(15)); // 15 seconds
   setInterval(addDecayToStats, getTime(0, 0, 1)); // 1 hour
+  setInterval(checkVoiceChannels, getTime(15)); // 15 seconds
 });
 
 client.on("messageCreate", async (msg) => {
@@ -352,11 +451,14 @@ client.on("messageCreate", async (msg) => {
   }
 
   if (!msg.content.toLowerCase().startsWith(prefix)) {
-    return await addToStats({
+    await addToStats({
       type: "message",
       userId: msg.author.id,
       guildId: msg.guild.id,
     });
+    lastMessageChannelIds[msg.guild.id] = msg.channel.id;
+
+    return;
   }
 
   var args = msg.content.split(" ");
