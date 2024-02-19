@@ -13,14 +13,18 @@ module.exports = {
       return;
     }
 
-    const player = createAudioPlayer();
-    joinVoiceChannel({
-      channelId: msg.member.voice.channelId,
-      guildId: msg.guild.id,
-      adapterCreator: msg.guild.voiceAdapterCreator,
-    }).subscribe(player);
+    try {
+      const player = createAudioPlayer();
+      joinVoiceChannel({
+        channelId: msg.member.voice.channelId,
+        guildId: msg.guild.id,
+        adapterCreator: msg.guild.voiceAdapterCreator,
+      }).subscribe(player);
 
-    const res = createAudioResource(await ytdl(args[0]));
-    player.play(res);
+      const res = createAudioResource(await ytdl(args[0]));
+      player.play(res);
+    } catch (e) {
+      msg.reply(e.message);
+    }
   },
 };
