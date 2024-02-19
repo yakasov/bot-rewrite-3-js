@@ -7,6 +7,7 @@ const responses = require("./resources/responses.json");
 const reactions = require("./resources/reactions.json");
 const stats = require("./resources/stats.json");
 const ranks = require("./resources/ranks.json");
+const rankUpChannels = require("./resources/channels.json");
 const fetch = require("node-fetch");
 globalThis.fetch = fetch;
 
@@ -374,14 +375,14 @@ async function updateScores() {
         if (
           stats[guild][user]["bestRanking"] !=
             (await getRanking(stats[guild][user]["score"])) &&
-          lastMessageChannelIds[guild]
+          rankUpChannels[guild]
         ) {
           const guildObject = await client.guilds.fetch(guild);
           const userObject = guildObject.members.cache
             .filter((m) => m.id == user)
             .first();
           const channel = await guildObject.channels.fetch(
-            lastMessageChannelIds[guild]
+            rankUpChannels[guild]
           );
           channel.send(
             "```ansi\n" +
@@ -460,16 +461,12 @@ client.on("messageCreate", async (msg) => {
     }
   }
 
-  if (!msg.content.toLowerCase().startsWith(prefix)) {
-    await addToStats({
+  if (!msg.content.toLowerCase().startsWith(prefix))
+    return await addToStats({
       type: "message",
       userId: msg.author.id,
       guildId: msg.guild.id,
     });
-    lastMessageChannelIds[msg.guild.id] = msg.channel.id;
-
-    return;
-  }
 
   var args = msg.content.split(" ");
   var cmd = args.shift().slice(prefix.length).toLowerCase();
