@@ -79,7 +79,7 @@ module.exports = {
   },
   getNickname: (msg, id) => {
     const member = msg.guild.members.cache.filter((m) => m.id == id).first();
-    return `${member.nickname ?? member.user.username}`;
+    return `${member.displayName}`;
   },
   getRanking: (memberStats) => {
     var rankString = "MISSINGNO";
