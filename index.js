@@ -90,7 +90,9 @@ async function addDecayToStats() {
   Object.entries(stats).forEach(([guild, gv]) => {
     Object.keys(gv).forEach((member) => {
       if (stats[guild][member]["score"] > statsConfig["decaySRLossThreshold"]) {
-        stats[guild][member]["decay"] += statsConfig["decaySRLoss"];
+        stats[guild][member]["decay"] +=
+          statsConfig["decaySRLoss"] +
+          (stats[guild][member]["score"] / 10000) * statsConfig["decaySRLoss"];
       }
     });
   });
@@ -385,7 +387,7 @@ async function updateScores() {
             rankUpChannels[guild]
           );
           channel.send(
-            "```ansi\n" +
+            "## Rank Up!\n```ansi\n" +
               (userObject.nickname ?? userObject.username) +
               " has reached rank " +
               (await getRanking(stats[guild][user]["score"])) +
