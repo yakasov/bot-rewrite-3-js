@@ -70,10 +70,8 @@ async function getNewSplash() {
 }
 
 function getNickname(msg) {
-  return (
-    msg.guild.members.cache.filter((m) => m.id == msg.author.id).first()
-      .nickname ?? msg.author.username
-  );
+  return msg.guild.members.cache.filter((m) => m.id == msg.author.id).first()
+    .displayName;
 }
 
 async function saveStats() {
@@ -388,7 +386,7 @@ async function updateScores() {
           );
           channel.send(
             "## Rank Up!\n```ansi\n" +
-              (userObject.nickname ?? userObject.username) +
+              userObject.displayName +
               " has reached rank " +
               (await getRanking(stats[guild][user]["score"])) +
               "!```"
