@@ -50,9 +50,11 @@ module.exports = {
           0,
           (allUserStats["reputation"] ?? 0) * statsConfig["reputationGain"]
         )
-    )}SR\n    Reputation: ${allUserStats["reputation"] ?? 0}\n    Decay: ${
+    )}SR\n    Reputation: ${
+      allUserStats["reputation"] ?? 0
+    }\n    Decay: ${Math.round(
       allUserStats["decay"]
-    }\n\n    Nerd Emojis given: ${
+    )}\n\n    Nerd Emojis given: ${
       allUserStats["nerdsGiven"] ?? 0
     }\n    Nerd Emojis received: ${
       Object.values(allUserStats["nerdEmojis"]).reduce(
