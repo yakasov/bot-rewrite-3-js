@@ -142,6 +142,16 @@ async function checkMessageResponse(msg) {
     stopProcessing = true;
   }
 
+  // swap steamcommunity links for openable ones
+  if (msg.content.includes("https://steamcommunity.com")) {
+    const steamLink = msg.content
+      .split(" ")
+      .find((m) => m.includes("https://steamcommunity.com"));
+    msg.channel.send(
+      `Embedded link: https://yakasov.github.io/pages/miscellaneous/steam_direct.html?page=${steamLink}`
+    );
+  }
+
   async function f(k, v) {
     if (v.includes("{AUTHOR}")) {
       v = v.replace("{AUTHOR}", getNickname(msg));
