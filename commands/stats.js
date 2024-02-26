@@ -71,20 +71,33 @@ module.exports = {
       bottomReputation[0]
     )} - ${bottomReputation[1]} reputation\n\n`;
 
-    topScores
-      .slice(start, Math.min(start + 5, topScores.length))
-      .forEach((a, i) => {
-        outputMessage += `#${i + 1}: ${module.exports.getNickname(
-          msg,
-          a[0]
-        )}\n    Messages: ${
-          guildStats[a[0]]["messages"]
-        }\n    Voice Time: ${module.exports.formatTime(
-          guildStats[a[0]]["voiceTime"]
-        )}\n    Ranking: ${module.exports.getRanking(guildStats[a[0]])} (${
-          a[1]
-        }SR)${!i ? "\n    == #1 of friends! ==" : ""}\n\n`;
-      });
+    const longestName = Math.max(
+      ...topScores
+        .slice(0, Math.min(10, topScores.length))
+        .map((e) => module.exports.getNickname(msg, e[0]))
+        .map((e) => e.length)
+    );
+
+    const headerString = `#  | Name ${" ".repeat(
+      longestName - 4
+    )} | Msgs  | Time ${" ".repeat(9)} | Rep | Rank`;
+    outputMessage +=
+      headerString + `\n${"-".repeat(headerString.length + 15)}\n`;
+    topScores.slice(0, Math.min(10, topScores.length)).forEach((a, i) => {
+      const name = module.exports.getNickname(msg, a[0]);
+      const msgLength = 4 - `${guildStats[a[0]]["messages"]}`.length;
+      const repLength = 2 - `${guildStats[a[0]]["reputation"]}`.length;
+
+      outputMessage += `${i + 1} ${" ".repeat(
+        2 - (i + 1).toString().length
+      )}| ${name} ${" ".repeat(longestName - name.length)} | ${" ".repeat(
+        msgLength
+      )} ${guildStats[a[0]]["messages"]} | ${module.exports.formatTime(
+        guildStats[a[0]]["voiceTime"]
+      )} | ${" ".repeat(repLength)} ${
+        guildStats[a[0]]["reputation"]
+      } | ${module.exports.getRanking(guildStats[a[0]])} (${a[1]}SR)\n`;
+    });
 
     const userRanking = topScores
       .map((a, i) => [a[0], a[1], i])
