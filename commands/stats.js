@@ -85,8 +85,14 @@ module.exports = {
       headerString + `\n${"-".repeat(headerString.length + 15)}\n`;
     topScores.slice(0, Math.min(10, topScores.length)).forEach((a, i) => {
       const name = module.exports.getNickname(msg, a[0]);
-      const msgLength = 4 - `${guildStats[a[0]]["messages"]}`.length;
-      const repLength = 2 - `${guildStats[a[0]]["reputation"]}`.length;
+      const msgLength = Math.max(
+        4 - `${guildStats[a[0]]["messages"]}`.length,
+        0
+      );
+      const repLength = Math.max(
+        2 - `${guildStats[a[0]]["reputation"]}`.length,
+        0
+      );
 
       outputMessage += `${i + 1} ${" ".repeat(
         2 - (i + 1).toString().length
