@@ -91,7 +91,7 @@ module.exports = {
       );
       const repLength = Math.max(
         2 - `${guildStats[a[0]]["reputation"]}`.length,
-        0
+        1
       );
 
       outputMessage += `${i + 1} ${" ".repeat(
