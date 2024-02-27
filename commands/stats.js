@@ -91,7 +91,7 @@ module.exports = {
       );
       const repLength = Math.max(
         2 - `${guildStats[a[0]]["reputation"]}`.length,
-        1
+        0
       );
 
       outputMessage += `${i + 1} ${" ".repeat(
@@ -101,7 +101,7 @@ module.exports = {
       )} ${guildStats[a[0]]["messages"]} | ${module.exports.formatTime(
         guildStats[a[0]]["voiceTime"]
       )} | ${" ".repeat(repLength)} ${module.exports.formatReputation(
-        guildStats[a[0]]["reputation"] ?? 0
+        guildStats[a[0]]["reputation"] ?? " 0"
       )} | ${module.exports.getRanking(guildStats[a[0]])} (${a[1]}SR)\n`;
     });
 
