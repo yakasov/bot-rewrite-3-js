@@ -51,25 +51,25 @@ module.exports = {
       return f[1] - s[1];
     })[0];
 
-    var outputMessage = `Top Nerder: ${module.exports.getNickname(
+    var outputMessage = `Top nerder: ${module.exports.getNickname(
       msg,
       topNerder[0]
-    )} - ${
+    )} (${
       topNerder[1]
-    } emojis given\nMost Nerded: ${module.exports.getNickname(
+    } emojis given)\nMost nerded: ${module.exports.getNickname(
       msg,
       topNerded[0]
-    )} - ${
+    )} (${
       topNerded[1]
-    } emojis received\nHighest reputation: ${module.exports.getNickname(
+    } emojis received)\nHighest reputation: ${module.exports.getNickname(
       msg,
       topReputation[0]
-    )} - ${
+    )} (${
       topReputation[1]
-    } reputation\nLowest reputation: ${module.exports.getNickname(
+    } reputation)\nLowest reputation: ${module.exports.getNickname(
       msg,
       bottomReputation[0]
-    )} - ${bottomReputation[1]} reputation\n\n`;
+    )} (${bottomReputation[1]} reputation)\n\n`;
 
     const longestName = Math.max(
       ...topScores
@@ -90,7 +90,7 @@ module.exports = {
         0
       );
       const repLength = Math.max(
-        2 - `${guildStats[a[0]]["reputation"]}`.length,
+        3 - `${guildStats[a[0]]["reputation"]}`.length,
         0
       );
 
@@ -100,7 +100,7 @@ module.exports = {
         msgLength
       )} ${guildStats[a[0]]["messages"]} | ${module.exports.formatTime(
         guildStats[a[0]]["voiceTime"]
-      )} | ${" ".repeat(repLength)} ${module.exports.formatReputation(
+      )} | ${" ".repeat(repLength)}${module.exports.formatReputation(
         guildStats[a[0]]["reputation"] ?? " 0"
       )} | ${module.exports.getRanking(guildStats[a[0]])} (${a[1]}SR)\n`;
     });
