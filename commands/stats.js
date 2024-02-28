@@ -100,8 +100,8 @@ module.exports = {
         msgLength
       )} ${guildStats[a[0]]["messages"]} | ${module.exports.formatTime(
         guildStats[a[0]]["voiceTime"]
-      )} | ${" ".repeat(repLength)}${module.exports.formatReputation(
-        guildStats[a[0]]["reputation"] ?? " 0"
+      )} |${" ".repeat(repLength)}${module.exports.formatReputation(
+        module.exports.addLeadingZero(guildStats[a[0]]["reputation"] ?? " 0")
       )} | ${module.exports.getRanking(guildStats[a[0]])} (${a[1]}SR)\n`;
     });
 
@@ -119,6 +119,12 @@ module.exports = {
     outputArray.forEach((r) => {
       msg.reply("```ansi\n" + r + "\n```");
     });
+  },
+  addLeadingZero: (num) => {
+    if (num > -10 && num < 10) {
+      return num >= 0 ? `0${num}` : `-0${Math.abs(num)}`;
+    }
+    return num;
   },
   formatTime: (seconds) => {
     // note: this will only work up to 30d 23h 59m 59s
