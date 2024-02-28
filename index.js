@@ -324,6 +324,8 @@ async function addToStats(a, msg = null) {
       }
       stats[guildId][userId]["reputation"] =
         (stats[guildId][userId]["reputation"] ?? 0) + 1;
+      if (stats[guildId][userId]["reputation"] == 100)
+        stats[guildId][userId]["reputation"] = -99;
       stats[guildId][giverId]["reputationTime"] = f();
 
       await msg.react("✅");
@@ -345,6 +347,8 @@ async function addToStats(a, msg = null) {
       }
       stats[guildId][userId]["reputation"] =
         (stats[guildId][userId]["reputation"] ?? 0) - 1;
+      if (stats[guildId][userId]["reputation"] == -100)
+        stats[guildId][userId]["reputation"] = 99;
       stats[guildId][giverId]["reputationTime"] = f();
 
       await msg.react("✅");
