@@ -90,7 +90,9 @@ module.exports = {
         0
       );
       const repLength = Math.max(
-        3 - `${guildStats[a[0]]["reputation"]}`.length,
+        3 -
+          `${module.exports.addLeadingZero(guildStats[a[0]]["reputation"])}`
+            .length,
         0
       );
 
@@ -100,7 +102,7 @@ module.exports = {
         msgLength
       )} ${guildStats[a[0]]["messages"]} | ${module.exports.formatTime(
         guildStats[a[0]]["voiceTime"]
-      )} |${" ".repeat(repLength)}${module.exports.formatReputation(
+      )} | ${" ".repeat(repLength)}${module.exports.formatReputation(
         module.exports.addLeadingZero(guildStats[a[0]]["reputation"] ?? " 0")
       )} | ${module.exports.getRanking(guildStats[a[0]])} (${a[1]}SR)\n`;
     });
