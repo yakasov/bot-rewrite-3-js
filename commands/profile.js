@@ -24,6 +24,7 @@ module.exports = {
     }
 
     const userStats = Object.entries(guildStats)
+      .filter((k) => k[0].length == 18)
       .map(([k, v]) => {
         return [k, v["score"]];
       })
