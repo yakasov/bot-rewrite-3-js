@@ -261,13 +261,11 @@ async function addToStats(a, msg = null) {
       return;
 
     case "message":
-      console.log(1);
       if (
         f() - stats[guildId][userId]["lastGainTime"] <
         statsConfig["messageSRGainCooldown"]
       )
         return;
-      console.log(2);
       stats[guildId][userId]["lastGainTime"] = f();
       stats[guildId][userId]["messages"] += 1;
       break;
@@ -321,7 +319,6 @@ async function addToStats(a, msg = null) {
       break;
 
     case "reputationGain":
-      console.log(a);
       if (!giverId || giverId == userId) return msg ? msg.react("❌") : null;
       if (
         f() - (stats[guildId][giverId]["reputationTime"] ?? 0) <
@@ -345,7 +342,6 @@ async function addToStats(a, msg = null) {
       break;
 
     case "reputationLoss":
-      console.log(a);
       if (!giverId || giverId == userId) return msg ? msg.react("❌") : null;
       if (
         f() - (stats[guildId][giverId]["reputationTime"] ?? 0) <
@@ -371,7 +367,6 @@ async function addToStats(a, msg = null) {
     default:
       break;
   }
-  console.log(3);
 
   await updateScores();
   await saveStats();
@@ -382,7 +377,6 @@ async function updateScores() {
     Object.keys(guildStats)
       .filter((k) => k.length == 18)
       .forEach(async (user) => {
-        console.log(user);
         await addToStats({ type: "init", userId: user, guildId: guild });
         stats[guild][user]["score"] = Math.max(
           0,
