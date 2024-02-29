@@ -7,7 +7,6 @@ const responses = require("./resources/responses.json");
 const reactions = require("./resources/reactions.json");
 const stats = require("./resources/stats.json");
 const ranks = require("./resources/ranks.json");
-const rankUpChannels = require("./resources/channels.json");
 const fetch = require("node-fetch");
 globalThis.fetch = fetch;
 
@@ -76,7 +75,7 @@ function getNickname(msg) {
 
 async function saveStats() {
   try {
-    const saveStats = require("./tasks/saveStats.js");
+    const saveStats = require("./tasks/savestats.js");
     await saveStats.run(stats);
   } catch (e) {
     return console.error(e);
@@ -86,13 +85,20 @@ async function saveStats() {
 async function addDecayToStats() {
   // This function should really be a separate task!!!
   Object.entries(stats).forEach(([guild, gv]) => {
-    Object.keys(gv).forEach((member) => {
-      if (stats[guild][member]["score"] > statsConfig["decaySRLossThreshold"]) {
-        stats[guild][member]["decay"] +=
-          statsConfig["decaySRLoss"] +
-          (stats[guild][member]["score"] / 10000) * statsConfig["decaySRLoss"];
-      }
-    });
+    if (stats[guild]["allowDecay"] ?? true) {
+      Object.keys(gv)
+        .filter((k) => k.length == 18)
+        .forEach((member) => {
+          if (
+            stats[guild][member]["score"] > statsConfig["decaySRLossThreshold"]
+          ) {
+            stats[guild][member]["decay"] +=
+              statsConfig["decaySRLoss"] +
+              (stats[guild][member]["score"] / 10000) *
+                statsConfig["decaySRLoss"];
+          }
+        });
+    }
   });
 }
 
@@ -227,7 +233,11 @@ async function addToStats(a, msg = null) {
   const { type, userId, guildId, messageId, giver } = a;
   const giverId = giver ? giver.id : 0;
 
-  if (!stats[guildId]) stats[guildId] = {};
+  if (!stats[guildId])
+    stats[guildId] = {
+      allowDecay: true,
+      rankUpChannel: "",
+    };
   if (!stats[guildId][userId]) {
     stats[guildId][userId] = {
       messages: 0,
@@ -251,11 +261,13 @@ async function addToStats(a, msg = null) {
       return;
 
     case "message":
+      console.log(1);
       if (
         f() - stats[guildId][userId]["lastGainTime"] <
         statsConfig["messageSRGainCooldown"]
       )
         return;
+      console.log(2);
       stats[guildId][userId]["lastGainTime"] = f();
       stats[guildId][userId]["messages"] += 1;
       break;
@@ -309,6 +321,7 @@ async function addToStats(a, msg = null) {
       break;
 
     case "reputationGain":
+      console.log(a);
       if (!giverId || giverId == userId) return msg ? msg.react("❌") : null;
       if (
         f() - (stats[guildId][giverId]["reputationTime"] ?? 0) <
@@ -332,6 +345,7 @@ async function addToStats(a, msg = null) {
       break;
 
     case "reputationLoss":
+      console.log(a);
       if (!giverId || giverId == userId) return msg ? msg.react("❌") : null;
       if (
         f() - (stats[guildId][giverId]["reputationTime"] ?? 0) <
@@ -357,6 +371,7 @@ async function addToStats(a, msg = null) {
     default:
       break;
   }
+  console.log(3);
 
   await updateScores();
   await saveStats();
@@ -364,53 +379,56 @@ async function addToStats(a, msg = null) {
 
 async function updateScores() {
   Object.entries(stats).forEach(async ([guild, guildStats]) => {
-    Object.keys(guildStats).forEach(async (user) => {
-      await addToStats({ type: "init", userId: user, guildId: guild });
-      stats[guild][user]["score"] = Math.max(
-        0,
-        Math.floor(
-          stats[guild][user]["voiceTime"] * statsConfig["voiceChatSRGain"] +
-            stats[guild][user]["messages"] * statsConfig["messageSRGain"] -
-            Object.values(stats[guild][user]["nerdEmojis"]).reduce(
-              (sum, a) => sum + Math.max(3.32 ** a + 1, 0) - 1,
-              0
-            ) -
-            stats[guild][user]["decay"] +
-            (stats[guild][user]["reputation"] ?? 0) *
-              statsConfig["reputationGain"]
-        )
-      );
-
-      if (
-        stats[guild][user]["score"] > (stats[guild][user]["bestScore"] ?? 0)
-      ) {
-        stats[guild][user]["bestScore"] = stats[guild][user]["score"];
+    Object.keys(guildStats)
+      .filter((k) => k.length == 18)
+      .forEach(async (user) => {
+        console.log(user);
+        await addToStats({ type: "init", userId: user, guildId: guild });
+        stats[guild][user]["score"] = Math.max(
+          0,
+          Math.floor(
+            stats[guild][user]["voiceTime"] * statsConfig["voiceChatSRGain"] +
+              stats[guild][user]["messages"] * statsConfig["messageSRGain"] -
+              Object.values(stats[guild][user]["nerdEmojis"]).reduce(
+                (sum, a) => sum + Math.max(3.32 ** a + 1, 0) - 1,
+                0
+              ) -
+              stats[guild][user]["decay"] +
+              (stats[guild][user]["reputation"] ?? 0) *
+                statsConfig["reputationGain"]
+          )
+        );
 
         if (
-          stats[guild][user]["bestRanking"] !=
-            (await getRanking(stats[guild][user]["score"])) &&
-          rankUpChannels[guild]
+          stats[guild][user]["score"] > (stats[guild][user]["bestScore"] ?? 0)
         ) {
-          const guildObject = await client.guilds.fetch(guild);
-          const userObject = guildObject.members.cache
-            .filter((m) => m.id == user)
-            .first();
-          const channel = await guildObject.channels.fetch(
-            rankUpChannels[guild]
-          );
-          channel.send(
-            "## Rank Up!\n```ansi\n" +
-              userObject.displayName +
-              " has reached rank " +
-              (await getRanking(stats[guild][user]["score"])) +
-              "!```"
+          stats[guild][user]["bestScore"] = stats[guild][user]["score"];
+
+          if (
+            stats[guild][user]["bestRanking"] !=
+              (await getRanking(stats[guild][user]["score"])) &&
+            stats[guild]["rankUpChannel"]
+          ) {
+            const guildObject = await client.guilds.fetch(guild);
+            const userObject = guildObject.members.cache
+              .filter((m) => m.id == user)
+              .first();
+            const channel = await guildObject.channels.fetch(
+              stats[guild]["rankUpChannel"]
+            );
+            channel.send(
+              "## Rank Up!\n```ansi\n" +
+                userObject.displayName +
+                " has reached rank " +
+                (await getRanking(stats[guild][user]["score"])) +
+                "!```"
+            );
+          }
+          stats[guild][user]["bestRanking"] = await getRanking(
+            stats[guild][user]["score"]
           );
         }
-        stats[guild][user]["bestRanking"] = await getRanking(
-          stats[guild][user]["score"]
-        );
-      }
-    });
+      });
   });
 }
 

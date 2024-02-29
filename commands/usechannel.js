@@ -1,5 +1,5 @@
 const fs = require("fs");
-const channels = require("./../resources/channels.json");
+var stats = require("./../resources/stats.json");
 
 module.exports = {
   aliases: ["use_channel", "setchannel", "set_channel"],
@@ -7,9 +7,9 @@ module.exports = {
   run: async (client, msg, args) => {
     await client.application.fetch();
     if (msg.author === client.application.owner) {
-      channels[msg.guild.id] = msg.channel.id;
+      stats[msg.guild.id]["rankUpChannel"] = msg.channel.id;
 
-      fs.writeFileSync("./resources/channels.json", JSON.stringify(channels));
+      fs.writeFileSync("./resources/stats.json", JSON.stringify(stats));
 
       return msg.reply(`Set the rank up channel to ${msg.channel.name}.`);
     }

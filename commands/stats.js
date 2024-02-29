@@ -1,5 +1,4 @@
 /* eslint-disable indent */
-const { statsConfig } = require("./../resources/config.json");
 const stats = require("./../resources/stats.json");
 const ranks = require("./../resources/ranks.json");
 
@@ -15,6 +14,7 @@ module.exports = {
     if (!guildStats) return msg.reply("This server has no statistics yet!");
 
     const topNerder = Object.entries(guildStats)
+      .filter((k) => k[0].length == 18)
       .map(([k, v]) => {
         return [k, v["nerdsGiven"] ?? 0];
       })
@@ -23,6 +23,7 @@ module.exports = {
       })[0];
 
     const topNerded = Object.entries(guildStats)
+      .filter((k) => k[0].length == 18)
       .map(([k, v]) => {
         return [
           k,
@@ -34,6 +35,7 @@ module.exports = {
       })[0];
 
     const topScores = Object.entries(guildStats)
+      .filter((k) => k[0].length == 18)
       .map(([k, v]) => {
         return [k, v["score"]];
       })
@@ -41,9 +43,11 @@ module.exports = {
         return s[1] - f[1];
       });
 
-    const reputations = Object.entries(guildStats).map(([k, v]) => {
-      return [k, v["reputation"] ?? 0];
-    });
+    const reputations = Object.entries(guildStats)
+      .filter((k) => k[0].length == 18)
+      .map(([k, v]) => {
+        return [k, v["reputation"] ?? 0];
+      });
     const topReputation = reputations.sort(function (f, s) {
       return s[1] - f[1];
     })[0];
@@ -111,12 +115,14 @@ module.exports = {
     const userRanking = topScores
       .map((a, i) => [a[0], a[1], i])
       .filter((a) => a[0] == msg.author.id)[0];
-    outputMessage += `\nYour ranking (${module.exports.getNickname(
-      msg,
-      userRanking[0]
-    )}): #${userRanking[2] + 1} (${module.exports.getRanking(
-      guildStats[userRanking[0]]
-    )}, ${userRanking[1]}SR)`;
+    if (userRanking) {
+      outputMessage += `\nYour ranking (${module.exports.getNickname(
+        msg,
+        userRanking[0]
+      )}): #${userRanking[2] + 1} (${module.exports.getRanking(
+        guildStats[userRanking[0]]
+      )}, ${userRanking[1]}SR)`;
+    }
 
     const outputArray = outputMessage.match(/[\s\S]{1,1990}(?!\S)/g);
     outputArray.forEach((r) => {
