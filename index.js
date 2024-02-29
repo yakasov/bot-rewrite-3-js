@@ -254,6 +254,22 @@ async function addToStats(a, msg = null) {
       bestRanking: "",
     };
   }
+  if (!stats[guildId][giverId]) {
+    stats[guildId][giverId] = {
+      messages: 0,
+      voiceTime: 0,
+      joinTime: 0,
+      lastGainTime: 0,
+      decay: 0,
+      nerdEmojis: {},
+      nerdsGiven: 0,
+      score: 0,
+      reputation: 0,
+      reputationTime: 0,
+      bestScore: 0,
+      bestRanking: "",
+    };
+  }
 
   switch (type) {
     case "init":
