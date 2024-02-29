@@ -372,7 +372,7 @@ async function updateScores() {
           stats[guild][user]["voiceTime"] * statsConfig["voiceChatSRGain"] +
             stats[guild][user]["messages"] * statsConfig["messageSRGain"] -
             Object.values(stats[guild][user]["nerdEmojis"]).reduce(
-              (sum, a) => sum + 2 ** (a + 1) - 1,
+              (sum, a) => sum + Math.max(3.32 ** a + 1, 0) - 1,
               0
             ) -
             stats[guild][user]["decay"] +
