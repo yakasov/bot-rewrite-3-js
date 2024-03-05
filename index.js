@@ -93,9 +93,10 @@ async function addDecayToStats() {
             stats[guild][member]["score"] > statsConfig["decaySRLossThreshold"]
           ) {
             stats[guild][member]["decay"] +=
-              statsConfig["decaySRLoss"] +
-              (stats[guild][member]["score"] / 10000) *
-                statsConfig["decaySRLoss"];
+              (statsConfig["decaySRLoss"] +
+                (stats[guild][member]["score"] / 10000) *
+                  statsConfig["decaySRLoss"]) *
+              (statsConfig["decaySRLoss"] / 10);
           }
         });
     }
