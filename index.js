@@ -89,6 +89,7 @@ async function addDecayToStats() {
       Object.keys(gv)
         .filter((k) => k.length == 18)
         .forEach((member) => {
+          return (stats[guild][member]["decay"] = 0);
           if (
             stats[guild][member]["score"] > statsConfig["decaySRLossThreshold"]
           ) {
