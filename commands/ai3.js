@@ -18,7 +18,7 @@ var conversation = [initialMessage];
 module.exports = {
   aliases: [],
   description: "Uses OpenAI API (gpt-3.5-turbo) to generate an AI response",
-  run: async (client, msg, args, splash) => {
+  run: async ([, msg, args]) => {
     if (
       !config.apiKey ||
       !aiChannels.includes(`${msg.channelId}`) ||

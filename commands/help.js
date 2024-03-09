@@ -3,7 +3,7 @@ const fs = require("fs");
 module.exports = {
   aliases: ["commands"],
   description: "Shows a list of all available commands",
-  run: async (client, msg, args) => {
+  run: async ([, msg]) => {
     var output = "```";
     var keyPairs = {};
 

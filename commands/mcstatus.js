@@ -8,7 +8,7 @@ const {
 module.exports = {
   aliases: [],
   description: "Get information about the current Minecraft server",
-  run: async (client, msg, args) => {
+  run: async ([, msg]) => {
     if (!(minecraftServerIp.length && minecraftServerPort)) {
       return;
     }

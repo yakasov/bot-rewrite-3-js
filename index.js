@@ -25,7 +25,6 @@ const client = new Client({
 const aliases = buildAliases();
 var date = new Date().toLocaleDateString("en-GB").slice(0, -5);
 var splash;
-var lastMessageChannelIds = {};
 
 function buildAliases() {
   var aliases = {};
@@ -55,17 +54,8 @@ async function checkMinecraftServer() {
   }
 }
 
-async function checkTweets() {
-  try {
-    const twitterCheck = require("./tasks/twitter.js");
-    await twitterCheck.run(client);
-  } catch (e) {
-    return console.error(e);
-  }
-}
-
 async function getNewSplash() {
-  splash = await npFile.run(client, null, null);
+  splash = await npFile.run([client]);
 }
 
 function getNickname(msg) {
@@ -464,13 +454,11 @@ client.once(Events.ClientReady, async (c) => {
   await checkVoiceChannels();
   await checkBirthdays(true);
   await checkMinecraftServer();
-  await checkTweets();
   await getNewSplash();
   await addDecayToStats();
 
   setInterval(checkBirthdays, getTime(0, 15)); // 15 minutes
   setInterval(checkMinecraftServer, getTime(5)); // 5 seconds
-  setInterval(checkTweets, getTime(0, 15)); // 15 minutes
   setInterval(getNewSplash, getTime(0, 0, 1)); // 1 hour
   setInterval(addDecayToStats, getTime(0, 0, 1)); // 1 hour
   setInterval(checkVoiceChannels, getTime(15)); // 15 seconds
@@ -525,14 +513,7 @@ client.on("messageCreate", async (msg) => {
 
   try {
     var file = require(`./commands/${cmd}.js`);
-    if (
-      ["ai", "ai3"].includes(cmd) &&
-      ["bot", "chat-with-outputbot"].includes(msg.channel.name)
-    ) {
-      return file.run(client, msg, args, splash);
-    } else {
-      return file.run(client, msg, args);
-    }
+    return file.run([client, msg, args]);
   } catch (err) {
     if (err.code && err.code !== "MODULE_NOT_FOUND") {
       console.error(err);

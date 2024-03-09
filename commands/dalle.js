@@ -13,7 +13,7 @@ const openai = new OpenAIApi(config);
 module.exports = {
   aliases: [],
   description: "Uses OpenAI API (dall-e-2) to generate an image",
-  run: async (client, msg, args, splash) => {
+  run: async ([, msg, args]) => {
     if (
       !config.apiKey ||
       !elevatedPermsAiChannels.includes(msg.channelId) ||

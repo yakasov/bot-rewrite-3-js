@@ -1,7 +1,7 @@
 module.exports = {
   aliases: [],
   description: "Test",
-  run: async (client, msg, args) => {
+  run: async ([client, msg]) => {
     await client.application.fetch();
     if (msg.author === client.application.owner) {
       module.exports

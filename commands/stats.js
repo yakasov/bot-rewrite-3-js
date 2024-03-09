@@ -5,11 +5,7 @@ const ranks = require("./../resources/ranks.json");
 module.exports = {
   aliases: ["statistics", "leaderboard", "scores"],
   description: "Show server statistics.",
-  run: async (client, msg, args, start = 0) => {
-    // 'start' is the start index of the scores to show
-    // this is in case I let people scroll the leaderboard later
-    // otherwise it works as top 5
-
+  run: async ([, msg]) => {
     const guildStats = stats[msg.guild.id];
     if (!guildStats) return msg.reply("This server has no statistics yet!");
 
