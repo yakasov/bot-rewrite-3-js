@@ -56,7 +56,7 @@ async function checkMinecraftServer() {
 }
 
 async function getNewSplash() {
-  splash = await npFile.run(client, null, null);
+  splash = await npFile.run([client]);
 }
 
 function getNickname(msg) {
@@ -479,14 +479,7 @@ client.on("messageCreate", async (msg) => {
 
   try {
     var file = require(`./commands/${cmd}.js`);
-    if (
-      ["ai", "ai3"].includes(cmd) &&
-      ["bot", "chat-with-outputbot"].includes(msg.channel.name)
-    ) {
-      return file.run(client, msg, args, splash);
-    } else {
-      return file.run(client, msg, args);
-    }
+    return file.run([client, msg, args]);
   } catch (err) {
     if (err.code && err.code !== "MODULE_NOT_FOUND") {
       console.error(err);

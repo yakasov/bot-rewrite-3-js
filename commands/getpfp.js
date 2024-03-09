@@ -4,7 +4,7 @@ module.exports = {
   aliases: [],
   description:
     "Get profile picture of mentioned user or from user ID. If no mention or ID, use author",
-  run: async (client, msg, args) => {
+  run: async ([, msg, args]) => {
     try {
       var avatar;
       if (args.length) {

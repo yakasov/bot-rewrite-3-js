@@ -8,7 +8,7 @@ const fs = require("node:fs");
 module.exports = {
   aliases: [],
   description: "Generate a TTS output from a given input",
-  run: async (client, msg, args) => {
+  run: async ([, msg, args]) => {
     if (!args.length) {
       return;
     }

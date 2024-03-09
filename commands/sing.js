@@ -8,7 +8,7 @@ const ytdl = require("ytdl-core-discord");
 module.exports = {
   aliases: ["play", "stream"],
   description: "Streams from a YouTube url",
-  run: async (client, msg, args) => {
+  run: async ([, msg, args]) => {
     if (!args.length) {
       return;
     }

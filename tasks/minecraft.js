@@ -15,7 +15,7 @@ exports.run = async (client, splash) => {
       if (!online) {
         if (client.user.presence.activities[0].name === splash) return;
         // if nobody is online and the splash is already set, don't set it again
-        
+
         activityString = splash;
       } else {
         const players = res.players.list;
@@ -26,7 +26,7 @@ exports.run = async (client, splash) => {
         activities: [{ name: activityString, type: ActivityType.Watching }],
       });
     })
-    .catch((e) => {
+    .catch(() => {
       return;
     });
 };

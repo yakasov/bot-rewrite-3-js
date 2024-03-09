@@ -6,7 +6,7 @@ const ranks = require("./../resources/ranks.json");
 module.exports = {
   aliases: ["mystats"],
   description: "Show server statistics.",
-  run: async (client, msg, args) => {
+  run: async ([, msg, args]) => {
     const guildStats = stats[msg.guild.id];
     if (!guildStats) return msg.reply("This server has no statistics yet!");
 
