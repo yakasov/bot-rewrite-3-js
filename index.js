@@ -26,7 +26,6 @@ const client = new Client({
 const aliases = buildAliases();
 var date = new Date().toLocaleDateString("en-GB").slice(0, -5);
 var splash;
-var lastMessageChannelIds = {};
 
 function buildAliases() {
   var aliases = {};
@@ -51,15 +50,6 @@ async function checkMinecraftServer() {
   try {
     const minecraftServer = require("./tasks/minecraft.js");
     await minecraftServer.run(client, splash);
-  } catch (e) {
-    return console.error(e);
-  }
-}
-
-async function checkTweets() {
-  try {
-    const twitterCheck = require("./tasks/twitter.js");
-    await twitterCheck.run(client);
   } catch (e) {
     return console.error(e);
   }
@@ -430,13 +420,11 @@ client.once(Events.ClientReady, async (c) => {
   await checkVoiceChannels();
   await checkBirthdays(true);
   await checkMinecraftServer();
-  await checkTweets();
   await getNewSplash();
   await addDecayToStats();
 
   setInterval(checkBirthdays, getTime(0, 15)); // 15 minutes
   setInterval(checkMinecraftServer, getTime(5)); // 5 seconds
-  setInterval(checkTweets, getTime(0, 15)); // 15 minutes
   setInterval(getNewSplash, getTime(0, 0, 1)); // 1 hour
   setInterval(addDecayToStats, getTime(0, 0, 1)); // 1 hour
   setInterval(checkVoiceChannels, getTime(15)); // 15 seconds
