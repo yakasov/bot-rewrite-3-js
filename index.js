@@ -215,6 +215,14 @@ async function checkMessageReactions(msg) {
   if (Math.random() < 1 / 50) {
     await msg.react("🤓");
   }
+  if (Math.random() < 1 / 100) {
+    await msg.reply("L boozoo");
+  }
+  if (Math.random() < 1 / 10000) {
+    await msg.reply(
+      "The chance for you to get this is 0.0001%, so well done, nerd"
+    );
+  }
 }
 
 async function addToStats(a, msg = null) {
