@@ -31,6 +31,8 @@
     "decaySRLossThreshold": 2500,
     "_decaySRLossThreshold": "The amount of SR required for decay to start.",
     "reputationGain": 75,
-    "reputationGainCooldown": 900
+    "reputationGainCooldown": 900,
+    "prestigeRequirement": 50000,
+    "_prestigeRequirement": "The SR that needs to be met before a user can prestige."
   },
 }

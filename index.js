@@ -245,6 +245,7 @@ async function addToStats(a, msg = null) {
       reputationTime: 0,
       bestScore: 0,
       bestRanking: "",
+      prestige: 0,
     };
   }
   if (!stats[guildId][giverId]) {
@@ -261,8 +262,14 @@ async function addToStats(a, msg = null) {
       reputationTime: 0,
       bestScore: 0,
       bestRanking: "",
+      prestige: 0,
     };
   }
+
+  if (!stats[userId]["prestige"]) stats[userId]["prestige"] = 0;
+  // yeah I might be retroactively adding this in...
+  // I will add a system later to sort every stat individually if not initialised
+  // ... TODO
 
   switch (type) {
     case "init":
@@ -309,7 +316,9 @@ async function addToStats(a, msg = null) {
       }
 
       stats[guildId][userId]["nerdEmojis"][messageId] =
-        (stats[guildId][userId]["nerdEmojis"][messageId] ?? 0) + 1;
+        (stats[guildId][userId]["nerdEmojis"][messageId] ?? 0) +
+        1 +
+        (stats[guildId][userId]["prestige"] ?? 0);
       break;
 
     case "nerdEmojiRemoved":
@@ -342,7 +351,9 @@ async function addToStats(a, msg = null) {
         return await msg.react("🕑");
       }
       stats[guildId][userId]["reputation"] =
-        (stats[guildId][userId]["reputation"] ?? 0) + 1;
+        (stats[guildId][userId]["reputation"] ?? 0) +
+        1 +
+        (stats[guildId][userId]["prestige"] ?? 0);
       if (stats[guildId][userId]["reputation"] == 100)
         stats[guildId][userId]["reputation"] = -99;
       stats[guildId][giverId]["reputationTime"] = f();
@@ -365,7 +376,9 @@ async function addToStats(a, msg = null) {
         return await msg.react("🕑");
       }
       stats[guildId][userId]["reputation"] =
-        (stats[guildId][userId]["reputation"] ?? 0) - 1;
+        (stats[guildId][userId]["reputation"] ?? 0) -
+        1 -
+        (stats[guildId][userId]["prestige"] ?? 0);
       if (stats[guildId][userId]["reputation"] == -100)
         stats[guildId][userId]["reputation"] = 99;
       stats[guildId][giverId]["reputationTime"] = f();
@@ -390,15 +403,21 @@ async function updateScores() {
         stats[guild][user]["score"] = Math.max(
           0,
           Math.floor(
-            stats[guild][user]["voiceTime"] * statsConfig["voiceChatSRGain"] +
-              stats[guild][user]["messages"] * statsConfig["messageSRGain"] -
+            stats[guild][user]["voiceTime"] *
+              statsConfig["voiceChatSRGain"] *
+              1.2 ** (stats[guild][user]["prestige"] + 1 ?? 1) +
+              stats[guild][user]["messages"] *
+                statsConfig["messageSRGain"] *
+                1.2 ** (stats[guild][user]["prestige"] + 1 ?? 1) -
               Object.values(stats[guild][user]["nerdEmojis"]).reduce(
                 (sum, a) => sum + Math.max(3.32 ** a + 1, 0) - 1,
                 0
               ) -
               stats[guild][user]["decay"] +
               (stats[guild][user]["reputation"] ?? 0) *
-                statsConfig["reputationGain"]
+                statsConfig["reputationGain"] -
+              (stats[guild][user]["prestige"] ?? 0) *
+                statsConfig["prestigeRequirement"]
           )
         );
 
