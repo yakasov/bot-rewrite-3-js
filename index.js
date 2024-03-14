@@ -88,6 +88,9 @@ async function addDecayToStats() {
                 stats[guild][member]["lastGainTime"] >
                 getTime(0, 0, 24))
           ) {
+            stats[guild][member]["lastGainTime"] = Math.floor(
+              Date.now() / 1000
+            );
             stats[guild][member]["decay"] += statsConfig["decaySRLoss"];
           }
         });
