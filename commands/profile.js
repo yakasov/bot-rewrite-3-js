@@ -42,6 +42,8 @@ module.exports = {
       allUserStats["messages"]
     }\n    Voice Time: ${module.exports.formatTime(
       allUserStats["voiceTime"]
+    )}\n    Prestige: ${module.exports.getPrestige(
+      allUserStats
     )}\n\n    Ranking: ${module.exports.getRanking(allUserStats)} (${
       userStats[1]
     }SR)\n    Ranking before penalties: ${Math.floor(
@@ -88,6 +90,11 @@ module.exports = {
     return `${parseInt(unitArray[0]) - 1}d ${unitArray[1]}h ${unitArray[2]}m ${
       unitArray[3]
     }s`;
+  },
+  getPrestige: (memberStats) => {
+    return `${memberStats["prestige"] ?? 0} \u001b[33m${"★".repeat(
+      memberStats["prestige"] ?? 0
+    )}\u001b[0m`;
   },
   getNickname: (msg, id) => {
     const member = msg.guild.members.cache.filter((m) => m.id == id).first();

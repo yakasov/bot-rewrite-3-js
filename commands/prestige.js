@@ -1,4 +1,5 @@
 /* eslint-disable indent */
+const fs = require("fs");
 const { statsConfig } = require("./../resources/config.json");
 const stats = require("./../resources/stats.json");
 
@@ -10,9 +11,7 @@ module.exports = {
     if (!guildStats) return msg.reply("This server has no statistics yet!");
     if (!guildStats[msg.author.id])
       return msg.reply("You do not have any statistics yet!");
-    if (
-      !guildStats[msg.author.id]["score"] < statsConfig["prestigeRequirement"]
-    )
+    if (guildStats[msg.author.id]["score"] < statsConfig["prestigeRequirement"])
       return msg.reply(
         `You cannot prestige until ${statsConfig["prestigeRequirement"]}SR!`
       );
@@ -31,7 +30,7 @@ module.exports = {
           );
         };
 
-        m.awaitReaction({
+        m.awaitReactions({
           filter: collectorFilter,
           max: 1,
           time: 60_000,
@@ -40,24 +39,32 @@ module.exports = {
           .then((collected) => {
             const reaction = collected.first();
 
-            if (reaction.emoji.name == "❌")
+            if (reaction.emoji.name == "❌") {
+              m.delete();
               return msg.reply("Prestige cancelled.");
+            } else {
+              m.delete();
+              msg.channel.send(
+                `${
+                  msg.guild.members.cache
+                    .filter((m) => m.id == msg.author.id)
+                    .first().displayName
+                } has prestiged to prestige ${
+                  guildStats[msg.author.id]["prestige"] + 1
+                }!`
+              );
+
+              stats[msg.guild.id][msg.author.id]["prestige"] =
+                (stats[msg.guild.id][msg.author.id]["prestige"] ?? 0) + 1;
+              stats[msg.guild.id][msg.author.id]["bestRanking"] = "";
+              stats[msg.guild.id][msg.author.id]["bestScore"] = 0;
+
+              fs.writeFileSync("./resources/stats.json", JSON.stringify(stats));
+            }
           })
           .catch(() => {
             return m.delete();
           });
       });
-
-    // If we get this far, they must have pressed Yes
-    msg.channel.send(
-      `${msg.author.displayName} has prestiged to prestige ${
-        guildStats[msg.author.id]["prestige"] + 1
-      }!`
-    );
-
-    stats[msg.guild.id][msg.author.id]["prestige"] =
-      (stats[msg.guild.id][msg.author.id]["prestige"] ?? 0) + 1;
-    stats[msg.guild.id][msg.author.id]["bestRanking"] = "";
-    stats[msg.guild.id][msg.author.id]["bestScore"] = 0;
   },
 };

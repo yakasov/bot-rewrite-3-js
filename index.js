@@ -266,7 +266,8 @@ async function addToStats(a, msg = null) {
     };
   }
 
-  if (!stats[userId]["prestige"]) stats[userId]["prestige"] = 0;
+  if (!stats[guildId][userId]["prestige"])
+    stats[guildId][userId]["prestige"] = 0;
   // yeah I might be retroactively adding this in...
   // I will add a system later to sort every stat individually if not initialised
   // ... TODO

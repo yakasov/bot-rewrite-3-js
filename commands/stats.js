@@ -82,7 +82,7 @@ module.exports = {
       longestName - 5
     )} | Msgs  | Time ${" ".repeat(9)} | Rep | Rank`;
     outputMessage +=
-      headerString + `\n${"-".repeat(headerString.length + 15)}\n`;
+      headerString + `\n${"-".repeat(headerString.length + 20)}\n`;
     topScores.slice(0, Math.min(10, topScores.length)).forEach((a, i) => {
       const name = module.exports.getNickname(msg, a[0]);
       const msgLength = Math.max(
@@ -97,7 +97,7 @@ module.exports = {
         0
       );
 
-      outputMessage += `${i + 1} ${" ".repeat(
+      const newLine = `${i + 1} ${" ".repeat(
         2 - (i + 1).toString().length
       )}| ${name} ${" ".repeat(longestName - name.length)}| ${" ".repeat(
         msgLength
@@ -105,7 +105,12 @@ module.exports = {
         guildStats[a[0]]["voiceTime"]
       )} | ${" ".repeat(repLength)}${module.exports.formatReputation(
         module.exports.addLeadingZero(guildStats[a[0]]["reputation"] ?? 0)
-      )} | ${module.exports.getRanking(guildStats[a[0]])} (${a[1]}SR)\n`;
+      )} | ${module.exports.getRanking(guildStats[a[0]])} (${a[1]}SR)`;
+
+      outputMessage += newLine;
+      outputMessage += `${" ".repeat(
+        100 - newLine.length
+      )} ${module.exports.getPrestige(guildStats[a[0]])}\n`;
     });
 
     const userRanking = topScores
@@ -146,6 +151,9 @@ module.exports = {
     return `${
       rep > 0 ? "\u001b[1;32m" : rep < 0 ? "\u001b[1;31m" : ""
     }${rep}\u001b[0m`;
+  },
+  getPrestige: (memberStats) => {
+    return `\u001b[33m${"★".repeat(memberStats["prestige"] ?? 0)}\u001b[0m`;
   },
   getNickname: (msg, id) => {
     const member = msg.guild.members.cache.filter((m) => m.id == id).first();
