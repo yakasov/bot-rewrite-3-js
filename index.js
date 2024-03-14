@@ -79,15 +79,16 @@ async function addDecayToStats() {
       Object.keys(gv)
         .filter((k) => k.length == 18)
         .forEach((member) => {
-          return (stats[guild][member]["decay"] = 0);
           if (
-            stats[guild][member]["score"] > statsConfig["decaySRLossThreshold"]
+            stats[guild][member]["score"] >
+              statsConfig["decaySRLossThreshold"] &&
+            (Math.floor(Date.now() / 1000) - stats[guild][member]["joinTime"] >
+              getTime(0, 0, 24) ||
+              Math.floor(Date.now() / 1000) -
+                stats[guild][member]["lastGainTime"] >
+                getTime(0, 0, 24))
           ) {
-            stats[guild][member]["decay"] +=
-              (statsConfig["decaySRLoss"] +
-                (stats[guild][member]["score"] / 10000) *
-                  statsConfig["decaySRLoss"]) *
-              (statsConfig["decaySRLoss"] / 10);
+            stats[guild][member]["decay"] += statsConfig["decaySRLoss"];
           }
         });
     }
@@ -214,6 +215,14 @@ async function checkMessageReactions(msg) {
   if (Math.random() < 1 / 50) {
     await msg.react("🤓");
   }
+  if (Math.random() < 1 / 100) {
+    await msg.reply("L boozoo");
+  }
+  if (Math.random() < 1 / 10000) {
+    await msg.reply(
+      "The chance for you to get this is 0.0001%, so well done, nerd"
+    );
+  }
 }
 
 async function addToStats(a, msg = null) {
@@ -244,6 +253,7 @@ async function addToStats(a, msg = null) {
       reputationTime: 0,
       bestScore: 0,
       bestRanking: "",
+      prestige: 0,
     };
   }
   if (!stats[guildId][giverId]) {
@@ -260,8 +270,15 @@ async function addToStats(a, msg = null) {
       reputationTime: 0,
       bestScore: 0,
       bestRanking: "",
+      prestige: 0,
     };
   }
+
+  if (!stats[guildId][userId]["prestige"])
+    stats[guildId][userId]["prestige"] = 0;
+  // yeah I might be retroactively adding this in...
+  // I will add a system later to sort every stat individually if not initialised
+  // ... TODO
 
   switch (type) {
     case "init":
@@ -308,7 +325,9 @@ async function addToStats(a, msg = null) {
       }
 
       stats[guildId][userId]["nerdEmojis"][messageId] =
-        (stats[guildId][userId]["nerdEmojis"][messageId] ?? 0) + 1;
+        (stats[guildId][userId]["nerdEmojis"][messageId] ?? 0) +
+        1 +
+        (stats[guildId][userId]["prestige"] ?? 0);
       break;
 
     case "nerdEmojiRemoved":
@@ -341,7 +360,9 @@ async function addToStats(a, msg = null) {
         return await msg.react("🕑");
       }
       stats[guildId][userId]["reputation"] =
-        (stats[guildId][userId]["reputation"] ?? 0) + 1;
+        (stats[guildId][userId]["reputation"] ?? 0) +
+        1 +
+        (stats[guildId][userId]["prestige"] ?? 0);
       if (stats[guildId][userId]["reputation"] == 100)
         stats[guildId][userId]["reputation"] = -99;
       stats[guildId][giverId]["reputationTime"] = f();
@@ -364,7 +385,9 @@ async function addToStats(a, msg = null) {
         return await msg.react("🕑");
       }
       stats[guildId][userId]["reputation"] =
-        (stats[guildId][userId]["reputation"] ?? 0) - 1;
+        (stats[guildId][userId]["reputation"] ?? 0) -
+        1 -
+        (stats[guildId][userId]["prestige"] ?? 0);
       if (stats[guildId][userId]["reputation"] == -100)
         stats[guildId][userId]["reputation"] = 99;
       stats[guildId][giverId]["reputationTime"] = f();
@@ -389,15 +412,21 @@ async function updateScores() {
         stats[guild][user]["score"] = Math.max(
           0,
           Math.floor(
-            stats[guild][user]["voiceTime"] * statsConfig["voiceChatSRGain"] +
-              stats[guild][user]["messages"] * statsConfig["messageSRGain"] -
+            stats[guild][user]["voiceTime"] *
+              statsConfig["voiceChatSRGain"] *
+              1.2 ** (stats[guild][user]["prestige"] + 1 ?? 1) +
+              stats[guild][user]["messages"] *
+                statsConfig["messageSRGain"] *
+                1.2 ** (stats[guild][user]["prestige"] + 1 ?? 1) -
               Object.values(stats[guild][user]["nerdEmojis"]).reduce(
                 (sum, a) => sum + Math.max(3.32 ** a + 1, 0) - 1,
                 0
               ) -
               stats[guild][user]["decay"] +
               (stats[guild][user]["reputation"] ?? 0) *
-                statsConfig["reputationGain"]
+                statsConfig["reputationGain"] -
+              (stats[guild][user]["prestige"] ?? 0) *
+                statsConfig["prestigeRequirement"]
           )
         );
 
