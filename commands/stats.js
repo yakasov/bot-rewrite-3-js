@@ -109,7 +109,7 @@ module.exports = {
 
       outputMessage += newLine;
       outputMessage += `${" ".repeat(
-        100 - newLine.length
+        120 - newLine.length
       )} ${module.exports.getPrestige(guildStats[a[0]])}\n`;
     });
 
