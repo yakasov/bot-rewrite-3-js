@@ -417,10 +417,10 @@ async function updateScores() {
           Math.floor(
             stats[guild][user]["voiceTime"] *
               statsConfig["voiceChatSRGain"] *
-              1.2 ** ((stats[guild][user]["prestige"] ?? -1) + 1) +
+              1.2 ** (stats[guild][user]["prestige"] ?? 0) +
               stats[guild][user]["messages"] *
                 statsConfig["messageSRGain"] *
-                1.2 ** ((stats[guild][user]["prestige"] ?? -1) + 1) -
+                1.2 ** (stats[guild][user]["prestige"] ?? 0) -
               Object.values(stats[guild][user]["nerdEmojis"]).reduce(
                 (sum, a) => sum + Math.max(3.32 ** a + 1, 0) - 1,
                 0
