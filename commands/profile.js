@@ -36,7 +36,13 @@ module.exports = {
     const allUserStats = guildStats[userStats[0]];
 
     if (args[1] && args[1] == "debug") {
-      return msg.reply("```\n" + JSON.stringify(allUserStats, null, 2) + "```");
+      const outputMessage =
+        "```\n" + JSON.stringify(allUserStats, null, 2) + "```";
+      const outputArray = outputMessage.match(/[\s\S]{1,1990}(?!\S)/g);
+      outputArray.forEach((r) => {
+        msg.reply("```ansi\n" + r + "\n```");
+      });
+      return;
     }
 
     const outputMessage = `=== Profile for ${module.exports.getNickname(
