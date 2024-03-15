@@ -18,6 +18,9 @@ module.exports = {
         });
 
       fs.writeFileSync("./resources/stats.json", JSON.stringify(stats));
+      return msg.reply(
+        `Reset all best scores and rankings for guild ${msg.guild.id}.`
+      );
     }
   },
   getRanking: (memberStats) => {

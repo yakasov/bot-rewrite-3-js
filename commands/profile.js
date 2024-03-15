@@ -37,10 +37,10 @@ module.exports = {
 
     if (args[1] && args[1] == "debug") {
       const outputMessage =
-        "```\n" + JSON.stringify(allUserStats, null, 2) + "```";
+        "```\n" + JSON.stringify(allUserStats, null, 4) + "```";
       const outputArray = outputMessage.match(/[\s\S]{1,1990}(?!\S)/g);
       outputArray.forEach((r) => {
-        msg.reply("```ansi\n" + r + "\n```");
+        msg.reply("```\n" + r + "\n```");
       });
       return;
     }
