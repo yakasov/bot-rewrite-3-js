@@ -11,6 +11,11 @@ module.exports = {
     if (!guildStats) return msg.reply("This server has no statistics yet!");
     if (!guildStats[msg.author.id])
       return msg.reply("You do not have any statistics yet!");
+    if (
+      (guildStats[msg.author.id]["prestige"] ?? 0) >=
+      statsConfig["prestigeMaximum"]
+    )
+      return msg.reply("You have reached max prestige!");
     if (guildStats[msg.author.id]["score"] < statsConfig["prestigeRequirement"])
       return msg.reply(
         `You cannot prestige until ${statsConfig["prestigeRequirement"]}SR!`
