@@ -123,8 +123,6 @@ function getTime(seconds = 0, minutes = 0, hours = 0) {
 }
 
 async function checkMessageResponse(msg) {
-  var stopProcessing = false;
-
   // swap Twitter/X URLs for proper embedding ones
   if (
     ["https://x.com/", "https://twitter.com/"].find((l) =>
@@ -142,7 +140,7 @@ async function checkMessageResponse(msg) {
     } catch (e) {
       msg.reply("Missing permissions to delete the above message!!");
     }
-    stopProcessing = true;
+    return;
   }
 
   // swap steamcommunity links for openable ones
@@ -193,15 +191,13 @@ async function checkMessageResponse(msg) {
     return msg.channel.send(v);
   }
 
-  Object.entries(responses).forEach(async ([k, v]) => {
-    if (
-      ` ${msg.content.toLowerCase()} `.includes(` ${k} `) &&
-      !stopProcessing
-    ) {
-      stopProcessing = true;
-      await f(k, v);
+  const entries = Object.entries(responses);
+  for (let i = 0; i < entries.length; i++) {
+    const [k, v] = entries[i];
+    if (` ${msg.content.toLowerCase()} `.includes(` ${k} `)) {
+      return await f(k, v);
     }
-  });
+  }
 }
 
 async function checkMessageReactions(msg) {
@@ -229,6 +225,32 @@ async function checkMessageReactions(msg) {
   }
 }
 
+async function initialiseStats(guildId, userId) {
+  const baseObj = {
+    messages: 0,
+    voiceTime: 0,
+    joinTime: 0,
+    lastGainTime: 0,
+    decay: 0,
+    nerdEmojis: {},
+    nerdsGiven: 0,
+    score: 0,
+    reputation: 0,
+    reputationTime: 0,
+    bestScore: 0,
+    bestRanking: "",
+    prestige: 0,
+  };
+
+  if (!stats[guildId][userId]) return (stats[guildId][userId] = baseObj);
+
+  Object.entries(baseObj).forEach(([k, v]) => {
+    if (!stats[guildId][userId][k]) {
+      stats[guildId][userId][k] = v;
+    }
+  });
+}
+
 async function addToStats(a, msg = null) {
   function f() {
     // Returns UNIX time in seconds.
@@ -243,46 +265,9 @@ async function addToStats(a, msg = null) {
       allowDecay: true,
       rankUpChannel: "",
     };
-  if (!stats[guildId][userId]) {
-    stats[guildId][userId] = {
-      messages: 0,
-      voiceTime: 0,
-      joinTime: 0,
-      lastGainTime: 0,
-      decay: 0,
-      nerdEmojis: {},
-      nerdsGiven: 0,
-      score: 0,
-      reputation: 0,
-      reputationTime: 0,
-      bestScore: 0,
-      bestRanking: "",
-      prestige: 0,
-    };
-  }
-  if (!stats[guildId][giverId]) {
-    stats[guildId][giverId] = {
-      messages: 0,
-      voiceTime: 0,
-      joinTime: 0,
-      lastGainTime: 0,
-      decay: 0,
-      nerdEmojis: {},
-      nerdsGiven: 0,
-      score: 0,
-      reputation: 0,
-      reputationTime: 0,
-      bestScore: 0,
-      bestRanking: "",
-      prestige: 0,
-    };
-  }
 
-  if (!stats[guildId][userId]["prestige"])
-    stats[guildId][userId]["prestige"] = 0;
-  // yeah I might be retroactively adding this in...
-  // I will add a system later to sort every stat individually if not initialised
-  // ... TODO
+  await initialiseStats(guildId, userId);
+  await initialiseStats(guildId, giverId);
 
   switch (type) {
     case "init":
