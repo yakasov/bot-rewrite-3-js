@@ -33,6 +33,8 @@
     "reputationGain": 75,
     "reputationGainCooldown": 900,
     "prestigeRequirement": 50000,
-    "_prestigeRequirement": "The SR that needs to be met before a user can prestige."
+    "_prestigeRequirement": "The SR that needs to be met before a user can prestige.",
+    "prestigeMaximum": 5,
+    "_prestigeMaximum": "The highest prestige allowed."
   },
 }
