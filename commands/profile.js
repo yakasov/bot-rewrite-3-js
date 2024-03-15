@@ -53,15 +53,6 @@ module.exports = {
           0,
           (allUserStats["reputation"] ?? 0) * statsConfig["reputationGain"]
         )
-    )}SR\n    Actual SR: ${Math.floor(
-      allUserStats["voiceTime"] * statsConfig["voiceChatSRGain"] +
-        allUserStats["messages"] * statsConfig["messageSRGain"] -
-        Object.values(allUserStats["nerdEmojis"]).reduce(
-          (sum, a) => sum + Math.max(3.32 ** a + 1, 0) - 1,
-          0
-        ) -
-        allUserStats["decay"] +
-        (allUserStats["reputation"] ?? 0) * statsConfig["reputationGain"]
     )}SR\n    Reputation: ${
       allUserStats["reputation"] ?? 0
     }\n    Decay: ${Math.round(
