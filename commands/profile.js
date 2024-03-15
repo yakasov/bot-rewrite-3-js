@@ -52,11 +52,7 @@ module.exports = {
         1.2 ** ((allUserStats["prestige"] ?? -1) + 1) +
         allUserStats["messages"] *
           statsConfig["messageSRGain"] *
-          1.2 ** ((allUserStats["prestige"] ?? -1) + 1) -
-        Object.values(allUserStats["nerdEmojis"]).reduce(
-          (sum, a) => sum + Math.max(3.32 ** a + 1, 0) - 1,
-          0
-        ) +
+          1.2 ** ((allUserStats["prestige"] ?? -1) + 1) +
         Math.max(
           0,
           (allUserStats["reputation"] ?? 0) * statsConfig["reputationGain"]
