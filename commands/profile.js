@@ -33,8 +33,12 @@ module.exports = {
       })
       .map((a, i) => [a[0], a[1], i])
       .filter((a) => a[0] == (specificUser ?? msg.author.id))[0];
-
     const allUserStats = guildStats[userStats[0]];
+
+    if (args[1] && args[1] == "debug") {
+      return msg.reply("```\n" + JSON.stringify(allUserStats, null, 2) + "```");
+    }
+
     const outputMessage = `=== Profile for ${module.exports.getNickname(
       msg,
       userStats[0]
