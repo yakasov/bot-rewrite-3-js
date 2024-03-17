@@ -59,14 +59,14 @@ module.exports = {
     }SR)\n    Ranking before penalties: ${Math.floor(
       allUserStats["voiceTime"] *
         statsConfig["voiceChatSRGain"] *
-        1.2 ** (allUserStats["prestige"] ?? 0) +
+        1.2 ** (allUserStats["prestige"] ?? 0) *
+        Math.max(
+          1 + (allUserStats["reputation"] ?? 0) * statsConfig["reputationGain"],
+          1
+        ) +
         allUserStats["messages"] *
           statsConfig["messageSRGain"] *
-          1.2 ** (allUserStats["prestige"] ?? 0) +
-        Math.max(
-          0,
-          (allUserStats["reputation"] ?? 0) * statsConfig["reputationGain"]
-        ) -
+          1.2 ** (allUserStats["prestige"] ?? 0) -
         (allUserStats["prestige"] ?? 0) * statsConfig["prestigeRequirement"]
     )}SR\n    Reputation: ${
       allUserStats["reputation"] ?? 0
