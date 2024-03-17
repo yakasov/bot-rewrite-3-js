@@ -399,7 +399,7 @@ async function updateScores() {
       .filter((k) => k.length == 18)
       .forEach(async (user) => {
         await addToStats({ type: "init", userId: user, guildId: guild });
-        stats[guild][user]["score"] = Math.max(
+        const score = Math.max(
           0,
           Math.floor(
             stats[guild][user]["voiceTime"] *
@@ -419,9 +419,20 @@ async function updateScores() {
                 0
               ) -
               stats[guild][user]["decay"] -
-              (stats[guild][user]["prestigeModifier"] ?? 0)
+              (stats[guild][user]["prestigeModifier"] ?? 0) -
+              (stats[guild][user]["scoreDeficit"] ?? 0)
           )
         );
+        if (
+          stats[guild][user]["score"] > statsConfig["prestigeRequirement"] &&
+          stats[guild][user]["prestige"] < statsConfig["prestigeMaximum"]
+        ) {
+          stats[guild][user]["scoreDeficit"] =
+            score - statsConfig["prestigeRequirement"];
+          stats[guild][user]["score"] = statsConfig["prestigeRequirement"];
+        } else {
+          stats[guild][user]["score"] = score;
+        }
 
         if (
           stats[guild][user]["score"] > (stats[guild][user]["bestScore"] ?? 0)
