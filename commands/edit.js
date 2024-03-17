@@ -15,7 +15,7 @@ module.exports = {
           `Set user ${args[0]} attribute ${args[1]} to value ${args[2]}`
         );
       } catch (e) {
-        return msg.reply(e);
+        return msg.reply(e.message);
       }
     }
   },
