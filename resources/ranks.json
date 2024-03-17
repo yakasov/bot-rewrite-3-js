@@ -38,5 +38,21 @@
   "Transcendent IV": [42500, "\u001b[35m"],
   "Transcendent III": [45000, "\u001b[35m"],
   "Transcendent II": [47500, "\u001b[35m"],
-  "Transcendent I": [50000, "\u001b[35m"]
+  "Transcendent I": [50000, "\u001b[35m"],
+  "Cosmic V": [50001, "\u001b[34;1m"],
+  "Cosmic IV": [55000, "\u001b[34;1m"],
+  "Cosmic III": [60000, "\u001b[34;1m"],
+  "Cosmic II": [65000, "\u001b[34;1m"],
+  "Cosmic I": [70000, "\u001b[34;1m"],
+  "Ethereal V": [75000, "\u001b[37;1m"],
+  "Ethereal IV": [80000, "\u001b[37;1m"],
+  "Ethereal III": [85000, "\u001b[37;1m"],
+  "Ethereal II": [90000, "\u001b[37;1m"],
+  "Ethereal I": [95000, "\u001b[37;1m"],
+  "Mythical V": [100000, "\u001b[35;1m"],
+  "Mythical IV": [110000, "\u001b[35;1m"],
+  "Mythical III": [120000, "\u001b[35;4m"],
+  "Mythical II": [130000, "\u001b[35;4m"],
+  "Mythical I": [140000, "\u001b[35;4m"],
+  "Infinite": [150000, "\u001b[31;1;4m"]
 }

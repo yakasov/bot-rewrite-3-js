@@ -72,6 +72,15 @@ async function saveStats() {
   }
 }
 
+async function backupStats() {
+  try {
+    const backupStats = require("./tasks/backupstats.js");
+    await backupStats.run(stats);
+  } catch (e) {
+    return console.error(e);
+  }
+}
+
 async function addDecayToStats() {
   // This function should really be a separate task!!!
   Object.entries(stats).forEach(([guild, gv]) => {
@@ -351,9 +360,8 @@ async function addToStats(a, msg = null) {
       }
       stats[guildId][userId]["reputation"] =
         (stats[guildId][userId]["reputation"] ?? 0) +
-        1 +
-        (stats[guildId][userId]["prestige"] ?? 0);
-      if (stats[guildId][userId]["reputation"] == 100)
+        (1 + (stats[guildId][giverId]["prestige"] ?? 0));
+      if (stats[guildId][userId]["reputation"] >= 100)
         stats[guildId][userId]["reputation"] = -99;
       stats[guildId][giverId]["reputationTime"] = f();
 
@@ -376,9 +384,8 @@ async function addToStats(a, msg = null) {
       }
       stats[guildId][userId]["reputation"] =
         (stats[guildId][userId]["reputation"] ?? 0) -
-        1 -
-        (stats[guildId][userId]["prestige"] ?? 0);
-      if (stats[guildId][userId]["reputation"] == -100)
+        (1 + (stats[guildId][giverId]["prestige"] ?? 0));
+      if (stats[guildId][userId]["reputation"] <= -100)
         stats[guildId][userId]["reputation"] = 99;
       stats[guildId][giverId]["reputationTime"] = f();
 
@@ -489,12 +496,14 @@ client.once(Events.ClientReady, async (c) => {
   await checkMinecraftServer();
   await getNewSplash();
   await addDecayToStats();
+  await backupStats();
 
   setInterval(checkBirthdays, getTime(0, 15)); // 15 minutes
   setInterval(checkMinecraftServer, getTime(5)); // 5 seconds
   setInterval(getNewSplash, getTime(0, 0, 1)); // 1 hour
   setInterval(addDecayToStats, getTime(0, 0, 1)); // 1 hour
   setInterval(checkVoiceChannels, getTime(15)); // 15 seconds
+  setInterval(backupStats, getTime(0, 15)); // 15 minutes
 });
 
 client.on("messageCreate", async (msg) => {
