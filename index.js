@@ -72,6 +72,15 @@ async function saveStats() {
   }
 }
 
+async function backupStats() {
+  try {
+    const backupStats = require("./tasks/backupstats.js");
+    await backupStats.run(stats);
+  } catch (e) {
+    return console.error(e);
+  }
+}
+
 async function addDecayToStats() {
   // This function should really be a separate task!!!
   Object.entries(stats).forEach(([guild, gv]) => {
@@ -487,12 +496,14 @@ client.once(Events.ClientReady, async (c) => {
   await checkMinecraftServer();
   await getNewSplash();
   await addDecayToStats();
+  await backupStats();
 
   setInterval(checkBirthdays, getTime(0, 15)); // 15 minutes
   setInterval(checkMinecraftServer, getTime(5)); // 5 seconds
   setInterval(getNewSplash, getTime(0, 0, 1)); // 1 hour
   setInterval(addDecayToStats, getTime(0, 0, 1)); // 1 hour
   setInterval(checkVoiceChannels, getTime(15)); // 15 seconds
+  setInterval(backupStats, getTime(0, 15)); // 15 minutes
 });
 
 client.on("messageCreate", async (msg) => {
