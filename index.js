@@ -406,14 +406,15 @@ async function updateScores() {
               1.2 ** (stats[guild][user]["prestige"] ?? 0) +
               stats[guild][user]["messages"] *
                 statsConfig["messageSRGain"] *
-                1.2 ** (stats[guild][user]["prestige"] ?? 0) -
+                1.2 ** (stats[guild][user]["prestige"] ?? 0) *
+                (1 +
+                  (stats[guild][user]["reputation"] ?? 0) *
+                    statsConfig["reputationGain"]) -
               Object.values(stats[guild][user]["nerdEmojis"]).reduce(
                 (sum, a) => sum + Math.max(3.32 ** a + 1, 0) - 1,
                 0
               ) -
               stats[guild][user]["decay"] +
-              (stats[guild][user]["reputation"] ?? 0) *
-                statsConfig["reputationGain"] -
               (stats[guild][user]["prestige"] ?? 0) *
                 statsConfig["prestigeRequirement"]
           )
