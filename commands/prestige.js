@@ -63,6 +63,8 @@ module.exports = {
                 (stats[msg.guild.id][msg.author.id]["prestige"] ?? 0) + 1;
               stats[msg.guild.id][msg.author.id]["bestRanking"] = "";
               stats[msg.guild.id][msg.author.id]["bestScore"] = 0;
+              stats[msg.guild.id][msg.author.id]["prestigeModifier"] =
+                stats[msg.guild.id][msg.author.id]["score"];
 
               fs.writeFileSync("./resources/stats.json", JSON.stringify(stats));
             }

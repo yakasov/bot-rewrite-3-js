@@ -67,7 +67,7 @@ module.exports = {
         allUserStats["messages"] *
           statsConfig["messageSRGain"] *
           1.2 ** (allUserStats["prestige"] ?? 0) -
-        (allUserStats["prestige"] ?? 0) * statsConfig["prestigeRequirement"]
+        (allUserStats["prestigeModifier"] ?? 0)
     )}SR\n    Reputation: ${
       allUserStats["reputation"] ?? 0
     }\n    Decay: ${Math.round(
