@@ -54,5 +54,5 @@
   "Mythical III": [120000, "\u001b[35;4m"],
   "Mythical II": [130000, "\u001b[35;4m"],
   "Mythical I": [140000, "\u001b[35;4m"],
-  "Infinite": [150000, "\u001b[31;1;4m"]
+  "Infinite.": [150000, "\u001b[31;1;4m"]
 }
