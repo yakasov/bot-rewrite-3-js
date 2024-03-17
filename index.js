@@ -351,9 +351,8 @@ async function addToStats(a, msg = null) {
       }
       stats[guildId][userId]["reputation"] =
         (stats[guildId][userId]["reputation"] ?? 0) +
-        1 +
-        (stats[guildId][userId]["prestige"] ?? 0);
-      if (stats[guildId][userId]["reputation"] == 100)
+        (1 + (stats[guildId][giverId]["prestige"] ?? 0));
+      if (stats[guildId][userId]["reputation"] >= 100)
         stats[guildId][userId]["reputation"] = -99;
       stats[guildId][giverId]["reputationTime"] = f();
 
@@ -376,9 +375,8 @@ async function addToStats(a, msg = null) {
       }
       stats[guildId][userId]["reputation"] =
         (stats[guildId][userId]["reputation"] ?? 0) -
-        1 -
-        (stats[guildId][userId]["prestige"] ?? 0);
-      if (stats[guildId][userId]["reputation"] == -100)
+        (1 + (stats[guildId][giverId]["prestige"] ?? 0));
+      if (stats[guildId][userId]["reputation"] <= -100)
         stats[guildId][userId]["reputation"] = 99;
       stats[guildId][giverId]["reputationTime"] = f();
 
