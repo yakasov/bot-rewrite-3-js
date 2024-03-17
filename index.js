@@ -240,6 +240,7 @@ async function initialiseStats(guildId, userId) {
     bestScore: 0,
     bestRanking: "",
     prestige: 0,
+    prestigeModifier: 0,
   };
 
   if (!stats[guildId][userId]) return (stats[guildId][userId] = baseObj);
