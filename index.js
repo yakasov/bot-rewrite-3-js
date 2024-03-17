@@ -417,7 +417,7 @@ async function updateScores() {
                 (sum, a) => sum + Math.max(3.32 ** a + 1, 0) - 1,
                 0
               ) -
-              stats[guild][user]["decay"] +
+              stats[guild][user]["decay"] -
               (stats[guild][user]["prestige"] ?? 0) *
                 statsConfig["prestigeRequirement"]
           )
