@@ -8,7 +8,9 @@ module.exports = {
     await client.application.fetch();
     if (msg.author === client.application.owner) {
       try {
-        stats[msg.guild.id][args[0]][args[1]] = args[2];
+        stats[msg.guild.id][args[0]][args[1]] = /^-?\d+$/.test(args[2])
+          ? parseInt(args[2])
+          : args[2];
         fs.writeFileSync("./resources/stats.json", JSON.stringify(stats));
 
         return msg.reply(
