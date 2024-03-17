@@ -407,9 +407,12 @@ async function updateScores() {
               stats[guild][user]["messages"] *
                 statsConfig["messageSRGain"] *
                 1.2 ** (stats[guild][user]["prestige"] ?? 0) *
-                (1 +
-                  (stats[guild][user]["reputation"] ?? 0) *
-                    statsConfig["reputationGain"]) -
+                Math.max(
+                  1 +
+                    (stats[guild][user]["reputation"] ?? 0) *
+                      statsConfig["reputationGain"],
+                  0.01
+                ) -
               Object.values(stats[guild][user]["nerdEmojis"]).reduce(
                 (sum, a) => sum + Math.max(3.32 ** a + 1, 0) - 1,
                 0
