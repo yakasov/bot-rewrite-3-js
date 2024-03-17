@@ -418,8 +418,7 @@ async function updateScores() {
                 0
               ) -
               stats[guild][user]["decay"] -
-              (stats[guild][user]["prestige"] ?? 0) *
-                statsConfig["prestigeRequirement"]
+              (stats[guild][user]["prestigeModifier"] ?? 0)
           )
         );
 
