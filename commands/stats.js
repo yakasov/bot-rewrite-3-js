@@ -82,7 +82,7 @@ module.exports = {
       longestName - 5
     )} | Msgs  | Time ${" ".repeat(9)} | Rep | Rank`;
     outputMessage +=
-      headerString + `\n${"-".repeat(headerString.length + 20)}\n`;
+      headerString + `\n${"-".repeat(headerString.length + 25)}\n`;
     topScores.slice(0, Math.min(10, topScores.length)).forEach((a, i) => {
       const name = module.exports.getNickname(msg, a[0]);
       const msgLength = Math.max(
@@ -96,7 +96,6 @@ module.exports = {
           )}`.length,
         0
       );
-
       const newLine = `${i + 1} ${" ".repeat(
         2 - (i + 1).toString().length
       )}| ${name} ${" ".repeat(longestName - name.length)}| ${" ".repeat(
@@ -109,7 +108,7 @@ module.exports = {
 
       outputMessage += newLine;
       outputMessage += `${" ".repeat(
-        140 - newLine.length
+        125 - newLine.length
       )} ${module.exports.getPrestige(guildStats[a[0]])}\n`;
     });
 
