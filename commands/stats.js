@@ -86,7 +86,10 @@ module.exports = {
     topScores.slice(0, Math.min(10, topScores.length)).forEach((a, i) => {
       const name = module.exports.getNickname(msg, a[0]);
       const msgLength = Math.max(
-        4 - `${guildStats[a[0]]["messages"]}`.length,
+        4 -
+          `${
+            guildStats[a[0]]["messages"] + guildStats[a[0]]["previousMessages"]
+          }`.length,
         0
       );
       const repLength = Math.max(
@@ -100,8 +103,10 @@ module.exports = {
         2 - (i + 1).toString().length
       )}| ${name} ${" ".repeat(longestName - name.length)}| ${" ".repeat(
         msgLength
-      )} ${guildStats[a[0]]["messages"]} | ${module.exports.formatTime(
-        guildStats[a[0]]["voiceTime"]
+      )} ${
+        guildStats[a[0]]["messages"] + guildStats[a[0]]["previousMessages"]
+      } | ${module.exports.formatTime(
+        guildStats[a[0]]["voiceTime"] + guildStats[a[0]]["previousVoiceTime"]
       )} | ${" ".repeat(repLength)}${module.exports.formatReputation(
         module.exports.addLeadingZero(guildStats[a[0]]["reputation"] ?? 0)
       )} | ${module.exports.getRanking(guildStats[a[0]])} (${a[1]}SR)`;

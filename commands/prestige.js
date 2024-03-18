@@ -63,8 +63,14 @@ module.exports = {
                 (stats[msg.guild.id][msg.author.id]["prestige"] ?? 0) + 1;
               stats[msg.guild.id][msg.author.id]["bestRanking"] = "";
               stats[msg.guild.id][msg.author.id]["bestScore"] = 0;
-              stats[msg.guild.id][msg.author.id]["prestigeModifier"] =
-                stats[msg.guild.id][msg.author.id]["score"];
+
+              // Store message + voiceTime values then reset them
+              stats[msg.guild.id][msg.author.id]["previousMessages"] =
+                stats[msg.guild.id][msg.author.id]["messages"];
+              stats[msg.guild.id][msg.author.id]["previousVoiceTime"] =
+                stats[msg.guild.id][msg.author.id]["voiceTime"];
+              stats[msg.guild.id][msg.author.id]["messages"] = 0;
+              stats[msg.guild.id][msg.author.id]["voiceTime"] = 0;
 
               fs.writeFileSync("./resources/stats.json", JSON.stringify(stats));
             }
