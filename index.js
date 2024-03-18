@@ -249,7 +249,8 @@ async function initialiseStats(guildId, userId) {
     bestScore: 0,
     bestRanking: "",
     prestige: 0,
-    prestigeModifier: 0,
+    previousMessages: 0,
+    previousVoiceTime: 0,
   };
 
   if (!stats[guildId][userId]) return (stats[guildId][userId] = baseObj);
@@ -425,17 +426,13 @@ async function updateScores() {
                 (sum, a) => sum + Math.max(3.32 ** a + 1, 0) - 1,
                 0
               ) -
-              stats[guild][user]["decay"] -
-              (stats[guild][user]["prestigeModifier"] ?? 0) -
-              (stats[guild][user]["scoreDeficit"] ?? 0)
+              stats[guild][user]["decay"]
           )
         );
         if (
           stats[guild][user]["score"] > statsConfig["prestigeRequirement"] &&
           stats[guild][user]["prestige"] < statsConfig["prestigeMaximum"]
         ) {
-          stats[guild][user]["scoreDeficit"] =
-            score - statsConfig["prestigeRequirement"];
           stats[guild][user]["score"] = statsConfig["prestigeRequirement"];
         } else {
           stats[guild][user]["score"] = score;

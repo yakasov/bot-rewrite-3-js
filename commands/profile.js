@@ -49,9 +49,9 @@ module.exports = {
       msg,
       userStats[0]
     )}, #${userStats[2] + 1} on server ===\n    Messages: ${
-      allUserStats["messages"]
+      allUserStats["messages"] + allUserStats["previousMessages"]
     }\n    Voice Time: ${module.exports.formatTime(
-      allUserStats["voiceTime"]
+      allUserStats["voiceTime"] + allUserStats["previousVoiceTime"]
     )}\n    Prestige: ${module.exports.getPrestige(
       allUserStats
     )}\n\n    Ranking: ${module.exports.getRanking(allUserStats)} (${
@@ -66,9 +66,7 @@ module.exports = {
         ) +
         allUserStats["messages"] *
           statsConfig["messageSRGain"] *
-          1.2 ** (allUserStats["prestige"] ?? 0) -
-        (allUserStats["prestigeModifier"] ?? 0) -
-        (allUserStats["scoreDeficit"] ?? 0)
+          1.2 ** (allUserStats["prestige"] ?? 0)
     )}SR\n    Reputation: ${
       allUserStats["reputation"] ?? 0
     }\n    Decay: ${Math.round(
