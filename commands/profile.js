@@ -57,16 +57,13 @@ module.exports = {
     )}\n\n    Ranking: ${module.exports.getRanking(allUserStats)} (${
       userStats[1]
     }SR)\n    Ranking before penalties: ${Math.floor(
-      allUserStats["voiceTime"] *
-        statsConfig["voiceChatSRGain"] *
-        1.2 ** (allUserStats["prestige"] ?? 0) *
+      (allUserStats["voiceTime"] * statsConfig["voiceChatSRGain"] +
+        allUserStats["messages"] * statsConfig["messageSRGain"]) *
         Math.max(
           1 + (allUserStats["reputation"] ?? 0) * statsConfig["reputationGain"],
           1
-        ) +
-        allUserStats["messages"] *
-          statsConfig["messageSRGain"] *
-          1.2 ** (allUserStats["prestige"] ?? 0)
+        ) *
+        1.2 ** (allUserStats["prestige"] ?? 0)
     )}SR\n    Reputation: ${
       allUserStats["reputation"] ?? 0
     }\n    Decay: ${Math.round(
