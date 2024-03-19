@@ -23,7 +23,7 @@ module.exports = {
 
     msg
       .reply(
-        "Goonmaxxing will reset your SR back to 0, and your rank will be adjusted accordingly.\n\nIn return, you will gain a gooner mark and your SR gain will be boosted. Additionally, your +/-reps and reactions will have more weight.\n\nAre you sure you want to prestige?"
+        "Goonmaxxing will reset your SR back to 0, and your rank will be adjusted accordingly.\n\nIn return, you will gain a gooner mark and your SR gain will be boosted. Additionally, your +/-reps and reactions will have more weight.\n\nAre you sure you want to goonmax?"
       )
       .then((m) => {
         m.react("✅").then(() => m.react("❌"));
@@ -54,7 +54,7 @@ module.exports = {
                   msg.guild.members.cache
                     .filter((m) => m.id == msg.author.id)
                     .first().displayName
-                } has prestiged to prestige ${
+                } has goonmaxxed to to goon rank ${
                   guildStats[msg.author.id]["prestige"] + 1
                 }!`
               );
