@@ -4,7 +4,7 @@ const { statsConfig } = require("./../resources/config.json");
 const stats = require("./../resources/stats.json");
 
 module.exports = {
-  aliases: ["rankup"],
+  aliases: ["rankup", "goonmax"],
   description: "Show server statistics.",
   run: async ([, msg]) => {
     const guildStats = stats[msg.guild.id];
@@ -15,15 +15,15 @@ module.exports = {
       (guildStats[msg.author.id]["prestige"] ?? 0) >=
       statsConfig["prestigeMaximum"]
     )
-      return msg.reply("You have reached max prestige!");
+      return msg.reply("You have reached max goon!");
     if (guildStats[msg.author.id]["score"] < statsConfig["prestigeRequirement"])
       return msg.reply(
-        `You cannot prestige until ${statsConfig["prestigeRequirement"]}SR!`
+        `You cannot goonmax until ${statsConfig["prestigeRequirement"]}SR!`
       );
 
     msg
       .reply(
-        "Prestiging will reset your SR back to 0, and your rank will be adjusted accordingly.\n\nIn return, you will gain a prestige mark and your SR gain will be boosted. Additionally, your +/-reps and reactions will have more weight.\n\nAre you sure you want to prestige?"
+        "Goonmaxxing will reset your SR back to 0, and your rank will be adjusted accordingly.\n\nIn return, you will gain a gooner mark and your SR gain will be boosted. Additionally, your +/-reps and reactions will have more weight.\n\nAre you sure you want to prestige?"
       )
       .then((m) => {
         m.react("✅").then(() => m.react("❌"));
@@ -46,7 +46,7 @@ module.exports = {
 
             if (reaction.emoji.name == "❌") {
               m.delete();
-              return msg.reply("Prestige cancelled.");
+              return msg.reply("Goonmax cancelled.");
             } else {
               m.delete();
               msg.channel.send(
