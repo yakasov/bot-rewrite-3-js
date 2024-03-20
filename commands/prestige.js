@@ -4,7 +4,7 @@ const { statsConfig } = require("./../resources/config.json");
 const stats = require("./../resources/stats.json");
 
 module.exports = {
-  aliases: ["rankup", "goonmax"],
+  aliases: ["rankup"],
   description: "Show server statistics.",
   run: async ([, msg]) => {
     const guildStats = stats[msg.guild.id];
@@ -15,15 +15,15 @@ module.exports = {
       (guildStats[msg.author.id]["prestige"] ?? 0) >=
       statsConfig["prestigeMaximum"]
     )
-      return msg.reply("You have reached max goon!");
+      return msg.reply("You have reached max prestige!");
     if (guildStats[msg.author.id]["score"] < statsConfig["prestigeRequirement"])
       return msg.reply(
-        `You cannot goonmax until ${statsConfig["prestigeRequirement"]}SR!`
+        `You cannot prestige until ${statsConfig["prestigeRequirement"]}SR!`
       );
 
     msg
       .reply(
-        "Goonmaxxing will reset your SR back to 0, and your rank will be adjusted accordingly.\n\nIn return, you will gain a gooner mark and your SR gain will be boosted. Additionally, your +/-reps and reactions will have more weight.\n\nAre you sure you want to goonmax?"
+        "Prestiging will reset your SR back to 0, and your rank will be adjusted accordingly.\n\nIn return, you will gain a prestige mark and your SR gain will be boosted. Additionally, your +/-reps and reactions will have more weight.\n\nAre you sure you want to prestige?"
       )
       .then((m) => {
         m.react("✅").then(() => m.react("❌"));
@@ -46,7 +46,7 @@ module.exports = {
 
             if (reaction.emoji.name == "❌") {
               m.delete();
-              return msg.reply("Goonmax cancelled.");
+              return msg.reply("Prestige cancelled.");
             } else {
               m.delete();
               msg.channel.send(
@@ -54,7 +54,7 @@ module.exports = {
                   msg.guild.members.cache
                     .filter((m) => m.id == msg.author.id)
                     .first().displayName
-                } has goonmaxxed to to goon rank ${
+                } has prestiged to prestige ${
                   guildStats[msg.author.id]["prestige"] + 1
                 }!`
               );
@@ -66,9 +66,12 @@ module.exports = {
 
               // Store message + voiceTime values then reset them
               stats[msg.guild.id][msg.author.id]["previousMessages"] =
+                (stats[msg.guild.id][msg.author.id]["previousMessages"] ?? 0) +
                 stats[msg.guild.id][msg.author.id]["messages"];
               stats[msg.guild.id][msg.author.id]["previousVoiceTime"] =
+                (stats[msg.guild.id][msg.author.id]["previousVoiceTime"] ?? 0) +
                 stats[msg.guild.id][msg.author.id]["voiceTime"];
+
               stats[msg.guild.id][msg.author.id]["messages"] = 0;
               stats[msg.guild.id][msg.author.id]["voiceTime"] = 0;
 
