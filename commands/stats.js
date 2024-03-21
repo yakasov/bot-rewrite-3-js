@@ -80,13 +80,13 @@ module.exports = {
 
     const headerString = `#  | Name ${" ".repeat(
       longestName - 5
-    )} | Msgs  | Time ${" ".repeat(9)} | Rep | Rank`;
-    outputMessage +=
-      headerString + `\n${"-".repeat(headerString.length + 25)}\n`;
+    )} | Msgs  | Time ${" ".repeat(10)} | Rep | Rank`;
+
+    var leaderboardLines = [];
     topScores.slice(0, Math.min(10, topScores.length)).forEach((a, i) => {
       const name = module.exports.getNickname(msg, a[0]);
       const msgLength = Math.max(
-        4 -
+        5 -
           `${
             guildStats[a[0]]["messages"] + guildStats[a[0]]["previousMessages"]
           }`.length,
@@ -103,7 +103,7 @@ module.exports = {
         2 - (i + 1).toString().length
       )}| ${name} ${" ".repeat(longestName - name.length)}| ${" ".repeat(
         msgLength
-      )} ${
+      )}${
         guildStats[a[0]]["messages"] + guildStats[a[0]]["previousMessages"]
       } | ${module.exports.formatTime(
         guildStats[a[0]]["voiceTime"] + guildStats[a[0]]["previousVoiceTime"]
@@ -111,10 +111,23 @@ module.exports = {
         module.exports.addLeadingZero(guildStats[a[0]]["reputation"] ?? 0)
       )} | ${module.exports.getRanking(guildStats[a[0]])} (${a[1]}SR)`;
 
-      outputMessage += newLine;
-      outputMessage += `${" ".repeat(
-        125 - newLine.length
-      )} ${module.exports.getPrestige(guildStats[a[0]])}\n`;
+      leaderboardLines.push(newLine);
+    });
+
+    const longestLeaderboardLine = Math.max(
+      ...leaderboardLines.map((e) => e.length)
+    );
+    topScores.slice(0, Math.min(10, topScores.length)).forEach((a, i) => {
+      leaderboardLines[i] += " ".repeat(
+        longestLeaderboardLine + 5 - leaderboardLines[i].length
+      );
+      leaderboardLines[i] += module.exports.getPrestige(guildStats[a[0]]);
+    });
+
+    outputMessage +=
+      headerString + `\n${"-".repeat(longestLeaderboardLine - 10)}\n`;
+    leaderboardLines.forEach((line) => {
+      outputMessage += `${line}\n`;
     });
 
     const userRanking = topScores
@@ -147,9 +160,9 @@ module.exports = {
     var date = new Date(null);
     date.setSeconds(seconds);
     const unitArray = date.toISOString().substr(8, 11).split(/:|T/);
-    return `${parseInt(unitArray[0]) - 1}d ${unitArray[1]}h ${unitArray[2]}m ${
-      unitArray[3]
-    }s`;
+    return `${parseInt(unitArray[0]) - 1 > 9 ? "" : " "}${
+      parseInt(unitArray[0]) - 1
+    }d ${unitArray[1]}h ${unitArray[2]}m ${unitArray[3]}s`;
   },
   formatReputation: (rep) => {
     return `${
