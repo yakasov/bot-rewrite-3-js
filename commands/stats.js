@@ -14,7 +14,7 @@ module.exports = {
       .map(([k, v]) => {
         return [k, v["nerdsGiven"] ?? 0];
       })
-      .sort(function (f, s) {
+      .sort((f, s) => {
         return s[1] - f[1];
       })[0];
 
@@ -26,7 +26,7 @@ module.exports = {
           Object.values(v["nerdEmojis"]).reduce((sum, a) => sum + a, 0) ?? 0,
         ];
       })
-      .sort(function (f, s) {
+      .sort((f, s) => {
         return s[1] - f[1];
       })[0];
 
@@ -35,7 +35,7 @@ module.exports = {
       .map(([k, v]) => {
         return [k, v["score"]];
       })
-      .sort(function (f, s) {
+      .sort((f, s) => {
         return s[1] - f[1];
       });
 
@@ -44,10 +44,10 @@ module.exports = {
       .map(([k, v]) => {
         return [k, v["reputation"] ?? 0];
       });
-    const topReputation = reputations.sort(function (f, s) {
+    const topReputation = reputations.sort((f, s) => {
       return s[1] - f[1];
     })[0];
-    const bottomReputation = reputations.sort(function (f, s) {
+    const bottomReputation = reputations.sort((f, s) => {
       return f[1] - s[1];
     })[0];
 

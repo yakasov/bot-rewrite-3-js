@@ -25,6 +25,7 @@ const client = new Client({
 const aliases = buildAliases();
 var date = new Date().toLocaleDateString("en-GB").slice(0, -5);
 var splash;
+var botUptime = 0;
 
 function buildAliases() {
   var aliases = {};
@@ -300,6 +301,9 @@ async function addToStats(a, msg = null) {
       break;
 
     case "inVoiceChannel":
+      if (botUptime < 10) {
+        stats[guildId][userId]["joinTime"] = f();
+      }
       stats[guildId][userId]["voiceTime"] =
         stats[guildId][userId]["voiceTime"] +
         Math.floor(
@@ -443,7 +447,8 @@ async function updateScores() {
           if (
             stats[guild][user]["bestRanking"] !=
               (await getRanking(stats[guild][user]["score"])) &&
-            stats[guild]["rankUpChannel"]
+            stats[guild]["rankUpChannel"] &&
+            botUptime > 120
           ) {
             const guildObject = await client.guilds.fetch(guild);
             const userObject = guildObject.members.cache
@@ -492,6 +497,9 @@ client.once(Events.ClientReady, async (c) => {
   await addDecayToStats();
   await backupStats();
 
+  setInterval(() => {
+    botUptime += 10;
+  }, getTime(10));
   setInterval(checkBirthdays, getTime(0, 15)); // 15 minutes
   setInterval(checkMinecraftServer, getTime(5)); // 5 seconds
   setInterval(getNewSplash, getTime(0, 0, 1)); // 1 hour

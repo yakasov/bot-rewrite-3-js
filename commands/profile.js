@@ -28,7 +28,7 @@ module.exports = {
       .map(([k, v]) => {
         return [k, v["score"]];
       })
-      .sort(function (f, s) {
+      .sort((f, s) => {
         return s[1] - f[1];
       })
       .map((a, i) => [a[0], a[1], i])
