@@ -301,6 +301,9 @@ async function addToStats(a, msg = null) {
       break;
 
     case "inVoiceChannel":
+      if (botUptime < 10) {
+        stats[guildId][userId]["joinTime"] = f();
+      }
       stats[guildId][userId]["voiceTime"] =
         stats[guildId][userId]["voiceTime"] +
         Math.floor(
