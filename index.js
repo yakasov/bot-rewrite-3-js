@@ -514,9 +514,6 @@ client.on("messageCreate", async (msg) => {
     console.log(`${getNickname(msg)} in ${msg.guild}: ${msg.content}`);
   }
 
-  await checkMessageResponse(msg);
-  await checkMessageReactions(msg);
-
   if (
     (msg.content.includes("+rep") || msg.content.includes("-rep")) &&
     msg.content.match(/<@(.*)>/)
@@ -543,6 +540,9 @@ client.on("messageCreate", async (msg) => {
       userId: msg.author.id,
       guildId: msg.guild.id,
     });
+
+  await checkMessageResponse(msg);
+  await checkMessageReactions(msg);
 
   var args = msg.content.split(" ");
   var cmd = args.shift().slice(prefix.length).toLowerCase();
