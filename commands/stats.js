@@ -139,7 +139,7 @@ module.exports = {
         userRanking[0]
       )}): #${userRanking[2] + 1} (${module.exports.getRanking(
         guildStats[userRanking[0]]
-      )}, ${userRanking[1]}SR)`;
+      )}, ${guildStats[userRanking[0]]["realScore"]}SR)`;
     }
 
     const outputArray = outputMessage.match(/[\s\S]{1,1990}(?!\S)/g);
@@ -179,7 +179,7 @@ module.exports = {
   getRanking: (memberStats) => {
     var rankString = "MISSINGNO";
     Object.entries(ranks).forEach(([k, v]) => {
-      if (v[0] <= memberStats["score"]) {
+      if (v[0] <= memberStats["realScore"]) {
         rankString = `${v[1]}${k}\u001b[0m`;
       }
     });

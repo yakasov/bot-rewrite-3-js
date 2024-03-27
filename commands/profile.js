@@ -55,7 +55,7 @@ module.exports = {
     )}\n    Prestige: ${module.exports.getPrestige(
       allUserStats
     )}\n\n    Ranking: ${module.exports.getRanking(allUserStats)} (${
-      userStats[1]
+      allUserStats["realScore"]
     }SR)\n    Ranking before penalties: ${Math.floor(
       (allUserStats["voiceTime"] * statsConfig["voiceChatSRGain"] +
         allUserStats["messages"] * statsConfig["messageSRGain"]) *
@@ -105,7 +105,7 @@ module.exports = {
   getRanking: (memberStats) => {
     var rankString = "MISSINGNO";
     Object.entries(ranks).forEach(([k, v]) => {
-      if (v[0] <= memberStats["score"]) {
+      if (v[0] <= memberStats["realScore"]) {
         rankString = `${v[1]}${k}\u001b[0m`;
       }
     });
