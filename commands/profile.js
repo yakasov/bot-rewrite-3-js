@@ -55,7 +55,7 @@ module.exports = {
     )}\n    Prestige: ${module.exports.getPrestige(
       allUserStats
     )}\n\n    Ranking: ${module.exports.getRanking(allUserStats)} (${
-      userStats[1]
+      allUserStats["realScore"]
     }SR)\n    Ranking before penalties: ${Math.floor(
       (allUserStats["voiceTime"] * statsConfig["voiceChatSRGain"] +
         allUserStats["messages"] * statsConfig["messageSRGain"]) *
