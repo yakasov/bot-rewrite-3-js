@@ -105,7 +105,7 @@ module.exports = {
   getRanking: (memberStats) => {
     var rankString = "MISSINGNO";
     Object.entries(ranks).forEach(([k, v]) => {
-      if (v[0] <= memberStats["score"]) {
+      if (v[0] <= memberStats["realScore"]) {
         rankString = `${v[1]}${k}\u001b[0m`;
       }
     });

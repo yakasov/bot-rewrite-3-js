@@ -446,7 +446,7 @@ async function updateScores() {
 
           if (
             stats[guild][user]["bestRanking"] !=
-              (await getRanking(stats[guild][user]["score"])) &&
+              (await getRanking(stats[guild][user]["realScore"])) &&
             stats[guild]["rankUpChannel"] &&
             botUptime > 120
           ) {
@@ -461,12 +461,12 @@ async function updateScores() {
               "## Rank Up!\n```ansi\n" +
                 userObject.displayName +
                 " has reached rank " +
-                (await getRanking(stats[guild][user]["score"])) +
+                (await getRanking(stats[guild][user]["realScore"])) +
                 "!```"
             );
           }
           stats[guild][user]["bestRanking"] = await getRanking(
-            stats[guild][user]["score"]
+            stats[guild][user]["realScore"]
           );
         }
       });
