@@ -1,12 +1,11 @@
 /* eslint-disable indent */
 const stats = require("./../resources/stats.json");
 const ranks = require("./../resources/ranks.json");
-const { Table } = require("console-table-printer");
 
 module.exports = {
   aliases: ["statistics", "leaderboard", "scores"],
   description: "Show server statistics.",
-  run: async ([, msg], second = false) => {
+  run: async ([, msg]) => {
     const guildStats = stats[msg.guild.id];
     if (!guildStats) return msg.reply("This server has no statistics yet!");
 
@@ -72,48 +71,64 @@ module.exports = {
       bottomReputation[0]
     )} (${bottomReputation[1]} reputation)\n\n`;
 
-    const table = new Table({
-      columns: [
-        { name: "#" },
-        { name: "Name", alignment: "left" },
-        { name: "Msgs" },
-        { name: "Time" },
-        { name: "Rep" },
-        { name: "Rank", alignment: "left" },
-      ],
+    const longestName = Math.max(
+      ...topScores
+        .slice(0, Math.min(10, topScores.length))
+        .map((e) => module.exports.getNickname(msg, e[0]))
+        .map((e) => e.length)
+    );
+
+    const headerString = `#  | Name ${" ".repeat(
+      longestName - 5
+    )} | Msgs  | Time ${" ".repeat(10)} | Rep | Rank`;
+
+    var leaderboardLines = [];
+    topScores.slice(0, Math.min(10, topScores.length)).forEach((a, i) => {
+      const name = module.exports.getNickname(msg, a[0]);
+      const msgLength = Math.max(
+        5 -
+          `${
+            guildStats[a[0]]["messages"] + guildStats[a[0]]["previousMessages"]
+          }`.length,
+        0
+      );
+      const repLength = Math.max(
+        3 -
+          `${module.exports.addLeadingZero(
+            guildStats[a[0]]["reputation"] ?? 0
+          )}`.length,
+        0
+      );
+      const newLine = `${i + 1} ${" ".repeat(
+        2 - (i + 1).toString().length
+      )}| ${name} ${" ".repeat(longestName - name.length)}| ${" ".repeat(
+        msgLength
+      )}${
+        guildStats[a[0]]["messages"] + guildStats[a[0]]["previousMessages"]
+      } | ${module.exports.formatTime(
+        guildStats[a[0]]["voiceTime"] + guildStats[a[0]]["previousVoiceTime"]
+      )} | ${" ".repeat(repLength)}${module.exports.formatReputation(
+        module.exports.addLeadingZero(guildStats[a[0]]["reputation"] ?? 0)
+      )} | ${module.exports.getRanking(guildStats[a[0]])} (${a[1]}SR)`;
+
+      leaderboardLines.push(newLine);
     });
-    var stars = [];
 
-    topScores
-      .slice(second ? 5 : 0, Math.min(second ? 10 : 5, topScores.length))
-      .forEach((a, i) => {
-        const name = module.exports.getNickname(msg, a[0]);
+    const longestLeaderboardLine = Math.max(
+      ...leaderboardLines.map((e) => e.length)
+    );
+    topScores.slice(0, Math.min(10, topScores.length)).forEach((a, i) => {
+      leaderboardLines[i] += " ".repeat(
+        longestLeaderboardLine + 5 - leaderboardLines[i].length
+      );
+      leaderboardLines[i] += module.exports.getPrestige(guildStats[a[0]]);
+    });
 
-        table.addRow({
-          "#": i + (second ? 6 : 1),
-          Name: name,
-          Msgs:
-            guildStats[a[0]]["messages"] + guildStats[a[0]]["previousMessages"],
-          Time: module.exports.formatTime(
-            guildStats[a[0]]["voiceTime"] +
-              guildStats[a[0]]["previousVoiceTime"]
-          ),
-          Rep: module.exports.formatReputation(
-            module.exports.addLeadingZero(guildStats[a[0]]["reputation"] ?? 0)
-          ),
-          Rank: `${module.exports.getRanking(guildStats[a[0]])} (${a[1]}SR)`,
-        });
-
-        stars.push(guildStats[a[0]]["prestige"] ?? 0);
-      });
-
-    var splitRender = table.render().split("\n");
-
-    for (var i = 3; i < splitRender.length - 1; i++) {
-      splitRender[i] += ` \u001b[33m${"★".repeat(stars[i - 3])}\u001b[0m`;
-    }
-
-    outputMessage += splitRender.join("\n") + "\n";
+    outputMessage +=
+      headerString + `\n${"-".repeat(longestLeaderboardLine - 10)}\n`;
+    leaderboardLines.forEach((line) => {
+      outputMessage += `${line}\n`;
+    });
 
     const userRanking = topScores
       .map((a, i) => [a[0], a[1], i])
@@ -127,9 +142,10 @@ module.exports = {
       )}, ${guildStats[userRanking[0]]["realScore"]}SR)`;
     }
 
-    msg.reply("```ansi\n" + outputMessage + "\n```");
-
-    if (!second) module.exports.run([null, msg], true);
+    const outputArray = outputMessage.match(/[\s\S]{1,1990}(?!\S)/g);
+    outputArray.forEach((r) => {
+      msg.reply("```ansi\n" + r + "\n```");
+    });
   },
   addLeadingZero: (num) => {
     if (num > -10 && num < 10) {
