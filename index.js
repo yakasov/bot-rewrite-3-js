@@ -534,15 +534,15 @@ client.on("messageCreate", async (msg) => {
     }
   }
 
+  await checkMessageResponse(msg);
+  await checkMessageReactions(msg);
+
   if (!msg.content.toLowerCase().startsWith(prefix))
     return await addToStats({
       type: "message",
       userId: msg.author.id,
       guildId: msg.guild.id,
     });
-
-  await checkMessageResponse(msg);
-  await checkMessageReactions(msg);
 
   var args = msg.content.split(" ");
   var cmd = args.shift().slice(prefix.length).toLowerCase();
