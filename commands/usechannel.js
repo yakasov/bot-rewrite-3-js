@@ -1,17 +1,22 @@
+const { SlashCommandBuilder } = require("discord.js");
 const fs = require("fs");
 var stats = require("./../resources/stats.json");
 
 module.exports = {
   aliases: ["use_channel", "setchannel", "set_channel"],
-  description: "Designates the channel to use for rank up messages",
-  run: async ([client, msg]) => {
-    await client.application.fetch();
-    if (msg.author === client.application.owner) {
-      stats[msg.guild.id]["rankUpChannel"] = msg.channel.id;
+  data: new SlashCommandBuilder()
+    .setName("usechannel")
+    .setDescription("Designates the channel to use for rank up messages"),
+  async execute(interaction) {
+    await interaction.client.application.fetch();
+    if (interaction.user === interaction.client.application.owner) {
+      stats[interaction.guild.id]["rankUpChannel"] = interaction.channel.id;
 
       fs.writeFileSync("./resources/stats.json", JSON.stringify(stats));
 
-      return msg.reply(`Set the rank up channel to ${msg.channel.name}.`);
+      return interaction.reply(
+        `Set the rank up channel to ${interaction.channel.name}.`
+      );
     }
   },
 };

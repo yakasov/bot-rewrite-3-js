@@ -1,12 +1,20 @@
-const { ActivityType } = require("discord.js");
+const { ActivityType, SlashCommandBuilder } = require("discord.js");
 const fs = require("fs");
 const splashes = fs
   .readFileSync("./resources/splashes.txt", "utf-8")
   .split("\n");
 
 module.exports = {
-  aliases: [],
-  description: "Generate a new splash presence",
+  data: new SlashCommandBuilder()
+    .setName("np")
+    .setDescription("Generate a new splash presence"),
+  async execute(interaction) {
+    var splash = splashes[Math.floor(Math.random() * splashes.length)];
+    interaction.client.user.setPresence({
+      activities: [{ name: splash, type: ActivityType.Watching }],
+    });
+    return splash;
+  },
   run: async ([client]) => {
     var splash = splashes[Math.floor(Math.random() * splashes.length)];
     client.user.setPresence({

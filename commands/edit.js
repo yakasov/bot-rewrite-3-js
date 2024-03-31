@@ -1,13 +1,12 @@
 const { SlashCommandBuilder } = require("discord.js");
 const fs = require("fs");
 const stats = require("./../resources/stats.json");
-const adminId = require("./../resources/config.json");
 
 module.exports = {
   aliases: ["use_channel", "setchannel", "set_channel"],
   data: new SlashCommandBuilder()
     .setName("edit")
-    .setDescription("Designates the channel to use for rank up messages")
+    .setDescription("Edit a user's statistics")
     .addUserOption((opt) =>
       opt.setName("user").setDescription("The user to edit").setRequired(true)
     )
@@ -32,7 +31,8 @@ module.exports = {
     const value = interaction.options.getString("value");
     const add = interaction.options.getBoolean("add") ?? false;
 
-    if (interaction.user.id === adminId) {
+    await interaction.client.application.fetch();
+    if (interaction.user === interaction.client.application.owner) {
       try {
         const newVal = /^-?\d+$/.test(value) ? parseInt(value) : value;
         stats[interaction.guild.id][user][attribute] = add

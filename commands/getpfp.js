@@ -1,27 +1,36 @@
-const { EmbedBuilder } = require("discord.js");
+const { EmbedBuilder, SlashCommandBuilder } = require("discord.js");
 
 module.exports = {
-  aliases: [],
-  description:
-    "Get profile picture of mentioned user or from user ID. If no mention or ID, use author",
-  run: async ([, msg, args]) => {
+  data: new SlashCommandBuilder()
+    .setName("getpfp")
+    .setDescription(
+      "Get profile picture of mentioned user. If no user, use author"
+    )
+    .addUserOption((opt) =>
+      opt
+        .setName("user")
+        .setDescription("The user to get the profile picture of")
+    ),
+  async execute(interaction) {
+    const user = interaction.options.getUser("user");
+
     try {
       var avatar;
-      if (args.length) {
-        const member =
-          msg.mentions.members.first() ||
-          (await msg.guild.members.fetch(args[0]));
-        avatar = member.displayAvatarURL({ size: 1024, dynamic: true });
+      if (user) {
+        avatar = user.displayAvatarURL({ size: 1024, dynamic: true });
       } else {
-        avatar = msg.author.displayAvatarURL({ size: 1024, dynamic: true });
+        avatar = interaction.user.displayAvatarURL({
+          size: 1024,
+          dynamic: true,
+        });
       }
 
       const embed = new EmbedBuilder()
         .setImage(avatar)
-        .setAuthor({ name: msg.author.username });
-      msg.channel.send({ embeds: [embed] });
+        .setAuthor({ name: interaction.member.displayName });
+      await interaction.reply({ embeds: [embed] });
     } catch (e) {
-      msg.reply(e.message);
+      await interaction.reply(e.message);
     }
   },
 };

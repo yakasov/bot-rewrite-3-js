@@ -8,7 +8,7 @@ const {
 } = require("discord.js");
 const fs = require("fs");
 const npFile = require("./commands/np.js");
-const { token, prefix, statsConfig } = require("./resources/config.json");
+const { token, statsConfig } = require("./resources/config.json");
 const responses = require("./resources/responses.json");
 const reactions = require("./resources/reactions.json");
 const stats = require("./resources/stats.json");
@@ -29,7 +29,6 @@ const client = new Client({
   ],
   allowedMentions: { parse: ["users", "roles"], repliedUser: true },
 });
-const aliases = buildAliases();
 var date = new Date().toLocaleDateString("en-GB").slice(0, -5);
 var splash;
 var botUptime = 0;
@@ -68,16 +67,6 @@ for (const file of commandFiles) {
       `[WARNING] The command at ${filePath} is missing a required "data" or "execute" property.`
     );
   }
-}
-
-function buildAliases() {
-  var aliases = {};
-  const cmdFiles = fs.readdirSync("./commands");
-  cmdFiles.forEach((file) => {
-    const cmd = require(`./commands/${file}`);
-    aliases[file.slice(0, -3)] = cmd.aliases;
-  });
-  return aliases;
 }
 
 async function checkBirthdays(force = false) {
@@ -576,32 +565,11 @@ client.on("messageCreate", async (msg) => {
   await checkMessageResponse(msg);
   await checkMessageReactions(msg);
 
-  if (!msg.content.toLowerCase().startsWith(prefix))
-    return await addToStats({
-      type: "message",
-      userId: msg.author.id,
-      guildId: msg.guild.id,
-    });
-
-  var args = msg.content.split(" ");
-  var cmd = args.shift().slice(prefix.length).toLowerCase();
-
-  if (!Object.keys(aliases).includes(cmd)) {
-    Object.entries(aliases).forEach(([k, v]) => {
-      if (v && v.includes(cmd)) {
-        cmd = k;
-      }
-    });
-  }
-
-  try {
-    var file = require(`./commands/${cmd}.js`);
-    return file.run([client, msg, args]);
-  } catch (err) {
-    if (err.code && err.code !== "MODULE_NOT_FOUND") {
-      console.error(err);
-    }
-  }
+  return await addToStats({
+    type: "message",
+    userId: msg.author.id,
+    guildId: msg.guild.id,
+  });
 });
 
 client.on(Events.InteractionCreate, async (interaction) => {
