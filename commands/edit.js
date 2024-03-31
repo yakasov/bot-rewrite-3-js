@@ -1,27 +1,52 @@
+const { SlashCommandBuilder } = require("discord.js");
 const fs = require("fs");
 const stats = require("./../resources/stats.json");
+const adminId = require("./../resources/config.json");
 
 module.exports = {
   aliases: ["use_channel", "setchannel", "set_channel"],
-  description: "Designates the channel to use for rank up messages",
-  run: async ([client, msg, args]) => {
-    await client.application.fetch();
-    if (msg.author === client.application.owner) {
+  data: new SlashCommandBuilder()
+    .setName("edit")
+    .setDescription("Designates the channel to use for rank up messages")
+    .addUserOption((opt) =>
+      opt.setName("user").setDescription("The user to edit").setRequired(true)
+    )
+    .addStringOption((opt) =>
+      opt
+        .setName("attribute")
+        .setDescription("The attribute to edit")
+        .setRequired(true)
+    )
+    .addStringOption((opt) =>
+      opt
+        .setName("value")
+        .setDescription("The value to set the attribute to")
+        .setRequired(true)
+    )
+    .addBooleanOption((opt) =>
+      opt.setName("add").setDescription("If the value should be set or added")
+    ),
+  async execute(interaction) {
+    const user = interaction.options.getUser("user").id;
+    const attribute = interaction.options.getString("attribute");
+    const value = interaction.options.getString("value");
+    const add = interaction.options.getBoolean("add") ?? false;
+
+    if (interaction.user.id === adminId) {
       try {
-        const newVal = /^-?\d+$/.test(args[2]) ? parseInt(args[2]) : args[2];
-        stats[msg.guild.id][args[0]][args[1]] =
-          args[3] && args[3] == "add"
-            ? stats[msg.guild.id][args[0]][args[1]] + newVal
-            : newVal;
+        const newVal = /^-?\d+$/.test(value) ? parseInt(value) : value;
+        stats[interaction.guild.id][user][attribute] = add
+          ? stats[interaction.guild.id][user][attribute] + newVal
+          : newVal;
         fs.writeFileSync("./resources/stats.json", JSON.stringify(stats));
 
-        return msg.reply(
-          `Set user ${args[0]} attribute ${args[1]} to value ${
-            stats[msg.guild.id][args[0]][args[1]]
+        return interaction.reply(
+          `Set user ${user} attribute ${attribute} to value ${
+            stats[interaction.guild.id][user][attribute]
           }`
         );
       } catch (e) {
-        return msg.reply(e.message);
+        return interaction.reply(e.message);
       }
     }
   },

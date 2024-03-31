@@ -1,5 +1,11 @@
 /* eslint-disable indent */
-const { Client, Events, GatewayIntentBits, Message } = require("discord.js");
+const {
+  Client,
+  Events,
+  GatewayIntentBits,
+  Message,
+  Collection,
+} = require("discord.js");
 const fs = require("fs");
 const npFile = require("./commands/np.js");
 const { token, prefix, statsConfig } = require("./resources/config.json");
@@ -8,6 +14,7 @@ const reactions = require("./resources/reactions.json");
 const stats = require("./resources/stats.json");
 const ranks = require("./resources/ranks.json");
 const fetch = require("node-fetch");
+const path = require("node:path");
 globalThis.fetch = fetch;
 
 const client = new Client({
@@ -44,6 +51,24 @@ Message.delete = function () {
     console.log(e.message);
   }
 };
+
+client.commands = new Collection();
+const commandsPath = path.join("./commands");
+const commandFiles = fs
+  .readdirSync(commandsPath)
+  .filter((file) => file.endsWith(".js"));
+for (const file of commandFiles) {
+  const filePath = path.join(commandsPath, file);
+  const command = require("./" + filePath);
+
+  if ("data" in command && "execute" in command) {
+    client.commands.set(command.data.name, command);
+  } else {
+    console.log(
+      `[WARNING] The command at ${filePath} is missing a required "data" or "execute" property.`
+    );
+  }
+}
 
 function buildAliases() {
   var aliases = {};
@@ -575,6 +600,34 @@ client.on("messageCreate", async (msg) => {
   } catch (err) {
     if (err.code && err.code !== "MODULE_NOT_FOUND") {
       console.error(err);
+    }
+  }
+});
+
+client.on(Events.InteractionCreate, async (interaction) => {
+  if (!interaction.isChatInputCommand()) return;
+
+  const command = interaction.client.commands.get(interaction.commandName);
+
+  if (!command) {
+    console.error(`No command matching ${interaction.commandName} was found.`);
+    return;
+  }
+
+  try {
+    await command.execute(interaction);
+  } catch (error) {
+    console.error(error);
+    if (interaction.replied || interaction.deferred) {
+      await interaction.followUp({
+        content: "There was an error while executing this command!",
+        ephemeral: true,
+      });
+    } else {
+      await interaction.reply({
+        content: "There was an error while executing this command!",
+        ephemeral: true,
+      });
     }
   }
 });
