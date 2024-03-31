@@ -79,7 +79,11 @@ module.exports = {
             }
           })
           .catch(() => {
-            return m.delete();
+            try {
+              return m.delete();
+            } catch (e) {
+              return msg.channel.send(e.message);
+            }
           });
       });
   },

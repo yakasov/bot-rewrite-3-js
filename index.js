@@ -148,7 +148,7 @@ async function checkMessageResponse(msg) {
     try {
       msg.delete();
     } catch (e) {
-      msg.reply("Missing permissions to delete the above message!!");
+      msg.channel.send(e.message);
     }
     return;
   }
