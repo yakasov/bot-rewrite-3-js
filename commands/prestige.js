@@ -79,7 +79,7 @@ module.exports = {
             }
           })
           .catch(() => {
-            return m.delete();
+            msg.delete();
           });
       });
   },
