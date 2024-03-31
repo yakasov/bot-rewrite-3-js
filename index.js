@@ -1,5 +1,5 @@
 /* eslint-disable indent */
-const { Client, Events, GatewayIntentBits } = require("discord.js");
+const { Client, Events, GatewayIntentBits, Message } = require("discord.js");
 const fs = require("fs");
 const npFile = require("./commands/np.js");
 const { token, prefix, statsConfig } = require("./resources/config.json");
@@ -26,6 +26,24 @@ const aliases = buildAliases();
 var date = new Date().toLocaleDateString("en-GB").slice(0, -5);
 var splash;
 var botUptime = 0;
+
+const superReply = Message.reply;
+Message.reply = function (s) {
+  try {
+    return superReply.call(this, { content: s, failIfNotExists: false });
+  } catch (e) {
+    console.log(e.message);
+  }
+};
+
+const superDelete = Message.delete;
+Message.delete = function () {
+  try {
+    return superDelete.call(this);
+  } catch (e) {
+    console.log(e.message);
+  }
+};
 
 function buildAliases() {
   var aliases = {};
@@ -145,11 +163,7 @@ async function checkMessageResponse(msg) {
         .replace("https://twitter.com/", "https://fxtwitter.com/")}`
     );
 
-    try {
-      msg.delete();
-    } catch (e) {
-      msg.channel.send(e.message);
-    }
+    msg.delete();
     return;
   }
 
