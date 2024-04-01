@@ -1,8 +1,8 @@
 /* eslint-disable indent */
 const { SlashCommandBuilder } = require("discord.js");
+const { generateTable } = require("./../resources/tableGenerator.js");
 const stats = require("./../resources/stats.json");
 const ranks = require("./../resources/ranks.json");
-const { Table } = require("console-table-printer");
 
 module.exports = {
   aliases: ["statistics", "leaderboard", "scores"],
@@ -76,24 +76,12 @@ module.exports = {
       bottomReputation[0]
     )} (${bottomReputation[1]} reputation)\n\n`;
 
-    const table = new Table({
-      columns: [
-        { name: "#" },
-        { name: "Name", alignment: "left" },
-        { name: "Msgs" },
-        { name: "Time" },
-        { name: "Rep" },
-        { name: "Rank", alignment: "left" },
-      ],
-    });
-    var stars = [];
+    var data = [];
 
-    topScores.slice(0, 5, topScores.length).forEach((a, i) => {
-      const name = module.exports.getNickname(interaction, a[0]);
-
-      table.addRow({
+    topScores.slice(0, 10, topScores.length).forEach((a, i) => {
+      data.push({
         "#": i + 1,
-        Name: name,
+        Name: module.exports.getNickname(interaction, a[0]),
         Msgs:
           guildStats[a[0]]["messages"] + guildStats[a[0]]["previousMessages"],
         Time: module.exports.formatTime(
@@ -103,18 +91,11 @@ module.exports = {
           module.exports.addLeadingZero(guildStats[a[0]]["reputation"] ?? 0)
         ),
         Rank: `${module.exports.getRanking(guildStats[a[0]])} (${a[1]}SR)`,
+        "★": module.exports.getPrestige(guildStats[a[0]]["prestige"]),
       });
-
-      stars.push(guildStats[a[0]]["prestige"] ?? 0);
     });
 
-    var splitRender = table.render().split("\n");
-
-    for (var i = 3; i < splitRender.length - 1; i++) {
-      splitRender[i] += ` \u001b[33m${"★".repeat(stars[i - 3])}\u001b[0m`;
-    }
-
-    outputMessage += splitRender.join("\n") + "\n";
+    outputMessage += generateTable(data);
 
     const userRanking = topScores
       .map((a, i) => [a[0], a[1], i])
@@ -149,11 +130,11 @@ module.exports = {
   },
   formatReputation: (rep) => {
     return `${
-      rep > 0 ? "\u001b[1;32m" : rep < 0 ? "\u001b[1;31m" : ""
+      rep > 0 ? "\u001b[1;32m" : rep < 0 ? "\u001b[1;31m" : "\u001b[1;00m"
     }${rep}\u001b[0m`;
   },
-  getPrestige: (memberStats) => {
-    return `\u001b[33m${"★".repeat(memberStats["prestige"] ?? 0)}\u001b[0m`;
+  getPrestige: (prestige) => {
+    return `\u001b[33m${"★".repeat(prestige ?? 0)}\u001b[0m`;
   },
   getNickname: (interaction, id) => {
     const member = interaction.guild.members.cache
