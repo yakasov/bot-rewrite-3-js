@@ -12,7 +12,9 @@ module.exports = {
     .setDescription("Get information about the current Minecraft server"),
   async execute(interaction) {
     if (!(minecraftServerIp.length && minecraftServerPort)) {
-      return;
+      return await interaction.reply(
+        "There is no current Minecraft server set up!"
+      );
     }
 
     status(minecraftServerIp, minecraftServerPort)

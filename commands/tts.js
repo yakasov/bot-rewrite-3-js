@@ -10,12 +10,12 @@ module.exports = {
   data: new SlashCommandBuilder()
     .setName("tts")
     .setDescription("Generate a TTS output from a given input")
-    .addStringOption((opt) => {
+    .addStringOption((opt) =>
       opt
         .setName("prompt")
         .setDescription("The prompt for TTS to say")
-        .setRequired(true);
-    }),
+        .setRequired(true)
+    ),
   async execute(interaction) {
     const prompt = interaction.options.getString("prompt");
 

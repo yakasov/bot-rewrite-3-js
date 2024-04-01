@@ -33,19 +33,19 @@ var date = new Date().toLocaleDateString("en-GB").slice(0, -5);
 var splash;
 var botUptime = 0;
 
-const superReply = Message.reply;
-Message.reply = function (s) {
+const superReply = Message.prototype.reply;
+Message.prototype.reply = async function (s) {
   try {
-    return superReply.call(this, { content: s, failIfNotExists: false });
+    return await superReply.call(this, { content: s, failIfNotExists: false });
   } catch (e) {
     console.log(e.message);
   }
 };
 
-const superDelete = Message.delete;
-Message.delete = function () {
+const superDelete = Message.prototype.delete;
+Message.prototype.delete = async function () {
   try {
-    return superDelete.call(this);
+    return await superDelete.call(this);
   } catch (e) {
     console.log(e.message);
   }
@@ -253,7 +253,7 @@ async function checkMessageReactions(msg) {
   if (Math.random() < 1 / 50) {
     await msg.react("🤓");
   }
-  if (Math.random() < 1 / 100) {
+  if (Math.random() < 1 / 1) {
     await msg.reply("L boozoo");
   }
   if (Math.random() < 1 / 10000) {

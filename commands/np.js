@@ -13,6 +13,7 @@ module.exports = {
     interaction.client.user.setPresence({
       activities: [{ name: splash, type: ActivityType.Watching }],
     });
+    await interaction.reply(`Set splash to ${splash}!`);
     return splash;
   },
   run: async ([client]) => {

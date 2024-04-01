@@ -2,8 +2,8 @@
 const {
   ActionRowBuilder,
   SlashCommandBuilder,
-  StringSelectMenuBuilder,
-  StringSelectMenuOptionBuilder,
+  ButtonBuilder,
+  ButtonStyle,
 } = require("discord.js");
 const fs = require("fs");
 const { statsConfig } = require("./../resources/config.json");
@@ -33,15 +33,17 @@ module.exports = {
         `You cannot prestige until ${statsConfig["prestigeRequirement"]}SR!`
       );
 
-    const select = new StringSelectMenuBuilder()
-      .setCustomId("answer")
-      .setPlaceholder("Are you sure you want to prestige?")
-      .addOptions(
-        new StringSelectMenuOptionBuilder().setLabel("Yes").setValue("y"),
-        new StringSelectMenuOptionBuilder().setLabel("No").setValue("n")
-      );
+    const confirm = new ButtonBuilder()
+      .setCustomId("y")
+      .setLabel("Yes")
+      .setStyle(ButtonStyle.Success);
 
-    const row = new ActionRowBuilder().addComponents(select);
+    const cancel = new ButtonBuilder()
+      .setCustomId("n")
+      .setLabel("No")
+      .setStyle(ButtonStyle.Danger);
+
+    const row = new ActionRowBuilder().addComponents(confirm, cancel);
 
     const response = await interaction.reply({
       content:
