@@ -253,7 +253,7 @@ async function checkMessageReactions(msg) {
   if (Math.random() < 1 / 50) {
     await msg.react("🤓");
   }
-  if (Math.random() < 1 / 1) {
+  if (Math.random() < 1 / 100) {
     await msg.reply("L boozoo");
   }
   if (Math.random() < 1 / 10000) {
