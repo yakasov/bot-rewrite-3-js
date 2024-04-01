@@ -1,86 +1,109 @@
 /* eslint-disable indent */
+const {
+  ActionRowBuilder,
+  SlashCommandBuilder,
+  ButtonBuilder,
+  ButtonStyle,
+} = require("discord.js");
 const fs = require("fs");
 const { statsConfig } = require("./../resources/config.json");
 const stats = require("./../resources/stats.json");
 
 module.exports = {
   aliases: ["rankup"],
-  description: "Show server statistics.",
-  run: async ([, msg]) => {
-    const guildStats = stats[msg.guild.id];
-    if (!guildStats) return msg.reply("This server has no statistics yet!");
-    if (!guildStats[msg.author.id])
-      return msg.reply("You do not have any statistics yet!");
+  data: new SlashCommandBuilder()
+    .setName("prestige")
+    .setDescription("Prestige to the next prestige level."),
+  async execute(interaction) {
+    const guildStats = stats[interaction.guild.id];
+    if (!guildStats)
+      return await interaction.reply("This server has no statistics yet!");
+    if (!guildStats[interaction.user.id])
+      return await interaction.reply("You do not have any statistics yet!");
     if (
-      (guildStats[msg.author.id]["prestige"] ?? 0) >=
+      (guildStats[interaction.user.id]["prestige"] ?? 0) >=
       statsConfig["prestigeMaximum"]
     )
-      return msg.reply("You have reached max prestige!");
-    if (guildStats[msg.author.id]["score"] < statsConfig["prestigeRequirement"])
-      return msg.reply(
+      return await interaction.reply("You have reached max prestige!");
+    if (
+      guildStats[interaction.user.id]["score"] <
+      statsConfig["prestigeRequirement"]
+    )
+      return await interaction.reply(
         `You cannot prestige until ${statsConfig["prestigeRequirement"]}SR!`
       );
 
-    msg
-      .reply(
-        "Prestiging will reset your SR back to 0, and your rank will be adjusted accordingly.\n\nIn return, you will gain a prestige mark and your SR gain will be boosted. Additionally, your +/-reps and reactions will have more weight.\n\nAre you sure you want to prestige?"
-      )
-      .then((m) => {
-        m.react("✅").then(() => m.react("❌"));
+    const confirm = new ButtonBuilder()
+      .setCustomId("y")
+      .setLabel("Yes")
+      .setStyle(ButtonStyle.Success);
 
-        const collectorFilter = (reaction, user) => {
-          return (
-            ["✅", "❌"].includes(reaction.emoji.name) &&
-            user.id === msg.author.id
-          );
-        };
+    const cancel = new ButtonBuilder()
+      .setCustomId("n")
+      .setLabel("No")
+      .setStyle(ButtonStyle.Danger);
 
-        m.awaitReactions({
-          filter: collectorFilter,
-          max: 1,
-          time: 60_000,
-          errors: ["time"],
-        })
-          .then((collected) => {
-            const reaction = collected.first();
+    const row = new ActionRowBuilder().addComponents(confirm, cancel);
 
-            if (reaction.emoji.name == "❌") {
-              m.delete();
-              return msg.reply("Prestige cancelled.");
-            } else {
-              m.delete();
-              msg.channel.send(
-                `${
-                  msg.guild.members.cache
-                    .filter((m) => m.id == msg.author.id)
-                    .first().displayName
-                } has prestiged to prestige ${
-                  guildStats[msg.author.id]["prestige"] + 1
-                }!`
-              );
+    const response = await interaction.reply({
+      content:
+        "Prestiging will reset your SR back to 0, and your rank will be adjusted accordingly.\n\nIn return, you will gain a prestige mark and your SR gain will be boosted. Additionally, your +/-reps and reactions will have more weight.\n\nAre you sure you want to prestige?",
+      components: [row],
+    });
 
-              stats[msg.guild.id][msg.author.id]["prestige"] =
-                (stats[msg.guild.id][msg.author.id]["prestige"] ?? 0) + 1;
-              stats[msg.guild.id][msg.author.id]["bestRanking"] = "";
-              stats[msg.guild.id][msg.author.id]["bestScore"] = 0;
+    const collectorFilter = (i) => i.user.id === interaction.user.id;
 
-              // Store message + voiceTime values then reset them
-              stats[msg.guild.id][msg.author.id]["previousMessages"] =
-                (stats[msg.guild.id][msg.author.id]["previousMessages"] ?? 0) +
-                stats[msg.guild.id][msg.author.id]["messages"];
-              stats[msg.guild.id][msg.author.id]["previousVoiceTime"] =
-                (stats[msg.guild.id][msg.author.id]["previousVoiceTime"] ?? 0) +
-                stats[msg.guild.id][msg.author.id]["voiceTime"];
-
-              stats[msg.guild.id][msg.author.id]["messages"] = 0;
-              stats[msg.guild.id][msg.author.id]["voiceTime"] = 0;
-
-              fs.writeFileSync("./resources/stats.json", JSON.stringify(stats));
-            }
-          })
-          .catch(() => {
-            msg.delete();
-          });
+    try {
+      const confirmation = await response.awaitMessageComponent({
+        filter: collectorFilter,
+        time: 60_000,
       });
+
+      if (confirmation.customId == "y") {
+        await confirmation.update({
+          content: `${
+            interaction.guild.members.cache
+              .filter((m) => m.id == interaction.user.id)
+              .first().displayName
+          } has prestiged to prestige ${
+            guildStats[interaction.user.id]["prestige"] + 1
+          }!`,
+          components: [],
+        });
+
+        stats[interaction.guild.id][interaction.user.id]["prestige"] =
+          (stats[interaction.guild.id][interaction.user.id]["prestige"] ?? 0) +
+          1;
+        stats[interaction.guild.id][interaction.user.id]["bestRanking"] = "";
+        stats[interaction.guild.id][interaction.user.id]["bestScore"] = 0;
+
+        // Store message + voiceTime values then reset them
+        stats[interaction.guild.id][interaction.user.id]["previousMessages"] =
+          (stats[interaction.guild.id][interaction.user.id][
+            "previousMessages"
+          ] ?? 0) +
+          stats[interaction.guild.id][interaction.user.id]["messages"];
+        stats[interaction.guild.id][interaction.user.id]["previousVoiceTime"] =
+          (stats[interaction.guild.id][interaction.user.id][
+            "previousVoiceTime"
+          ] ?? 0) +
+          stats[interaction.guild.id][interaction.user.id]["voiceTime"];
+
+        stats[interaction.guild.id][interaction.user.id]["messages"] = 0;
+        stats[interaction.guild.id][interaction.user.id]["voiceTime"] = 0;
+
+        fs.writeFileSync("./resources/stats.json", JSON.stringify(stats));
+      } else {
+        await confirmation.update({
+          content: "Prestige cancelled",
+          components: [],
+        });
+      }
+    } catch (e) {
+      await interaction.editReply({
+        content: "Confirmation not received within 1 minute, cancelling",
+        components: [],
+      });
+    }
   },
 };

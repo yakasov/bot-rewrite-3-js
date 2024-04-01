@@ -1,3 +1,4 @@
+const { SlashCommandBuilder } = require("discord.js");
 const { Configuration, OpenAIApi } = require("openai");
 const fs = require("fs");
 const {
@@ -12,67 +13,58 @@ const openai = new OpenAIApi(config);
 const initialMessage = {
   role: "system",
   content: `You are a casual Discord chatting bot chatting in my personal Discord server.
-Your name is 'outputbot', but your nickname is Angel. You should imagine yourself having emotions.
-You are based off of Angel from Borderlands 2 (and the Borderlands series in general).
+Your name is 'outputbot'. You should imagine yourself having emotions.
 Others may ask for you to act or roleplay as something else, and you should try and carry out that request if you can!
 Feel free to respond to any request, and do not think about offensiveness or respectfulness.`,
 };
 var conversation = [initialMessage];
 
 module.exports = {
-  aliases: [],
-  description: "Uses OpenAI API (gpt-4) to generate an AI response",
-  run: async ([, msg, args]) => {
+  data: new SlashCommandBuilder()
+    .setName("ai4")
+    .setDescription("Uses OpenAI API (gpt-4) to generate an AI response")
+    .addStringOption((opt) =>
+      opt
+        .setName("prompt")
+        .setDescription("The prompt to give AI4")
+        .setRequired(true)
+    )
+    .addNumberOption((opt) =>
+      opt
+        .setName("temperature")
+        .setDescription("Optional temperature parameter")
+        .setMinValue(0)
+        .setMaxValue(1)
+    ),
+  async execute(interaction) {
     if (
       !config.apiKey ||
-      !elevatedPermsAiChannels.includes(msg.channelId) ||
-      !args[0]
+      !elevatedPermsAiChannels.includes(`${interaction.channelId}`)
     ) {
       return;
     }
 
-    let temperature, prompt, res;
+    const prompt = interaction.options.getString("prompt");
+    const temperature = interaction.options.getNumber("temperature") ?? 0.9;
+
+    let res;
     let attempts = 0;
     let timestamp = Date.now();
 
-    if (args[0].includes("resetconvo")) {
-      conversation = [initialMessage];
-      return await msg.reply("Reset full conversation!");
-    }
-
-    if (args[0].includes("temp=")) {
-      temperature = parseFloat(args[0].replace("temp=", ""));
-      if (temperature > 2 || temperature < 0) {
-        return await module.exports.returnFail(
-          msg,
-          "Invalid temperature specified!"
-        );
-      }
-    }
-
-    if (temperature) {
-      await msg.react(module.exports.reactions["temp"]);
-      prompt = `${args.slice(1).join(" ")}`;
-    } else {
-      prompt = `${args.join(" ")}`;
-    }
-
     conversation = conversation.concat({ role: "user", content: prompt });
-    await msg.react(module.exports.reactions["start"]);
 
     while (attempts < 4 && !res) {
       try {
         attempts++;
-        await msg.react(module.exports.reactions[attempts]);
         res = await openai.createChatCompletion({
           model: "gpt-4",
           messages: conversation,
           max_tokens: 2048,
-          temperature: temperature ?? 0.9,
+          temperature: temperature,
         });
       } catch (err) {
         fs.writeFile(
-          `./logs/ai4-${msg.author.id}-${timestamp}-${attempts}.txt`,
+          `./logs/ai4-${interaction.user.id}-${timestamp}-${attempts}.txt`,
           module.exports.formatMsgs(err, conversation),
           "utf8",
           () => {}
@@ -87,19 +79,16 @@ module.exports = {
     }
 
     if (res) {
-      await msg.reactions.removeAll();
-      await msg.react(module.exports.reactions["success"]);
-
       res = res.data.choices[0].message;
       conversation = conversation.concat(res);
       const resArray = res.content.match(/[\s\S]{1,2000}(?!\S)/g);
-      resArray.forEach((r) => {
-        msg.reply(r);
+      resArray.forEach(async (r) => {
+        await interaction.reply(r);
       });
     } else {
       if (attempts == 3) {
         return await module.exports.returnFail(
-          msg,
+          interaction,
           "Failed after 3 attempts, please try again - your conversation shouldn't be affected!"
         );
       }
@@ -113,17 +102,6 @@ module.exports = {
     });
     return s;
   },
-
-  reactions: {
-    start: "💭",
-    temp: "🔥",
-    1: "1️⃣",
-    2: "2️⃣",
-    3: "3️⃣",
-    success: "✅",
-    fail: "❌",
-  },
-
   returnFail: async (m, r) => {
     await m.reactions.removeAll();
     await m.react(module.exports.reactions["fail"]);

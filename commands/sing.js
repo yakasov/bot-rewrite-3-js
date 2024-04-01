@@ -1,3 +1,4 @@
+const { SlashCommandBuilder } = require("discord.js");
 const {
   createAudioPlayer,
   joinVoiceChannel,
@@ -7,24 +8,31 @@ const ytdl = require("ytdl-core-discord");
 
 module.exports = {
   aliases: ["play", "stream"],
-  description: "Streams from a YouTube url",
-  run: async ([, msg, args]) => {
-    if (!args.length) {
-      return;
-    }
+  data: new SlashCommandBuilder()
+    .setName("sing")
+    .setDescription("Streams from a YouTube url")
+    .addStringOption((opt) =>
+      opt
+        .setName("url")
+        .setDescription("The YouTube URL to stream from")
+        .setRequired(true)
+    ),
+
+  async execute(interaction) {
+    const url = interaction.options.getString("url");
 
     try {
       const player = createAudioPlayer();
       joinVoiceChannel({
-        channelId: msg.member.voice.channelId,
-        guildId: msg.guild.id,
-        adapterCreator: msg.guild.voiceAdapterCreator,
+        channelId: interaction.member.voice.channelId,
+        guildId: interaction.guild.id,
+        adapterCreator: interaction.guild.voiceAdapterCreator,
       }).subscribe(player);
 
-      const res = createAudioResource(await ytdl(args[0]));
+      const res = createAudioResource(await ytdl(url));
       player.play(res);
     } catch (e) {
-      msg.reply(e.message);
+      await interaction.reply(e.message);
     }
   },
 };

@@ -1,13 +1,20 @@
 /* eslint-disable indent */
-const { Client, Events, GatewayIntentBits, Message } = require("discord.js");
+const {
+  Client,
+  Events,
+  GatewayIntentBits,
+  Message,
+  Collection,
+} = require("discord.js");
 const fs = require("fs");
 const npFile = require("./commands/np.js");
-const { token, prefix, statsConfig } = require("./resources/config.json");
+const { token, statsConfig } = require("./resources/config.json");
 const responses = require("./resources/responses.json");
 const reactions = require("./resources/reactions.json");
 const stats = require("./resources/stats.json");
 const ranks = require("./resources/ranks.json");
 const fetch = require("node-fetch");
+const path = require("node:path");
 globalThis.fetch = fetch;
 
 const client = new Client({
@@ -22,37 +29,44 @@ const client = new Client({
   ],
   allowedMentions: { parse: ["users", "roles"], repliedUser: true },
 });
-const aliases = buildAliases();
 var date = new Date().toLocaleDateString("en-GB").slice(0, -5);
 var splash;
 var botUptime = 0;
 
-const superReply = Message.reply;
-Message.reply = function (s) {
+const superReply = Message.prototype.reply;
+Message.prototype.reply = async function (s) {
   try {
-    return superReply.call(this, { content: s, failIfNotExists: false });
+    return await superReply.call(this, { content: s, failIfNotExists: false });
   } catch (e) {
     console.log(e.message);
   }
 };
 
-const superDelete = Message.delete;
-Message.delete = function () {
+const superDelete = Message.prototype.delete;
+Message.prototype.delete = async function () {
   try {
-    return superDelete.call(this);
+    return await superDelete.call(this);
   } catch (e) {
     console.log(e.message);
   }
 };
 
-function buildAliases() {
-  var aliases = {};
-  const cmdFiles = fs.readdirSync("./commands");
-  cmdFiles.forEach((file) => {
-    const cmd = require(`./commands/${file}`);
-    aliases[file.slice(0, -3)] = cmd.aliases;
-  });
-  return aliases;
+client.commands = new Collection();
+const commandsPath = path.join("./commands");
+const commandFiles = fs
+  .readdirSync(commandsPath)
+  .filter((file) => file.endsWith(".js"));
+for (const file of commandFiles) {
+  const filePath = path.join(commandsPath, file);
+  const command = require("./" + filePath);
+
+  if ("data" in command && "execute" in command) {
+    client.commands.set(command.data.name, command);
+  } else {
+    console.log(
+      `[WARNING] The command at ${filePath} is missing a required "data" or "execute" property.`
+    );
+  }
 }
 
 async function checkBirthdays(force = false) {
@@ -239,7 +253,7 @@ async function checkMessageReactions(msg) {
   if (Math.random() < 1 / 50) {
     await msg.react("🤓");
   }
-  if (Math.random() < 1 / 100) {
+  if (Math.random() < 1 / 1) {
     await msg.reply("L boozoo");
   }
   if (Math.random() < 1 / 10000) {
@@ -551,30 +565,37 @@ client.on("messageCreate", async (msg) => {
   await checkMessageResponse(msg);
   await checkMessageReactions(msg);
 
-  if (!msg.content.toLowerCase().startsWith(prefix))
-    return await addToStats({
-      type: "message",
-      userId: msg.author.id,
-      guildId: msg.guild.id,
-    });
+  return await addToStats({
+    type: "message",
+    userId: msg.author.id,
+    guildId: msg.guild.id,
+  });
+});
 
-  var args = msg.content.split(" ");
-  var cmd = args.shift().slice(prefix.length).toLowerCase();
+client.on(Events.InteractionCreate, async (interaction) => {
+  if (!interaction.isChatInputCommand()) return;
 
-  if (!Object.keys(aliases).includes(cmd)) {
-    Object.entries(aliases).forEach(([k, v]) => {
-      if (v && v.includes(cmd)) {
-        cmd = k;
-      }
-    });
+  const command = interaction.client.commands.get(interaction.commandName);
+
+  if (!command) {
+    console.error(`No command matching ${interaction.commandName} was found.`);
+    return;
   }
 
   try {
-    var file = require(`./commands/${cmd}.js`);
-    return file.run([client, msg, args]);
-  } catch (err) {
-    if (err.code && err.code !== "MODULE_NOT_FOUND") {
-      console.error(err);
+    await command.execute(interaction);
+  } catch (error) {
+    console.error(error);
+    if (interaction.replied || interaction.deferred) {
+      await interaction.followUp({
+        content: "There was an error while executing this command!",
+        ephemeral: true,
+      });
+    } else {
+      await interaction.reply({
+        content: "There was an error while executing this command!",
+        ephemeral: true,
+      });
     }
   }
 });

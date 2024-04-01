@@ -1,26 +1,32 @@
 /* eslint-disable indent */
+const { SlashCommandBuilder } = require("discord.js");
 const { statsConfig } = require("./../resources/config.json");
 const stats = require("./../resources/stats.json");
 const ranks = require("./../resources/ranks.json");
 
 module.exports = {
   aliases: ["mystats"],
-  description: "Show server statistics.",
-  run: async ([, msg, args]) => {
-    const guildStats = stats[msg.guild.id];
-    if (!guildStats) return msg.reply("This server has no statistics yet!");
+  data: new SlashCommandBuilder()
+    .setName("profile")
+    .setDescription("Shows personal statistics")
+    .addUserOption((opt) =>
+      opt.setName("user").setDescription("The user to get the profile of")
+    )
+    .addBooleanOption((opt) =>
+      opt.setName("debug").setDescription("Whether to print the raw statistics")
+    ),
+  async execute(interaction) {
+    var user = interaction.options.getUser("user") ?? null;
+    if (user) user = user.id;
+    const debug = interaction.options.getBoolean("debug") ?? false;
 
-    const specificUser = args[0]
-      ? args[0].length == 18
-        ? args[0]
-        : args[0].match(/<@(.*)>/)
-        ? args[0].match(/<@(.*)>/)[1]
-        : null
-      : null;
-    if (specificUser) {
-      if (specificUser.includes("&")) return; // Fix for roles being tagged
-      if (!guildStats[specificUser])
-        return msg.reply("This user has no statistics yet!");
+    const guildStats = stats[interaction.guild.id];
+    if (!guildStats)
+      return interaction.reply("This server has no statistics yet!");
+
+    if (user) {
+      if (!guildStats[user])
+        return interaction.reply("This user has no statistics yet!");
     }
 
     const userStats = Object.entries(guildStats)
@@ -32,21 +38,21 @@ module.exports = {
         return s[1] - f[1];
       })
       .map((a, i) => [a[0], a[1], i])
-      .filter((a) => a[0] == (specificUser ?? msg.author.id))[0];
+      .filter((a) => a[0] == (user ?? interaction.user.id))[0];
     const allUserStats = guildStats[userStats[0]];
 
-    if (args[1] && args[1] == "debug") {
+    if (debug) {
       const outputMessage =
         "```\n" + JSON.stringify(allUserStats, null, 4) + "```";
       const outputArray = outputMessage.match(/[\s\S]{1,1990}(?!\S)/g);
       outputArray.forEach((r) => {
-        msg.reply("```\n" + r + "\n```");
+        interaction.reply("```\n" + r + "\n```");
       });
       return;
     }
 
     const outputMessage = `=== Profile for ${module.exports.getNickname(
-      msg,
+      interaction,
       userStats[0]
     )}, #${userStats[2] + 1} on server ===\n    Messages: ${
       allUserStats["messages"] + allUserStats["previousMessages"]
@@ -79,7 +85,7 @@ module.exports = {
 
     const outputArray = outputMessage.match(/[\s\S]{1,1990}(?!\S)/g);
     outputArray.forEach((r) => {
-      msg.reply("```ansi\n" + r + "\n```");
+      interaction.reply("```ansi\n" + r + "\n```");
     });
   },
   formatTime: (seconds) => {
@@ -98,8 +104,10 @@ module.exports = {
       memberStats["prestige"] ?? 0
     )}\u001b[0m`;
   },
-  getNickname: (msg, id) => {
-    const member = msg.guild.members.cache.filter((m) => m.id == id).first();
+  getNickname: (interaction, id) => {
+    const member = interaction.guild.members.cache
+      .filter((m) => m.id == id)
+      .first();
     return `${member.displayName}`;
   },
   getRanking: (memberStats) => {

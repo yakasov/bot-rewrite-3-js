@@ -1,14 +1,18 @@
 /* eslint-disable indent */
+const { SlashCommandBuilder } = require("discord.js");
 const stats = require("./../resources/stats.json");
 const ranks = require("./../resources/ranks.json");
 const { Table } = require("console-table-printer");
 
 module.exports = {
   aliases: ["statistics", "leaderboard", "scores"],
-  description: "Show server statistics.",
-  run: async ([, msg], second = false) => {
-    const guildStats = stats[msg.guild.id];
-    if (!guildStats) return msg.reply("This server has no statistics yet!");
+  data: new SlashCommandBuilder()
+    .setName("stats")
+    .setDescription("Show server statistics"),
+  async execute(interaction) {
+    const guildStats = stats[interaction.guild.id];
+    if (!guildStats)
+      return interaction.reply("This server has no statistics yet!");
 
     const topNerder = Object.entries(guildStats)
       .filter((k) => k[0].length == 18)
@@ -53,22 +57,22 @@ module.exports = {
     })[0];
 
     var outputMessage = `Top nerder: ${module.exports.getNickname(
-      msg,
+      interaction,
       topNerder[0]
     )} (${
       topNerder[1]
     } emojis given)\nMost nerded: ${module.exports.getNickname(
-      msg,
+      interaction,
       topNerded[0]
     )} (${
       topNerded[1]
     } emojis received)\nHighest reputation: ${module.exports.getNickname(
-      msg,
+      interaction,
       topReputation[0]
     )} (${
       topReputation[1]
     } reputation)\nLowest reputation: ${module.exports.getNickname(
-      msg,
+      interaction,
       bottomReputation[0]
     )} (${bottomReputation[1]} reputation)\n\n`;
 
@@ -84,28 +88,25 @@ module.exports = {
     });
     var stars = [];
 
-    topScores
-      .slice(second ? 5 : 0, Math.min(second ? 10 : 5, topScores.length))
-      .forEach((a, i) => {
-        const name = module.exports.getNickname(msg, a[0]);
+    topScores.slice(0, 5, topScores.length).forEach((a, i) => {
+      const name = module.exports.getNickname(interaction, a[0]);
 
-        table.addRow({
-          "#": i + (second ? 6 : 1),
-          Name: name,
-          Msgs:
-            guildStats[a[0]]["messages"] + guildStats[a[0]]["previousMessages"],
-          Time: module.exports.formatTime(
-            guildStats[a[0]]["voiceTime"] +
-              guildStats[a[0]]["previousVoiceTime"]
-          ),
-          Rep: module.exports.formatReputation(
-            module.exports.addLeadingZero(guildStats[a[0]]["reputation"] ?? 0)
-          ),
-          Rank: `${module.exports.getRanking(guildStats[a[0]])} (${a[1]}SR)`,
-        });
-
-        stars.push(guildStats[a[0]]["prestige"] ?? 0);
+      table.addRow({
+        "#": i + 1,
+        Name: name,
+        Msgs:
+          guildStats[a[0]]["messages"] + guildStats[a[0]]["previousMessages"],
+        Time: module.exports.formatTime(
+          guildStats[a[0]]["voiceTime"] + guildStats[a[0]]["previousVoiceTime"]
+        ),
+        Rep: module.exports.formatReputation(
+          module.exports.addLeadingZero(guildStats[a[0]]["reputation"] ?? 0)
+        ),
+        Rank: `${module.exports.getRanking(guildStats[a[0]])} (${a[1]}SR)`,
       });
+
+      stars.push(guildStats[a[0]]["prestige"] ?? 0);
+    });
 
     var splitRender = table.render().split("\n");
 
@@ -117,19 +118,17 @@ module.exports = {
 
     const userRanking = topScores
       .map((a, i) => [a[0], a[1], i])
-      .filter((a) => a[0] == msg.author.id)[0];
+      .filter((a) => a[0] == interaction.user.id)[0];
     if (userRanking) {
       outputMessage += `\nYour ranking (${module.exports.getNickname(
-        msg,
+        interaction,
         userRanking[0]
       )}): #${userRanking[2] + 1} (${module.exports.getRanking(
         guildStats[userRanking[0]]
       )}, ${guildStats[userRanking[0]]["realScore"]}SR)`;
     }
 
-    msg.reply("```ansi\n" + outputMessage + "\n```");
-
-    if (!second) module.exports.run([null, msg], true);
+    await interaction.reply("```ansi\n" + outputMessage + "\n```");
   },
   addLeadingZero: (num) => {
     if (num > -10 && num < 10) {
@@ -156,8 +155,10 @@ module.exports = {
   getPrestige: (memberStats) => {
     return `\u001b[33m${"★".repeat(memberStats["prestige"] ?? 0)}\u001b[0m`;
   },
-  getNickname: (msg, id) => {
-    const member = msg.guild.members.cache.filter((m) => m.id == id).first();
+  getNickname: (interaction, id) => {
+    const member = interaction.guild.members.cache
+      .filter((m) => m.id == id)
+      .first();
     return `${member.displayName}`;
   },
   getRanking: (memberStats) => {
