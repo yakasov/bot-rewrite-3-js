@@ -536,7 +536,7 @@ client.once(Events.ClientReady, async (c) => {
   setInterval(backupStats, getTime(0, 15)); // 15 minutes
 });
 
-client.on("messageCreate", async (msg) => {
+client.on(Events.MessageCreate, async (msg) => {
   if (msg.author.bot || !msg.guild) return;
   if (msg.author.id == "269143269336809483") {
     console.log(`${getNickname(msg)} in ${msg.guild}: ${msg.content}`);
@@ -600,7 +600,7 @@ client.on(Events.InteractionCreate, async (interaction) => {
   }
 });
 
-client.on("voiceStateUpdate", async (oldState, newState) => {
+client.on(Events.VoiceStateUpdate, async (oldState, newState) => {
   if (newState.member.bot) return;
 
   if (oldState.channel && !newState.channel) {
@@ -618,7 +618,7 @@ client.on("voiceStateUpdate", async (oldState, newState) => {
   }
 });
 
-client.on("messageReactionAdd", async (reaction, user) => {
+client.on(Events.MessageReactionAdd, async (reaction, user) => {
   if (reaction.emoji.name == "🤓") {
     await addToStats({
       type: "nerdEmojiAdded",
@@ -630,7 +630,7 @@ client.on("messageReactionAdd", async (reaction, user) => {
   }
 });
 
-client.on("messageReactionRemove", async (reaction, user) => {
+client.on(Events.MessageReactionRemove, async (reaction, user) => {
   if (reaction.emoji.name == "🤓") {
     await addToStats({
       type: "nerdEmojiRemoved",
