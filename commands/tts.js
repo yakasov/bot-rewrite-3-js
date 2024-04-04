@@ -17,6 +17,8 @@ module.exports = {
         .setRequired(true)
     ),
   async execute(interaction) {
+    await interaction.deferReply();
+
     const prompt = interaction.options.getString("prompt");
 
     const player = createAudioPlayer();

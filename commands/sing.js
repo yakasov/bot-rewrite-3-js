@@ -19,6 +19,8 @@ module.exports = {
     ),
 
   async execute(interaction) {
+    await interaction.deferReply();
+
     const url = interaction.options.getString("url");
 
     try {

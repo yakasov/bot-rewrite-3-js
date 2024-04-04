@@ -16,6 +16,8 @@ module.exports = {
       opt.setName("debug").setDescription("Whether to print the raw statistics")
     ),
   async execute(interaction) {
+    await interaction.deferReply();
+
     var user = interaction.options.getUser("user") ?? null;
     if (user) user = user.id;
     const debug = interaction.options.getBoolean("debug") ?? false;
@@ -44,9 +46,9 @@ module.exports = {
     if (debug) {
       const outputMessage =
         "```\n" + JSON.stringify(allUserStats, null, 4) + "```";
-      const outputArray = outputMessage.match(/[\s\S]{1,1990}(?!\S)/g);
-      outputArray.forEach((r) => {
-        interaction.reply("```\n" + r + "\n```");
+      const outputArray = outputMessage.match(/[\s\S]{1,1980}(?!\S)/g);
+      outputArray.forEach(async (r) => {
+        await interaction.followUp("```json\n" + r + "\n```");
       });
       return;
     }
@@ -83,9 +85,9 @@ module.exports = {
       ) ?? 0
     }${!userStats[2] ? "\n    == #1 of friends! ==" : ""}\n\n`;
 
-    const outputArray = outputMessage.match(/[\s\S]{1,1990}(?!\S)/g);
-    outputArray.forEach((r) => {
-      interaction.reply("```ansi\n" + r + "\n```");
+    const outputArray = outputMessage.match(/[\s\S]{1,1980}(?!\S)/g);
+    outputArray.forEach(async (r) => {
+      await interaction.followUp("```ansi\n" + r + "\n```");
     });
   },
   formatTime: (seconds) => {

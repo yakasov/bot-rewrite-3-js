@@ -44,6 +44,8 @@ module.exports = {
       return;
     }
 
+    await interaction.deferReply();
+
     const prompt = interaction.options.getString("prompt");
     const temperature = interaction.options.getNumber("temperature") ?? 0.9;
 
@@ -83,7 +85,7 @@ module.exports = {
       conversation = conversation.concat(res);
       const resArray = res.content.match(/[\s\S]{1,2000}(?!\S)/g);
       resArray.forEach(async (r) => {
-        await interaction.reply(r);
+        await interaction.followUp(r);
       });
     } else {
       if (attempts == 3) {
