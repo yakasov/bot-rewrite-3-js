@@ -359,7 +359,7 @@ async function addToStats(a, msg = null) {
       stats[guildId][userId]["nerdEmojis"][messageId] =
         (stats[guildId][userId]["nerdEmojis"][messageId] ?? 0) +
         1 +
-        (stats[guildId][userId]["prestige"] ?? 0);
+        (stats[guildId][giverId]["prestige"] ?? 0);
       break;
 
     case "nerdEmojiRemoved":
@@ -373,7 +373,8 @@ async function addToStats(a, msg = null) {
 
       stats[guildId][userId]["nerdEmojis"][messageId] = Math.max(
         0,
-        (stats[guildId][userId]["nerdEmojis"][messageId] ?? 0) - 1
+        (stats[guildId][userId]["nerdEmojis"][messageId] ?? 0) -
+          (1 + (stats[guildId][giverId]["prestige"] ?? 0))
       );
       break;
 
