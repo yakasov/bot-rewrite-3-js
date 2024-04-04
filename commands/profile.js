@@ -34,7 +34,7 @@ module.exports = {
     const userStats = Object.entries(guildStats)
       .filter((k) => k[0].length == 18)
       .map(([k, v]) => {
-        return [k, v["score"]];
+        return [k, v["realScore"]];
       })
       .sort((f, s) => {
         return s[1] - f[1];
