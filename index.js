@@ -469,7 +469,9 @@ async function updateScores() {
         }
 
         if (
-          stats[guild][user]["score"] > (stats[guild][user]["bestScore"] ?? 0)
+          stats[guild][user]["score"] >
+            (stats[guild][user]["bestScore"] ?? 0) ||
+          stats[guild][user]["bestScore"] == 50000 // Fix for bestScore being stuck at 50K after prestige
         ) {
           stats[guild][user]["bestScore"] = stats[guild][user]["score"];
 
