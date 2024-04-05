@@ -14,6 +14,6 @@ exports.run = async () => {
       console.error("Error backing up file:", err);
       return;
     }
-    console.log(`Backup created: ${backupFile}`);
+    // console.log(`Backup created: ${backupFile}`);
   });
 };
