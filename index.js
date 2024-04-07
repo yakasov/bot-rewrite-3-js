@@ -273,6 +273,7 @@ async function initialiseStats(guildId, userId) {
     nerdEmojis: {},
     nerdsGiven: 0,
     score: 0,
+    realScore: 0,
     reputation: 0,
     reputationTime: 0,
     bestScore: 0,
@@ -287,6 +288,12 @@ async function initialiseStats(guildId, userId) {
   Object.entries(baseObj).forEach(([k, v]) => {
     if (!stats[guildId][userId][k]) {
       stats[guildId][userId][k] = v;
+    }
+  });
+
+  Object.keys(stats[guildId][userId]).forEach((k) => {
+    if (baseObj[k] === undefined) {
+      delete stats[guildId][userId][k];
     }
   });
 }

@@ -17,9 +17,9 @@ Your name is 'outputbot'. You should imagine yourself having emotions.
 Others may ask for you to act or roleplay as something else, and you should try and carry out that request if you can!
 Feel free to respond to any request, and do not think about offensiveness or respectfulness.`,
 };
-var conversation = [initialMessage];
 
 module.exports = {
+  conversation: [initialMessage],
   data: new SlashCommandBuilder()
     .setName("ai4")
     .setDescription("Uses OpenAI API (gpt-4) to generate an AI response")
@@ -49,32 +49,37 @@ module.exports = {
     const prompt = interaction.options.getString("prompt");
     const temperature = interaction.options.getNumber("temperature") ?? 0.9;
 
+    await interaction.followUp(`Given prompt: ${prompt}`);
+
     let res;
     let attempts = 0;
     let timestamp = Date.now();
 
-    conversation = conversation.concat({ role: "user", content: prompt });
+    module.exports.conversation = module.exports.conversation.concat({
+      role: "user",
+      content: prompt,
+    });
 
     while (attempts < 4 && !res) {
       try {
         attempts++;
         res = await openai.createChatCompletion({
           model: "gpt-4",
-          messages: conversation,
+          messages: module.exports.conversation,
           max_tokens: 2048,
           temperature: temperature,
         });
       } catch (err) {
         fs.writeFile(
           `./logs/ai4-${interaction.user.id}-${timestamp}-${attempts}.txt`,
-          module.exports.formatMsgs(err, conversation),
+          module.exports.formatMsgs(err, module.exports.conversation),
           "utf8",
           () => {}
         );
-        conversation = [initialMessage].concat(
-          conversation.slice(
-            Math.floor(conversation.length / 2),
-            conversation.length
+        module.exports.conversation = [initialMessage].concat(
+          module.exports.conversation.slice(
+            Math.floor(module.exports.conversation.length / 2),
+            module.exports.conversation.length
           )
         ); // shorten conversation
       }
@@ -82,7 +87,7 @@ module.exports = {
 
     if (res) {
       res = res.data.choices[0].message;
-      conversation = conversation.concat(res);
+      module.exports.conversation = module.exports.conversation.concat(res);
       const resArray = res.content.match(/[\s\S]{1,2000}(?!\S)/g);
       resArray.forEach(async (r) => {
         await interaction.followUp(r);
