@@ -298,7 +298,7 @@ async function initialiseStats(guildId, userId) {
   });
 }
 
-async function addToStats(a, msg = null) {
+async function addToStats(a) {
   function f() {
     // Returns UNIX time in seconds.
     return Math.floor(Date.now() / 1000);
@@ -383,54 +383,6 @@ async function addToStats(a, msg = null) {
         (stats[guildId][userId]["nerdEmojis"][messageId] ?? 0) -
           (1 + (stats[guildId][giverId]["prestige"] ?? 0))
       );
-      break;
-
-    case "reputationGain":
-      if (!giverId || giverId == userId) return msg ? msg.react("❌") : null;
-      if (
-        f() - (stats[guildId][giverId]["reputationTime"] ?? 0) <
-        statsConfig["reputationGainCooldown"]
-      ) {
-        msg.reply(
-          `You need to wait ${
-            statsConfig["reputationGainCooldown"] -
-            (f() - (stats[guildId][giverId]["reputationTime"] ?? 0))
-          } more seconds first!`
-        );
-        return await msg.react("🕑");
-      }
-      stats[guildId][userId]["reputation"] =
-        (stats[guildId][userId]["reputation"] ?? 0) +
-        (1 + (stats[guildId][giverId]["prestige"] ?? 0));
-      if (stats[guildId][userId]["reputation"] >= 100)
-        stats[guildId][userId]["reputation"] = -99;
-      stats[guildId][giverId]["reputationTime"] = f();
-
-      await msg.react("✅");
-      break;
-
-    case "reputationLoss":
-      if (!giverId || giverId == userId) return msg ? msg.react("❌") : null;
-      if (
-        f() - (stats[guildId][giverId]["reputationTime"] ?? 0) <
-        statsConfig["reputationGainCooldown"]
-      ) {
-        msg.reply(
-          `You need to wait ${
-            statsConfig["reputationGainCooldown"] -
-            (f() - (stats[guildId][giverId]["reputationTime"] ?? 0))
-          } more seconds first!`
-        );
-        return await msg.react("🕑");
-      }
-      stats[guildId][userId]["reputation"] =
-        (stats[guildId][userId]["reputation"] ?? 0) -
-        (1 + (stats[guildId][giverId]["prestige"] ?? 0));
-      if (stats[guildId][userId]["reputation"] <= -100)
-        stats[guildId][userId]["reputation"] = 99;
-      stats[guildId][giverId]["reputationTime"] = f();
-
-      await msg.react("✅");
       break;
 
     default:
@@ -550,26 +502,6 @@ client.on(Events.MessageCreate, async (msg) => {
   if (msg.author.bot || !msg.guild) return;
   if (msg.author.id == "269143269336809483") {
     console.log(`${getNickname(msg)} in ${msg.guild}: ${msg.content}`);
-  }
-
-  if (
-    (msg.content.includes("+rep") || msg.content.includes("-rep")) &&
-    msg.content.match(/<@(.*)>/)
-  ) {
-    if (!msg.content.includes("&")) {
-      return await addToStats(
-        {
-          type: msg.content.includes("+rep")
-            ? "reputationGain"
-            : "reputationLoss",
-          userId: msg.content.match(/<@(.*)>/)[1],
-          guildId: msg.guild.id,
-          messageId: 0,
-          giver: { id: msg.author.id },
-        },
-        msg
-      );
-    }
   }
 
   await checkMessageResponse(msg);
