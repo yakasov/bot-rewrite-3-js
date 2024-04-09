@@ -9,7 +9,10 @@ module.exports = {
     .setDescription("Designates the channel to use for rank up messages"),
   async execute(interaction) {
     await interaction.client.application.fetch();
-    if (interaction.user === interaction.client.application.owner) {
+    if (
+      interaction.user === interaction.client.application.owner ||
+      interaction.user === interaction.guild.fetchOwner()
+    ) {
       stats[interaction.guild.id]["rankUpChannel"] = interaction.channel.id;
 
       fs.writeFileSync("./resources/stats.json", JSON.stringify(stats));
