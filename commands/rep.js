@@ -31,20 +31,26 @@ module.exports = {
       (1 + (stats[interaction.guild.id][giver.id]["prestige"] ?? 0)) *
       (type === "+" ? 1 : -1);
 
+    // Do not allow giving reputation to yourself
+    if (user.id === giver.id) {
+      return await interaction.followUp(
+        "You cannot give reputation to yourself!"
+      );
+    }
+
     // Do not run the command if the cooldown is not over
     if (
       module.exports.f() -
         (stats[interaction.guild.id][giver.id]["reputationTime"] ?? 0) <
       statsConfig["reputationGainCooldown"]
     ) {
-      return await interaction.followUp({
-        content: `You need to wait ${
+      return await interaction.followUp(
+        `You need to wait ${
           statsConfig["reputationGainCooldown"] -
           (module.exports.f() -
             (stats[interaction.guild.id][giver.id]["reputationTime"] ?? 0))
-        } more seconds first!`,
-        ephemeral: true,
-      });
+        } more seconds first!`
+      );
     }
 
     stats[interaction.guild.id][user.id]["reputation"] =
