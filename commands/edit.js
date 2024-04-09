@@ -32,7 +32,10 @@ module.exports = {
     const add = interaction.options.getBoolean("add") ?? false;
 
     await interaction.client.application.fetch();
-    if (interaction.user === interaction.client.application.owner) {
+    if (
+      interaction.user === interaction.client.application.owner ||
+      interaction.user === interaction.guild.fetchOwner()
+    ) {
       try {
         const newVal = /^-?\d+$/.test(value) ? parseInt(value) : value;
         stats[interaction.guild.id][user][attribute] = add

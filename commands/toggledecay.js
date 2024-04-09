@@ -8,7 +8,10 @@ module.exports = {
     .setDescription("Toggle decay for the current server (owner only)"),
   async execute(interaction) {
     await interaction.client.application.fetch();
-    if (interaction.user === interaction.client.application.owner) {
+    if (
+      interaction.user === interaction.client.application.owner ||
+      interaction.user === interaction.guild.fetchOwner()
+    ) {
       stats[interaction.guild.id]["allowDecay"] = stats[interaction.guild.id][
         "allowDecay"
       ]
