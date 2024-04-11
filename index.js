@@ -10,7 +10,7 @@ const fs = require("fs");
 const npFile = require("./commands/np.js");
 const { token, statsConfig } = require("./resources/config.json");
 const responses = require("./resources/responses.json");
-const reactions = require("./resources/reactions.json");
+const chanceResponses = require("./resources/chanceResponses.json");
 const stats = require("./resources/stats.json");
 const ranks = require("./resources/ranks.json");
 const fetch = require("node-fetch");
@@ -239,28 +239,40 @@ async function checkMessageResponse(msg) {
 }
 
 async function checkMessageReactions(msg) {
-  Object.keys(reactions).some((k) => {
-    if (k === msg.author.id && Math.random() < 0.25) {
-      const reaction = msg.guild.emojis.cache.find(
-        (e) => e.name === reactions[k]
-      );
-      if (reaction) {
-        msg.react(reaction);
-      }
-    }
-  });
+  Object.values(chanceResponses).some((v) => {
+    const roll = Math.random();
 
-  if (Math.random() < 1 / 50) {
-    await msg.react("🤓");
-  }
-  if (Math.random() < 1 / 100) {
-    await msg.reply("L boozoo");
-  }
-  if (Math.random() < 1 / 10000) {
-    await msg.reply(
-      "The chance for you to get this is 0.0001%, so well done, nerd"
-    );
-  }
+    if (roll < v["chance"] / 100) {
+      switch (v["type"]) {
+        case "message":
+          msg.reply(v["string"]);
+          break;
+
+        case "react":
+          msg.react(v["string"]);
+          break;
+
+        case "react_custom":
+          if (v["user"] === msg.author.id && Math.random() < 0.25) {
+            const reaction = msg.guild.emojis.cache.find(
+              (e) => e.name === v["string"]
+            );
+
+            if (reaction) {
+              msg.react(reaction);
+            }
+          }
+          break;
+
+        default:
+          break;
+      }
+
+      return true;
+    }
+
+    return false;
+  });
 }
 
 async function initialiseStats(guildId, userId) {
