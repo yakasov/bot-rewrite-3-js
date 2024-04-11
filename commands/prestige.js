@@ -13,25 +13,37 @@ module.exports = {
   aliases: ["rankup"],
   data: new SlashCommandBuilder()
     .setName("prestige")
-    .setDescription("Prestige to the next prestige level."),
+    .setDescription("Prestige to the next prestige level.")
+    .addUserOption((opt) =>
+      opt
+        .setName("user")
+        .setDescription("The user to force prestige (admin only)")
+    ),
   async execute(interaction) {
+    await interaction.client.application.fetch();
+
+    const user = interaction.options.getUser("user");
+    const elevated =
+      interaction.user === interaction.client.application.owner ||
+      interaction.user.id === (await interaction.guild.fetchOwner()).user.id;
+    const idToUse = elevated ? user.id : interaction.user.id;
+
     const guildStats = stats[interaction.guild.id];
     if (!guildStats)
       return await interaction.reply("This server has no statistics yet!");
-    if (!guildStats[interaction.user.id])
+    if (!guildStats[idToUse])
       return await interaction.reply("You do not have any statistics yet!");
-    if (
-      (guildStats[interaction.user.id]["prestige"] ?? 0) >=
-      statsConfig["prestigeMaximum"]
-    )
-      return await interaction.reply("You have reached max prestige!");
-    if (
-      guildStats[interaction.user.id]["score"] <
-      statsConfig["prestigeRequirement"]
-    )
-      return await interaction.reply(
-        `You cannot prestige until ${statsConfig["prestigeRequirement"]}SR!`
-      );
+
+    if (!elevated) {
+      if (
+        (guildStats[idToUse]["prestige"] ?? 0) >= statsConfig["prestigeMaximum"]
+      )
+        return await interaction.reply("You have reached max prestige!");
+      if (guildStats[idToUse]["score"] < statsConfig["prestigeRequirement"])
+        return await interaction.reply(
+          `You cannot prestige until ${statsConfig["prestigeRequirement"]}SR!`
+        );
+    }
 
     const confirm = new ButtonBuilder()
       .setCustomId("y")
@@ -51,7 +63,7 @@ module.exports = {
       components: [row],
     });
 
-    const collectorFilter = (i) => i.user.id === interaction.user.id;
+    const collectorFilter = (i) => elevated || i.user.id === idToUse;
 
     try {
       const confirmation = await response.awaitMessageComponent({
@@ -63,34 +75,27 @@ module.exports = {
         await confirmation.update({
           content: `${
             interaction.guild.members.cache
-              .filter((m) => m.id == interaction.user.id)
+              .filter((m) => m.id == idToUse)
               .first().displayName
-          } has prestiged to prestige ${
-            guildStats[interaction.user.id]["prestige"] + 1
-          }!`,
+          } has prestiged to prestige ${guildStats[idToUse]["prestige"] + 1}!`,
           components: [],
         });
 
-        stats[interaction.guild.id][interaction.user.id]["prestige"] =
-          (stats[interaction.guild.id][interaction.user.id]["prestige"] ?? 0) +
-          1;
-        stats[interaction.guild.id][interaction.user.id]["bestRanking"] = "";
-        stats[interaction.guild.id][interaction.user.id]["bestScore"] = 0;
+        stats[interaction.guild.id][idToUse]["prestige"] =
+          (stats[interaction.guild.id][idToUse]["prestige"] ?? 0) + 1;
+        stats[interaction.guild.id][idToUse]["bestRanking"] = "";
+        stats[interaction.guild.id][idToUse]["bestScore"] = 0;
 
         // Store message + voiceTime values then reset them
-        stats[interaction.guild.id][interaction.user.id]["previousMessages"] =
-          (stats[interaction.guild.id][interaction.user.id][
-            "previousMessages"
-          ] ?? 0) +
-          stats[interaction.guild.id][interaction.user.id]["messages"];
-        stats[interaction.guild.id][interaction.user.id]["previousVoiceTime"] =
-          (stats[interaction.guild.id][interaction.user.id][
-            "previousVoiceTime"
-          ] ?? 0) +
-          stats[interaction.guild.id][interaction.user.id]["voiceTime"];
+        stats[interaction.guild.id][idToUse]["previousMessages"] =
+          (stats[interaction.guild.id][idToUse]["previousMessages"] ?? 0) +
+          stats[interaction.guild.id][idToUse]["messages"];
+        stats[interaction.guild.id][idToUse]["previousVoiceTime"] =
+          (stats[interaction.guild.id][idToUse]["previousVoiceTime"] ?? 0) +
+          stats[interaction.guild.id][idToUse]["voiceTime"];
 
-        stats[interaction.guild.id][interaction.user.id]["messages"] = 0;
-        stats[interaction.guild.id][interaction.user.id]["voiceTime"] = 0;
+        stats[interaction.guild.id][idToUse]["messages"] = 0;
+        stats[interaction.guild.id][idToUse]["voiceTime"] = 0;
 
         fs.writeFileSync("./resources/stats.json", JSON.stringify(stats));
       } else {

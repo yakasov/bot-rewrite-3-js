@@ -34,7 +34,7 @@ module.exports = {
     await interaction.client.application.fetch();
     if (
       interaction.user === interaction.client.application.owner ||
-      interaction.user === interaction.guild.fetchOwner()
+      interaction.user.id === (await interaction.guild.fetchOwner()).user.id
     ) {
       try {
         const newVal = /^-?\d+$/.test(value) ? parseInt(value) : value;
