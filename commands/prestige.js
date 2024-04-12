@@ -96,7 +96,7 @@ module.exports = {
 
         // Add nerdHandicap to offset nerdScore
         stats[interaction.guild.id][idToUse]["nerdHandicap"] =
-          stats[interaction.guild.id][idToUse]["nerdScore"];
+          stats[interaction.guild.id][idToUse]["nerdScore"] * 0.8;
 
         // Reset decay
         stats[interaction.guild.id][idToUse]["decay"] = 0;
