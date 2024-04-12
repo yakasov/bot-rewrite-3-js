@@ -6,6 +6,7 @@ const {
   Message,
   Collection,
 } = require("discord.js");
+const moment = require("moment-timezone");
 const fs = require("fs");
 const npFile = require("./commands/np.js");
 const { token, statsConfig } = require("./resources/config.json");
@@ -29,7 +30,7 @@ const client = new Client({
   ],
   allowedMentions: { parse: ["users", "roles"], repliedUser: true },
 });
-var date = new Date().toLocaleDateString("en-GB").slice(0, -5);
+var date = moment().tz("Europe/London").format("DD/MM");
 var splash;
 var botUptime = 0;
 
