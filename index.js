@@ -411,6 +411,7 @@ async function updateScores() {
       .filter((k) => k.length == 18)
       .forEach(async (user) => {
         await addToStats({ type: "init", userId: user, guildId: guild });
+        const nerdPower = (stats[guild][user]["prestige"] ?? 0) > 0 ? 2.8 : 1.8;
         const realScore = Math.floor(
           (stats[guild][user]["voiceTime"] * statsConfig["voiceChatSRGain"] +
             stats[guild][user]["messages"] * statsConfig["messageSRGain"]) *
@@ -422,7 +423,7 @@ async function updateScores() {
             ) *
             1.2 ** (stats[guild][user]["prestige"] ?? 0) -
             Object.values(stats[guild][user]["nerdEmojis"]).reduce(
-              (sum, a) => sum + Math.max(2.8 ** a + 1, 0) - 1,
+              (sum, a) => sum + Math.max(nerdPower ** a + 1, 0) - 1,
               0
             ) -
             stats[guild][user]["decay"]
