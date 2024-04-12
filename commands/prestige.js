@@ -34,7 +34,7 @@ module.exports = {
     if (!guildStats[idToUse])
       return await interaction.reply("You do not have any statistics yet!");
 
-    if (!elevated) {
+    if (!(elevated && user)) {
       if (
         (guildStats[idToUse]["prestige"] ?? 0) >= statsConfig["prestigeMaximum"]
       )
@@ -93,8 +93,9 @@ module.exports = {
         stats[interaction.guild.id][idToUse]["previousVoiceTime"] =
           (stats[interaction.guild.id][idToUse]["previousVoiceTime"] ?? 0) +
           stats[interaction.guild.id][idToUse]["voiceTime"];
+
+        // Add nerdHandicap to offset nerdScore
         stats[interaction.guild.id][idToUse]["nerdHandicap"] =
-          (stats[interaction.guild.id][idToUse]["nerdHandicap"] ?? 0) +
           stats[interaction.guild.id][idToUse]["nerdScore"];
 
         stats[interaction.guild.id][idToUse]["messages"] = 0;
