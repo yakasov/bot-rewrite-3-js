@@ -378,7 +378,7 @@ async function addToStats(a) {
       stats[guildId][userId]["nerdEmojis"][messageId] =
         (stats[guildId][userId]["nerdEmojis"][messageId] ?? 0) +
         1 +
-        (stats[guildId][giverId]["prestige"] ?? 0);
+        (Math.floor(stats[guildId][giverId]["prestige"] / 2) ?? 0);
       break;
 
     case "nerdEmojiRemoved":
@@ -393,7 +393,7 @@ async function addToStats(a) {
       stats[guildId][userId]["nerdEmojis"][messageId] = Math.max(
         0,
         (stats[guildId][userId]["nerdEmojis"][messageId] ?? 0) -
-          (1 + (stats[guildId][giverId]["prestige"] ?? 0))
+          (1 + (Math.floor(stats[guildId][giverId]["prestige"] / 2) ?? 0))
       );
       break;
 
@@ -422,7 +422,7 @@ async function updateScores() {
             ) *
             1.2 ** (stats[guild][user]["prestige"] ?? 0) -
             Object.values(stats[guild][user]["nerdEmojis"]).reduce(
-              (sum, a) => sum + Math.max(3 ** a + 1, 0) - 1,
+              (sum, a) => sum + Math.max(2.8 ** a + 1, 0) - 1,
               0
             ) -
             stats[guild][user]["decay"]
