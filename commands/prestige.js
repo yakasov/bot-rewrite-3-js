@@ -26,7 +26,7 @@ module.exports = {
     const elevated =
       interaction.user === interaction.client.application.owner ||
       interaction.user.id === (await interaction.guild.fetchOwner()).user.id;
-    const idToUse = elevated ? user.id : interaction.user.id;
+    const idToUse = elevated && user ? user.id : interaction.user.id;
 
     const guildStats = stats[interaction.guild.id];
     if (!guildStats)
@@ -93,6 +93,9 @@ module.exports = {
         stats[interaction.guild.id][idToUse]["previousVoiceTime"] =
           (stats[interaction.guild.id][idToUse]["previousVoiceTime"] ?? 0) +
           stats[interaction.guild.id][idToUse]["voiceTime"];
+        stats[interaction.guild.id][idToUse]["nerdHandicap"] =
+          (stats[interaction.guild.id][idToUse]["nerdHandicap"] ?? 0) +
+          stats[interaction.guild.id][idToUse]["nerdScore"];
 
         stats[interaction.guild.id][idToUse]["messages"] = 0;
         stats[interaction.guild.id][idToUse]["voiceTime"] = 0;
