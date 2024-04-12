@@ -1,3 +1,4 @@
+const moment = require("moment-timezone");
 const birthdays = require("./../resources/birthdays.json");
 const {
   mainGuildId,
@@ -6,7 +7,7 @@ const {
 } = require("./../resources/config.json");
 
 exports.run = async (client, date, force = false) => {
-  const today = new Date().toLocaleDateString("en-GB").slice(0, -5);
+  const today = moment().tz("Europe/London").format("DD/MM");
 
   if (today > date || force) {
     date = today;

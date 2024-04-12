@@ -25,6 +25,7 @@
     "ffmpeg-static": "^5.2.0",
     "gtts": "^0.2.1",
     "minecraft-server-util": "^5.4.4",
+    "moment-timezone": "^0.5.45",
     "node-fetch": "^2.7.0",
     "node-html-parser": "^6.1.13",
     "openai": "^3.3.0",
