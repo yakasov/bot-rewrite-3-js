@@ -26,7 +26,7 @@ module.exports = {
     const elevated =
       interaction.user === interaction.client.application.owner ||
       interaction.user.id === (await interaction.guild.fetchOwner()).user.id;
-    const idToUse = elevated ? user.id : interaction.user.id;
+    const idToUse = elevated && user ? user.id : interaction.user.id;
 
     const guildStats = stats[interaction.guild.id];
     if (!guildStats)
@@ -34,7 +34,7 @@ module.exports = {
     if (!guildStats[idToUse])
       return await interaction.reply("You do not have any statistics yet!");
 
-    if (!elevated) {
+    if (!(elevated && user)) {
       if (
         (guildStats[idToUse]["prestige"] ?? 0) >= statsConfig["prestigeMaximum"]
       )
@@ -93,6 +93,10 @@ module.exports = {
         stats[interaction.guild.id][idToUse]["previousVoiceTime"] =
           (stats[interaction.guild.id][idToUse]["previousVoiceTime"] ?? 0) +
           stats[interaction.guild.id][idToUse]["voiceTime"];
+
+        // Add nerdHandicap to offset nerdScore
+        stats[interaction.guild.id][idToUse]["nerdHandicap"] =
+          stats[interaction.guild.id][idToUse]["nerdScore"];
 
         stats[interaction.guild.id][idToUse]["messages"] = 0;
         stats[interaction.guild.id][idToUse]["voiceTime"] = 0;
