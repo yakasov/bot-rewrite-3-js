@@ -98,6 +98,9 @@ module.exports = {
         stats[interaction.guild.id][idToUse]["nerdHandicap"] =
           stats[interaction.guild.id][idToUse]["nerdScore"];
 
+        // Reset decay
+        stats[interaction.guild.id][idToUse]["decay"] = 0;
+
         stats[interaction.guild.id][idToUse]["messages"] = 0;
         stats[interaction.guild.id][idToUse]["voiceTime"] = 0;
 
