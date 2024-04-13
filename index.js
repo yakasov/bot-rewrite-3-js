@@ -192,8 +192,7 @@ function checkMessageResponse(msg) {
       "https://x.com/",
       "https://twitter.com/"
     ].find((l) =>
-      msg.content.includes(l)
-    )
+      msg.content.includes(l))
   ) {
     msg.channel.send(
       `${getNickname(msg)} sent:\n${msg.content

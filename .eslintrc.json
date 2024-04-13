@@ -22,7 +22,7 @@
     "func-names": "off",
     "func-style": ["error", "declaration", { "allowArrowFunctions": true }],
     "function-call-argument-newline": ["warn", "consistent"],
-    "function-paren-newline": "off",
+    "function-paren-newline": ["error", "multiline-arguments"],
     "id-length": "off",
     "implicit-arrow-linebreak": "off",
     "indent": ["warn", 2],

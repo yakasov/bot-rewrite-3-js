@@ -31,15 +31,13 @@ module.exports = {
       opt
         .setName("prompt")
         .setDescription("The prompt to give AI4")
-        .setRequired(true)
-    )
+        .setRequired(true))
     .addNumberOption((opt) =>
       opt
         .setName("temperature")
         .setDescription("Optional temperature parameter")
         .setMinValue(0)
-        .setMaxValue(1)
-    ),
+        .setMaxValue(1)),
   async execute(interaction) {
     if (
       !config.apiKey ||

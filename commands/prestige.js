@@ -17,8 +17,7 @@ module.exports = {
     .addUserOption((opt) =>
       opt
         .setName("user")
-        .setDescription("The user to force prestige (admin only)")
-    ),
+        .setDescription("The user to force prestige (admin only)")),
   async execute(interaction) {
     await interaction.client.application.fetch();
 
@@ -96,8 +95,10 @@ Are you sure you want to prestige?`
         stats[interaction.guild.id][idToUse] =
           module.exports.updateStats(stats[interaction.guild.id][idToUse]);
 
-        return fs.writeFileSync("./resources/stats.json",
-          JSON.stringify(stats));
+        return fs.writeFileSync(
+          "./resources/stats.json",
+          JSON.stringify(stats)
+        );
       }
       return confirmation.update({
         "components": [],

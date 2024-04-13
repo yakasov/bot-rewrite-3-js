@@ -16,8 +16,7 @@ module.exports = {
       opt
         .setName("url")
         .setDescription("The YouTube URL to stream from")
-        .setRequired(true)
-    ),
+        .setRequired(true)),
 
   async execute(interaction) {
     await interaction.deferReply();

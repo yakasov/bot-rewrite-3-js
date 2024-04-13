@@ -11,12 +11,10 @@ module.exports = {
     .setDescription("Shows personal statistics")
     .addUserOption((opt) =>
       opt.setName("user")
-        .setDescription("The user to get the profile of")
-    )
+        .setDescription("The user to get the profile of"))
     .addBooleanOption((opt) =>
       opt.setName("debug")
-        .setDescription("Whether to print the raw statistics")
-    ),
+        .setDescription("Whether to print the raw statistics")),
   async execute(interaction) {
     await interaction.deferReply();
 

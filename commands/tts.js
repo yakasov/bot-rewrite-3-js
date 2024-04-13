@@ -16,8 +16,7 @@ module.exports = {
       opt
         .setName("prompt")
         .setDescription("The prompt for TTS to say")
-        .setRequired(true)
-    ),
+        .setRequired(true)),
   async execute(interaction) {
     await interaction.deferReply();
 
@@ -47,7 +46,9 @@ module.exports = {
       .then(async (r) => {
         if (r.data) {
           fs.writeFileSync(
-            "resources/tts.mp3", r.data, { "encoding": "base64" }
+            "resources/tts.mp3", 
+            r.data,
+            { "encoding": "base64" }
           );
           const res = createAudioResource("resources/tts.mp3");
           player.play(res);

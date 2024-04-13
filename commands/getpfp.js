@@ -11,8 +11,7 @@ module.exports = {
     .addUserOption((opt) =>
       opt
         .setName("user")
-        .setDescription("The user to get the profile picture of")
-    ),
+        .setDescription("The user to get the profile picture of")),
   async execute(interaction) {
     const user = interaction.options.getUser("user");
 

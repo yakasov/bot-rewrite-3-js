@@ -17,14 +17,12 @@ module.exports = {
         .setRequired(true)
         .addChoices({ "name": "+",
           "value": "+" }, { "name": "-",
-          "value": "-" })
-    )
+          "value": "-" }))
     .addUserOption((opt) =>
       opt
         .setName("user")
         .setDescription("The user to give or take reputation from")
-        .setRequired(true)
-    ),
+        .setRequired(true)),
   async execute(interaction) {
     await interaction.deferReply({ "ephemeral": true });
 
