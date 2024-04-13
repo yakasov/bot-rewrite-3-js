@@ -46,7 +46,7 @@ module.exports = {
       .then(async (r) => {
         if (r.data) {
           fs.writeFileSync(
-            "resources/tts.mp3", 
+            "resources/tts.mp3",
             r.data,
             { "encoding": "base64" }
           );

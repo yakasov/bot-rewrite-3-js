@@ -87,10 +87,10 @@ function getTime(seconds = 0, minutes = 0, hours = 0) {
   return 1000 * seconds + 1000 * 60 * minutes + 1000 * 60 * 60 * hours;
 }
 
-async function checkBirthdays(force = false) {
+function checkBirthdays(force = false) {
   try {
     const task = require("./tasks/birthdays.js");
-    date = await task.run(client, date, force);
+    date = task.run(client, date, force);
     return null;
   } catch (e) {
     return console.error(e);
@@ -106,8 +106,8 @@ function checkMinecraftServer() {
   }
 }
 
-async function getNewSplash() {
-  splash = await npFile.run([client]);
+function getNewSplash() {
+  splash = npFile.run([client]);
 }
 
 function getNickname(msg) {
@@ -174,8 +174,8 @@ function checkVoiceChannels() {
       (channel) => channel.type === 2
     );
     channels.forEach((channel) => {
-      channel.members.forEach(async (member) => {
-        await addToStats({
+      channel.members.forEach((member) => {
+        addToStats({
           "guildId": member.guild.id,
           "type": "inVoiceChannel",
           "userId": member.user.id
@@ -464,7 +464,7 @@ function updateScores() {
       Object.keys(guildStats)
         .filter((k) => k.length === 18)
         .forEach(async (user) => {
-          await addToStats({
+          addToStats({
             "guildId": guild,
             "type": "init",
             "userId": user
@@ -506,13 +506,13 @@ function updateScores() {
             stats[guild][user].score >
           (stats[guild][user].bestScore ?? 0) ||
           // Fix for bestScore being stuck at 50K after prestige
-          stats[guild][user].bestScore === 50000
+          stats[guild][user].bestScore === statsConfig.prestigeRequirement
           ) {
             stats[guild][user].bestScore = stats[guild][user].score;
 
             if (
               stats[guild][user].bestRanking !==
-            await getRanking(stats[guild][user].score) &&
+            getRanking(stats[guild][user].score) &&
             stats[guild].rankUpChannel &&
             botUptime > 120
             ) {
@@ -525,11 +525,11 @@ function updateScores() {
               );
               channel.send(
                 `## Rank Up!\n\`\`\`ansi\n${userObject.displayName
-                } has reached rank ${await getRanking(stats[guild][user].score)
+                } has reached rank ${getRanking(stats[guild][user].score)
                 }!\`\`\``
               );
             }
-            stats[guild][user].bestRanking = await getRanking(
+            stats[guild][user].bestRanking = getRanking(
               stats[guild][user].score
             );
           }
@@ -551,7 +551,7 @@ function getRanking(score) {
   return rankString;
 }
 
-client.once(Events.ClientReady, async (c) => {
+client.once(Events.ClientReady, (c) => {
   console.log(
     "Connected and ready to go!\n" +
     `Current date is ${date}, ` +
@@ -559,11 +559,11 @@ client.once(Events.ClientReady, async (c) => {
   );
 
   checkVoiceChannels();
-  await checkBirthdays(true);
+  checkBirthdays(true);
   checkMinecraftServer();
-  await getNewSplash();
+  getNewSplash();
   addDecayToStats();
-  await backupStats();
+  backupStats();
 
   /* eslint-disable line-comment-position */
   setInterval(() => {
@@ -626,19 +626,19 @@ client.on(Events.InteractionCreate, async (interaction) => {
   }
 });
 
-client.on(Events.VoiceStateUpdate, async (oldState, newState) => {
+client.on(Events.VoiceStateUpdate, (oldState, newState) => {
   if (newState.member.bot) {
     return;
   }
 
   if (oldState.channel && !newState.channel) {
-    await addToStats({
+    addToStats({
       "guildId": newState.guild.id,
       "type": "leftVoiceChannel",
       "userId": newState.member.id
     });
   } else if (!oldState.channel && newState.channel) {
-    await addToStats({
+    addToStats({
       "guildId": newState.guild.id,
       "type": "joinedVoiceChannel",
       "userId": newState.member.id
@@ -646,9 +646,9 @@ client.on(Events.VoiceStateUpdate, async (oldState, newState) => {
   }
 });
 
-client.on(Events.MessageReactionAdd, async (reaction, user) => {
+client.on(Events.MessageReactionAdd, (reaction, user) => {
   if (reaction.emoji.name === "🤓") {
-    await addToStats({
+    addToStats({
       "giver": user,
       "guildId": reaction.message.guildId,
       "messageId": reaction.message.id,
@@ -658,9 +658,9 @@ client.on(Events.MessageReactionAdd, async (reaction, user) => {
   }
 });
 
-client.on(Events.MessageReactionRemove, async (reaction, user) => {
+client.on(Events.MessageReactionRemove, (reaction, user) => {
   if (reaction.emoji.name === "🤓") {
-    await addToStats({
+    addToStats({
       "giver": user,
       "guildId": reaction.message.guildId,
       "messageId": reaction.message.id,
