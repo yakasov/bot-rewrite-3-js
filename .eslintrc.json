@@ -4,7 +4,7 @@
     "commonjs": true,
     "es2021": true
   },
-  "extends": "eslint:recommended",
+  "extends": "eslint:all",
   "overrides": [],
   "parserOptions": {
     "ecmaVersion": "latest"
@@ -12,6 +12,10 @@
   "rules": {
     "indent": ["warn", 2],
     "quotes": ["warn", "double"],
-    "semi": ["warn", "always"]
+    "semi": ["warn", "always"],
+    "one-var": ["warn", "never"],
+    "no-magic-numbers": "off",
+    "no-console": "off",
+    "no-inline-comments": "off"
   }
 }

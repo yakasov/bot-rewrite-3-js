@@ -15,7 +15,7 @@ module.exports = {
     const user = interaction.options.getUser("user");
 
     try {
-      var avatar;
+      let avatar;
       if (user) {
         avatar = user.displayAvatarURL({ size: 1024, dynamic: true });
       } else {

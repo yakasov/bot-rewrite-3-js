@@ -29,19 +29,19 @@ module.exports = {
 
     const guildStats = stats[interaction.guild.id];
     if (!guildStats)
-      return await interaction.reply("This server has no statistics yet!");
+      {return await interaction.reply("This server has no statistics yet!");}
     if (!guildStats[idToUse])
-      return await interaction.reply("You do not have any statistics yet!");
+      {return await interaction.reply("You do not have any statistics yet!");}
 
     if (!(elevated && user)) {
       if (
-        (guildStats[idToUse]["prestige"] ?? 0) >= statsConfig["prestigeMaximum"]
+        (guildStats[idToUse].prestige ?? 0) >= statsConfig.prestigeMaximum
       )
-        return await interaction.reply("You have reached max prestige!");
-      if (guildStats[idToUse]["score"] < statsConfig["prestigeRequirement"])
-        return await interaction.reply(
-          `You cannot prestige until ${statsConfig["prestigeRequirement"]}SR!`
-        );
+        {return await interaction.reply("You have reached max prestige!");}
+      if (guildStats[idToUse].score < statsConfig.prestigeRequirement)
+        {return await interaction.reply(
+          `You cannot prestige until ${statsConfig.prestigeRequirement}SR!`
+        );}
     }
 
     const confirm = new ButtonBuilder()
@@ -76,34 +76,34 @@ module.exports = {
             interaction.guild.members.cache
               .filter((m) => m.id == idToUse)
               .first().displayName
-          } has prestiged to prestige ${guildStats[idToUse]["prestige"] + 1}!`,
+          } has prestiged to prestige ${guildStats[idToUse].prestige + 1}!`,
           components: [],
         });
 
-        stats[interaction.guild.id][idToUse]["prestige"] =
-          (stats[interaction.guild.id][idToUse]["prestige"] ?? 0) + 1;
-        stats[interaction.guild.id][idToUse]["bestRanking"] = "";
-        stats[interaction.guild.id][idToUse]["bestScore"] = 0;
+        stats[interaction.guild.id][idToUse].prestige =
+          (stats[interaction.guild.id][idToUse].prestige ?? 0) + 1;
+        stats[interaction.guild.id][idToUse].bestRanking = "";
+        stats[interaction.guild.id][idToUse].bestScore = 0;
 
         // Store message + voiceTime values then reset them
-        stats[interaction.guild.id][idToUse]["previousMessages"] =
-          (stats[interaction.guild.id][idToUse]["previousMessages"] ?? 0) +
-          stats[interaction.guild.id][idToUse]["messages"];
-        stats[interaction.guild.id][idToUse]["previousVoiceTime"] =
-          (stats[interaction.guild.id][idToUse]["previousVoiceTime"] ?? 0) +
-          stats[interaction.guild.id][idToUse]["voiceTime"];
+        stats[interaction.guild.id][idToUse].previousMessages =
+          (stats[interaction.guild.id][idToUse].previousMessages ?? 0) +
+          stats[interaction.guild.id][idToUse].messages;
+        stats[interaction.guild.id][idToUse].previousVoiceTime =
+          (stats[interaction.guild.id][idToUse].previousVoiceTime ?? 0) +
+          stats[interaction.guild.id][idToUse].voiceTime;
 
         // Add nerdHandicap to offset nerdScore
-        stats[interaction.guild.id][idToUse]["nerdHandicap"] =
-          stats[interaction.guild.id][idToUse]["nerdScore"] **
-            (stats[interaction.guild.id][idToUse]["prestige"] == 1 ? 1.55 : 0) *
+        stats[interaction.guild.id][idToUse].nerdHandicap =
+          stats[interaction.guild.id][idToUse].nerdScore **
+            (stats[interaction.guild.id][idToUse].prestige == 1 ? 1.55 : 0) *
           0.8;
 
         // Reset decay
-        stats[interaction.guild.id][idToUse]["decay"] = 0;
+        stats[interaction.guild.id][idToUse].decay = 0;
 
-        stats[interaction.guild.id][idToUse]["messages"] = 0;
-        stats[interaction.guild.id][idToUse]["voiceTime"] = 0;
+        stats[interaction.guild.id][idToUse].messages = 0;
+        stats[interaction.guild.id][idToUse].voiceTime = 0;
 
         fs.writeFileSync("./resources/stats.json", JSON.stringify(stats));
       } else {

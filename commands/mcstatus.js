@@ -19,13 +19,13 @@ module.exports = {
 
     status(minecraftServerIp, minecraftServerPort)
       .then(async (res) => {
-        res.favicon = null; // favicon is a base64 encoded image, remove it
+        res.favicon = null; // Favicon is a base64 encoded image, remove it
         await interaction.reply(
-          "```\n" + JSON.stringify(res, null, 4) + "\n```"
+          `\`\`\`\n${  JSON.stringify(res, null, 4)  }\n\`\`\``
         );
       })
       .catch(async (e) => {
-        var str = e.message;
+        let str = e.message;
 
         if (e.errno && e.errno === -4078) {
           str += `\n<@${minecraftServerOwnerId}>`;

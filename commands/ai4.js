@@ -53,7 +53,7 @@ module.exports = {
 
     let res;
     let attempts = 0;
-    let timestamp = Date.now();
+    const timestamp = Date.now();
 
     module.exports.conversation = module.exports.conversation.concat({
       role: "user",
@@ -67,7 +67,7 @@ module.exports = {
           model: "gpt-4",
           messages: module.exports.conversation,
           max_tokens: 2048,
-          temperature: temperature,
+          temperature,
         });
       } catch (err) {
         fs.writeFile(
@@ -81,7 +81,7 @@ module.exports = {
             Math.floor(module.exports.conversation.length / 2),
             module.exports.conversation.length
           )
-        ); // shorten conversation
+        ); // Shorten conversation
       }
     }
 
@@ -92,14 +92,12 @@ module.exports = {
       resArray.forEach(async (r) => {
         await interaction.followUp(r);
       });
-    } else {
-      if (attempts == 3) {
+    } else if (attempts == 3) {
         return await module.exports.returnFail(
           interaction,
           "Failed after 3 attempts, please try again - your conversation shouldn't be affected!"
         );
       }
-    }
   },
 
   formatMsgs: (e, ms) => {
@@ -111,7 +109,7 @@ module.exports = {
   },
   returnFail: async (m, r) => {
     await m.reactions.removeAll();
-    await m.react(module.exports.reactions["fail"]);
+    await m.react(module.exports.reactions.fail);
     return m.reply(r);
   },
 };

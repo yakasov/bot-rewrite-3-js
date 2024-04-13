@@ -9,7 +9,7 @@ module.exports = {
     .setName("np")
     .setDescription("Generate a new splash presence"),
   async execute(interaction) {
-    var splash = splashes[Math.floor(Math.random() * splashes.length)];
+    const splash = splashes[Math.floor(Math.random() * splashes.length)];
     interaction.client.user.setPresence({
       activities: [{ name: splash, type: ActivityType.Watching }],
     });
@@ -17,7 +17,7 @@ module.exports = {
     return splash;
   },
   run: async ([client]) => {
-    var splash = splashes[Math.floor(Math.random() * splashes.length)];
+    const splash = splashes[Math.floor(Math.random() * splashes.length)];
     client.user.setPresence({
       activities: [{ name: splash, type: ActivityType.Watching }],
     });

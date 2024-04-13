@@ -28,7 +28,7 @@ module.exports = {
     const user = interaction.options.getUser("user");
     const giver = interaction.member;
     const amount =
-      (1 + (stats[interaction.guild.id][giver.id]["prestige"] ?? 0)) *
+      (1 + (stats[interaction.guild.id][giver.id].prestige ?? 0)) *
       (type === "+" ? 1 : -1);
 
     // Do not allow giving reputation to yourself
@@ -41,25 +41,25 @@ module.exports = {
     // Do not run the command if the cooldown is not over
     if (
       module.exports.f() -
-        (stats[interaction.guild.id][giver.id]["reputationTime"] ?? 0) <
-      statsConfig["reputationGainCooldown"]
+        (stats[interaction.guild.id][giver.id].reputationTime ?? 0) <
+      statsConfig.reputationGainCooldown
     ) {
       return await interaction.followUp(
         `You need to wait ${
-          statsConfig["reputationGainCooldown"] -
+          statsConfig.reputationGainCooldown -
           (module.exports.f() -
-            (stats[interaction.guild.id][giver.id]["reputationTime"] ?? 0))
+            (stats[interaction.guild.id][giver.id].reputationTime ?? 0))
         } more seconds first!`
       );
     }
 
-    stats[interaction.guild.id][user.id]["reputation"] =
-      (stats[interaction.guild.id][user.id]["reputation"] ?? 0) + amount;
+    stats[interaction.guild.id][user.id].reputation =
+      (stats[interaction.guild.id][user.id].reputation ?? 0) + amount;
 
-    if (stats[interaction.guild.id][user.id]["reputation"] >= 100) {
-      stats[interaction.guild.id][user.id]["reputation"] = -99;
-    } else if (stats[interaction.guild.id][user.id]["reputation"] <= -100) {
-      stats[interaction.guild.id][user.id]["reputation"] = 99;
+    if (stats[interaction.guild.id][user.id].reputation >= 100) {
+      stats[interaction.guild.id][user.id].reputation = -99;
+    } else if (stats[interaction.guild.id][user.id].reputation <= -100) {
+      stats[interaction.guild.id][user.id].reputation = 99;
     }
 
     await interaction.followUp(
@@ -70,18 +70,16 @@ module.exports = {
       ephemeral: false,
     });
 
-    stats[interaction.guild.id][giver.id]["reputationTime"] =
+    stats[interaction.guild.id][giver.id].reputationTime =
       module.exports.f();
 
     fs.writeFileSync("./resources/stats.json", JSON.stringify(stats));
 
-    await wait(statsConfig["reputationGainCooldown"] * 1000);
+    await wait(statsConfig.reputationGainCooldown * 1000);
     return await interaction.followUp({
       content: "Your reputation cooldown has expired!",
       ephemeral: true,
     });
   },
-  f: () => {
-    return Math.floor(Date.now() / 1000);
-  },
+  f: () => Math.floor(Date.now() / 1000),
 };

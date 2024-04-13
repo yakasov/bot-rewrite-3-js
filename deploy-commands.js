@@ -15,7 +15,7 @@ const commandFiles = fs
 
 for (const file of commandFiles) {
   const filePath = path.join(commandsPath, file);
-  const command = require("./" + filePath);
+  const command = require(`./${  filePath}`);
   if ("data" in command && "execute" in command) {
     commands.push(command.data.toJSON());
   } else {
