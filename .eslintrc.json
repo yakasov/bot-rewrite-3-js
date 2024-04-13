@@ -20,7 +20,7 @@
     "consistent-return": ["error", { "treatUndefinedAsUnspecified": true }],
     "dot-location": ["error", "property"],
     "func-names": "off",
-    "func-style": "off",
+    "func-style": ["error", "declaration", { "allowArrowFunctions": true }],
     "function-call-argument-newline": ["warn", "consistent"],
     "function-paren-newline": "off",
     "id-length": "off",
