@@ -82,16 +82,16 @@ module.exports = {
       (allUserStats.voiceTime * statsConfig.voiceChatSRGain +
         allUserStats.messages * statsConfig.messageSRGain) *
         Math.max(
-          1 + (allUserStats.reputation ?? 0) * statsConfig.reputationGain,
+          1 + allUserStats.reputation * statsConfig.reputationGain,
           1
         ) *
-        1.2 ** (allUserStats.prestige ?? 0)
+        1.2 ** allUserStats.prestige
     )}SR\n    Reputation: ${
-      allUserStats.reputation ?? 0
+      allUserStats.reputation
     }\n    Decay: ${Math.round(
       allUserStats.decay
     )}\n\n    Nerd Emojis given: ${
-      allUserStats.nerdsGiven ?? 0
+      allUserStats.nerdsGiven
     }\n    Nerd Emojis received: ${
       Object.values(allUserStats.nerdEmojis)
         .reduce(
@@ -131,8 +131,8 @@ module.exports = {
     return `${member.displayName}`;
   },
   "getPrestige": (memberStats) =>
-    `${memberStats.prestige ?? 0} \u001b[33m${"★".repeat(
-      memberStats.prestige ?? 0
+    `${memberStats.prestige} \u001b[33m${"★".repeat(
+      memberStats.prestige
     )}\u001b[0m`,
   "getRanking": (memberStats) => {
     let rankString = "MISSINGNO";

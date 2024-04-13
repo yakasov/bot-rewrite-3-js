@@ -22,7 +22,7 @@ module.exports = {
         v
       ]) => [
         k,
-        v.nerdsGiven ?? 0
+        v.nerdsGiven
       ])
       .sort(([, f], [, s]) => s - f)[0];
 
@@ -56,7 +56,7 @@ module.exports = {
         v
       ]) => [
         k,
-        v.reputation ?? 0
+        v.reputation
       ]);
 
     const topReputation =
@@ -98,7 +98,7 @@ module.exports = {
             guildStats[a[0]].voiceTime + guildStats[a[0]].previousVoiceTime
           ),
           "Rep": module.exports.formatReputation(
-            module.exports.addLeadingZero(guildStats[a[0]].reputation ?? 0)
+            module.exports.addLeadingZero(guildStats[a[0]].reputation)
           ),
           "Rank": `${module.exports.getRanking(guildStats[a[0]])} (${a[1]}SR)`,
           "★": module.exports.getPrestige(guildStats[a[0]].prestige)
@@ -168,7 +168,7 @@ module.exports = {
     return "\u001b[1;00m";
   },
   "getPrestige": (prestige) =>
-    `\u001b[33m${"★".repeat(prestige ?? 0)}\u001b[0m`,
+    `\u001b[33m${"★".repeat(prestige)}\u001b[0m`,
   "getNickname": (interaction, id) => {
     const member = interaction.guild.members.cache
       .filter((m) => m.id === id)

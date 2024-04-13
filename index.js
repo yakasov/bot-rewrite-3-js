@@ -399,19 +399,18 @@ function addToStats(a) {
       stats[guildId][userId].joinTime = f();
     }
     stats[guildId][userId].voiceTime +=
-        Math.floor(
-          f() -
-          (stats[guildId][userId].joinTime === 0
-            ? f()
-            : stats[guildId][userId].joinTime)
-        );
+      Math.floor(
+        f() -
+        (stats[guildId][userId].joinTime === 0
+          ? f()
+          : stats[guildId][userId].joinTime)
+      );
     stats[guildId][userId].joinTime = f();
     break;
 
   case "leftVoiceChannel":
-    stats[guildId][userId].voiceTime =
-        (stats[guildId][userId].voiceTime ?? 0) +
-        Math.floor(f() - stats[guildId][userId].joinTime);
+    stats[guildId][userId].voiceTime +=
+      Math.floor(f() - stats[guildId][userId].joinTime);
     break;
 
   case "nerdEmojiAdded":
@@ -419,14 +418,13 @@ function addToStats(a) {
       return;
     }
     if (!giver.bot) {
-      stats[guildId][giverId].nerdsGiven =
-          (stats[guildId][giverId].nerdsGiven ?? 0) + 1;
+      stats[guildId][giverId].nerdsGiven++;
     }
 
     stats[guildId][userId].nerdEmojis[messageId] =
-        (stats[guildId][userId].nerdEmojis[messageId] ?? 0) +
-        1 +
-        (Math.floor(stats[guildId][giverId].prestige / 2) ?? 0);
+      stats[guildId][userId].nerdEmojis[messageId] +
+      1 +
+      Math.floor(stats[guildId][giverId].prestige / 2);
     break;
 
   case "nerdEmojiRemoved":
@@ -436,14 +434,14 @@ function addToStats(a) {
     if (!giver.bot) {
       stats[guildId][giverId].nerdsGiven = Math.max(
         0,
-        (stats[guildId][giverId].nerdsGiven ?? 0) - 1
+        stats[guildId][giverId].nerdsGiven - 1
       );
     }
 
     stats[guildId][userId].nerdEmojis[messageId] = Math.max(
       0,
-      (stats[guildId][userId].nerdEmojis[messageId] ?? 0) -
-        (1 + (Math.floor(stats[guildId][giverId].prestige / 2) ?? 0))
+      stats[guildId][userId].nerdEmojis[messageId] -
+        (1 + Math.floor(stats[guildId][giverId].prestige / 2))
     );
     break;
 
@@ -469,7 +467,7 @@ function updateScores() {
             "type": "init",
             "userId": user
           });
-          const nerdPower = (stats[guild][user].prestige ?? 0) > 0
+          const nerdPower = stats[guild][user].prestige > 0
             ? 2.8
             : 1.8;
           stats[guild][user].nerdScore =
@@ -477,18 +475,18 @@ function updateScores() {
             .reduce(
               (sum, a) => sum + Math.max(nerdPower ** a + 1, 0) - 1,
               0
-            ) - (stats[guild][user].nerdHandicap ?? 0);
+            ) - stats[guild][user].nerdHandicap;
 
           const score = Math.floor(
             (stats[guild][user].voiceTime * statsConfig.voiceChatSRGain +
             stats[guild][user].messages * statsConfig.messageSRGain) *
           Math.max(
             1 +
-            (stats[guild][user].reputation ?? 0) *
+            stats[guild][user].reputation *
             statsConfig.reputationGain,
             0.01
           ) *
-          1.2 ** (stats[guild][user].prestige ?? 0) -
+          1.2 ** stats[guild][user].prestige -
           stats[guild][user].nerdScore -
           stats[guild][user].decay
           );
@@ -504,7 +502,7 @@ function updateScores() {
 
           if (
             stats[guild][user].score >
-          (stats[guild][user].bestScore ?? 0) ||
+          stats[guild][user].bestScore ||
           // Fix for bestScore being stuck at 50K after prestige
           stats[guild][user].bestScore === statsConfig.prestigeRequirement
           ) {

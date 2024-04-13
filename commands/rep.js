@@ -30,7 +30,7 @@ module.exports = {
     const user = interaction.options.getUser("user");
     const giver = interaction.member;
     const amount =
-      (1 + (stats[interaction.guild.id][giver.id].prestige ?? 0)) *
+      (1 + stats[interaction.guild.id][giver.id].prestige) *
       (type === "+"
         ? 1
         : -1);
@@ -45,20 +45,19 @@ module.exports = {
     // Do not run the command if the cooldown is not over
     if (
       module.exports.f() -
-        (stats[interaction.guild.id][giver.id].reputationTime ?? 0) <
+        stats[interaction.guild.id][giver.id].reputationTime <
       statsConfig.reputationGainCooldown
     ) {
       return interaction.followUp(
         `You need to wait ${
           statsConfig.reputationGainCooldown -
           (module.exports.f() -
-            (stats[interaction.guild.id][giver.id].reputationTime ?? 0))
+            stats[interaction.guild.id][giver.id].reputationTime)
         } more seconds first!`
       );
     }
 
-    stats[interaction.guild.id][user.id].reputation =
-      (stats[interaction.guild.id][user.id].reputation ?? 0) + amount;
+    stats[interaction.guild.id][user.id].reputation += amount;
 
     if (stats[interaction.guild.id][user.id].reputation >= 100) {
       stats[interaction.guild.id][user.id].reputation = -99;

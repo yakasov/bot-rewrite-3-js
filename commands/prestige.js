@@ -39,7 +39,7 @@ module.exports = {
 
     if (!(elevated && user)) {
       if (
-        (guildStats[idToUse].prestige ?? 0) >= statsConfig.prestigeMaximum
+        guildStats[idToUse].prestige >= statsConfig.prestigeMaximum
       ) {
         return interaction.reply("You have reached max prestige!");
       }
@@ -113,18 +113,13 @@ Are you sure you want to prestige?`
     }
   },
   "updateStats": (userStats) => {
-    userStats.prestige =
-          (userStats.prestige ?? 0) + 1;
+    userStats.prestige++;
     userStats.bestRanking = "";
     userStats.bestScore = 0;
 
     // Store message + voiceTime values then reset them
-    userStats.previousMessages =
-          (userStats.previousMessages ?? 0) +
-          userStats.messages;
-    userStats.previousVoiceTime =
-          (userStats.previousVoiceTime ?? 0) +
-          userStats.voiceTime;
+    userStats.previousMessages += userStats.messages;
+    userStats.previousVoiceTime += userStats.voiceTime;
 
     // Add nerdHandicap to offset nerdScore
     userStats.nerdHandicap =
