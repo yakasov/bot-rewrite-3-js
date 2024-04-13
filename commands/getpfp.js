@@ -19,8 +19,8 @@ module.exports = {
     try {
       let avatar = null;
       if (user) {
-        avatar = user.displayAvatarURL({"dynamic": true,
-          "size": 1024});
+        avatar = user.displayAvatarURL({ "dynamic": true,
+          "size": 1024 });
       } else {
         avatar = interaction.user.displayAvatarURL({
           "dynamic": true,

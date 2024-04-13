@@ -14,7 +14,7 @@ exports.run = async (client, splash) => {
 
   queryFull(minecraftServerIp, minecraftServerPort)
     .then(async (res) => {
-      const {online} = res.players;
+      const online = res.players;
       let activityString = "";
       if (online) {
         const players = res.players.list;
