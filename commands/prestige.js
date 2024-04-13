@@ -67,11 +67,11 @@ module.exports = {
       components: [row],
       content:
         `Prestiging will reset your SR back to 0, 
-        and your rank will be adjusted accordingly.\n\n
-        In return, you will gain a prestige mark and your 
-        SR gain will be boosted. Additionally, 
-        your +/-reps and reactions will have more weight.\n\n
-        Are you sure you want to prestige?`
+and your rank will be adjusted accordingly.\n
+In return, you will gain a prestige mark and your 
+SR gain will be boosted. Additionally, 
+your +/-reps and reactions will have more weight.\n
+Are you sure you want to prestige?`
     });
 
     const collectorFilter = (i) => elevated || i.user.id === idToUse;
