@@ -264,6 +264,7 @@ function checkMessageResponse(msg) {
       v
     ] = entries[i];
     if (` ${msg.content.toLowerCase()} `.includes(` ${k} `)) {
+      /* eslint-disable-next-line consistent-return */
       return f(k, v);
     }
   }
@@ -349,6 +350,8 @@ function initialiseStats(guildId, userId) {
         delete stats[guildId][userId][k];
       }
     });
+
+  return null;
 }
 
 function addToStats(a) {
@@ -587,7 +590,7 @@ client.on(Events.MessageCreate, async (msg) => {
   await checkMessageResponse(msg);
   checkMessageReactions(msg);
 
-  return await addToStats({
+  addToStats({
     "guildId": msg.guild.id,
     "type": "message",
     "userId": msg.author.id

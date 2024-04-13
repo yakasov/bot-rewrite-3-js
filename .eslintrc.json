@@ -17,7 +17,7 @@
       }
     ],
     "complexity": ["warn", { "max": 25 }],
-    "consistent-return": "off",
+    "consistent-return": ["error", { "treatUndefinedAsUnspecified": true }],
     "dot-location": ["error", "property"],
     "func-names": "off",
     "func-style": "off",
