@@ -16,13 +16,17 @@
         "properties": "never"
       }
     ],
+    "complexity": ["warn", {"max": 25}],
+    "consistent-return": "off",
     "dot-location": ["error", "property"],
+    "func-names": "off",
     "func-style": "off",
     "function-call-argument-newline": ["warn", "consistent"],
     "function-paren-newline": "off",
     "id-length": "off",
     "implicit-arrow-linebreak": "off",
     "indent": ["warn", 2],
+    "max-lines": ["warn", 750],
     "max-lines-per-function": ["warn", 200],
     "max-statements": ["warn", 30],
     "newline-per-chained-call": "off",
@@ -39,9 +43,11 @@
         ]
       }
     ],
+    "no-param-reassign": "off",
     "no-plusplus": "off",
     "no-ternary": "off",
     "no-undefined": "off",
+    "no-use-before-define": ["error", { "functions": false }],
     "object-curly-spacing": "off",
     "one-var": ["warn", "never"],
     "padded-blocks": "off",
