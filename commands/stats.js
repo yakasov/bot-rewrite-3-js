@@ -9,7 +9,7 @@ module.exports = {
   "data": new SlashCommandBuilder()
     .setName("stats")
     .setDescription("Show server statistics"),
-  async execute(interaction) {
+  execute(interaction) {
     const guildStats = stats[interaction.guild.id];
     if (!guildStats) {
       return interaction.reply("This server has no statistics yet!");

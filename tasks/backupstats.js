@@ -2,7 +2,7 @@
 
 const fs = require("fs");
 
-exports.run = async () => {
+exports.run = () => {
   const dateString = new Date()
     .toISOString()
     .replace(/:/gu, "-");

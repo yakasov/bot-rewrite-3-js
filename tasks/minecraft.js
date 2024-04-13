@@ -7,13 +7,13 @@ const {
   minecraftServerPort
 } = require("./../resources/config.json");
 
-exports.run = async (client, splash) => {
+exports.run = (client, splash) => {
   if (!(minecraftServerIp && minecraftServerPort)) {
     return;
   }
 
   queryFull(minecraftServerIp, minecraftServerPort)
-    .then(async (res) => {
+    .then((res) => {
       const online = res.players;
       let activityString = "";
       if (online) {

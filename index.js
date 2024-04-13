@@ -44,7 +44,7 @@ let splash = "";
 let botUptime = 0;
 
 const superReply = Message.prototype.reply;
-Message.prototype.reply = async function (s) {
+Message.prototype.reply = function (s) {
   try {
     return superReply.call(this, {
       "content": s,
@@ -56,7 +56,7 @@ Message.prototype.reply = async function (s) {
 };
 
 const superDelete = Message.prototype.delete;
-Message.prototype.delete = async function () {
+Message.prototype.delete = function () {
   try {
     return superDelete.call(this);
   } catch (e) {
@@ -97,7 +97,7 @@ async function checkBirthdays(force = false) {
   }
 }
 
-async function checkMinecraftServer() {
+function checkMinecraftServer() {
   try {
     const minecraftServer = require("./tasks/minecraft.js");
     return minecraftServer.run(client, splash);
@@ -116,7 +116,7 @@ function getNickname(msg) {
     .displayName;
 }
 
-async function saveStats() {
+function saveStats() {
   try {
     const task = require("./tasks/saveStats.js");
     return task.run(stats);
@@ -125,7 +125,7 @@ async function saveStats() {
   }
 }
 
-async function backupStats() {
+function backupStats() {
   try {
     const task = require("./tasks/backupstats.js");
     return task.run(stats);
@@ -134,7 +134,7 @@ async function backupStats() {
   }
 }
 
-async function addDecayToStats() {
+function addDecayToStats() {
   // This function should really be a separate task!!!
   Object.entries(stats)
     .forEach(([
@@ -165,15 +165,15 @@ async function addDecayToStats() {
     });
 }
 
-async function checkVoiceChannels() {
+function checkVoiceChannels() {
   // This function should ALSO really be a separate task!!!
   const guilds = client.guilds.cache;
-  guilds.forEach(async (guild) => {
+  guilds.forEach((guild) => {
     const channels = guild.channels.cache.filter(
       // Voice channel is type 2
       (channel) => channel.type === 2
     );
-    channels.forEach(async (channel) => {
+    channels.forEach((channel) => {
       channel.members.forEach(async (member) => {
         await addToStats({
           "guildId": member.guild.id,
@@ -185,7 +185,7 @@ async function checkVoiceChannels() {
   });
 }
 
-async function checkMessageResponse(msg) {
+function checkMessageResponse(msg) {
   // Swap Twitter/X URLs for proper embedding ones
   if (
     [
@@ -269,7 +269,7 @@ async function checkMessageResponse(msg) {
   }
 }
 
-async function checkMessageReactions(msg) {
+function checkMessageReactions(msg) {
   Object.values(chanceResponses)
     .some((v) => {
       const roll = Math.random();
@@ -307,7 +307,7 @@ async function checkMessageReactions(msg) {
     });
 }
 
-async function initialiseStats(guildId, userId) {
+function initialiseStats(guildId, userId) {
   const baseObj = {
     "bestRanking": "",
     "bestScore": 0,
@@ -351,7 +351,7 @@ async function initialiseStats(guildId, userId) {
     });
 }
 
-async function addToStats(a) {
+function addToStats(a) {
   function f() {
     // Returns UNIX time in seconds.
     return Math.floor(Date.now() / 1000);
@@ -369,8 +369,8 @@ async function addToStats(a) {
     };
   }
 
-  await initialiseStats(guildId, userId);
-  await initialiseStats(guildId, giverId);
+  initialiseStats(guildId, userId);
+  initialiseStats(guildId, giverId);
 
   switch (type) {
   case "init":
@@ -449,13 +449,13 @@ async function addToStats(a) {
     break;
   }
 
-  await updateScores();
-  await saveStats();
+  updateScores();
+  saveStats();
 }
 
-async function updateScores() {
+function updateScores() {
   Object.entries(stats)
-    .forEach(async ([
+    .forEach(([
       guild,
       guildStats
     ]) => {
@@ -535,7 +535,7 @@ async function updateScores() {
     });
 }
 
-async function getRanking(score) {
+function getRanking(score) {
   let rankString = "MISSINGNO";
   Object.entries(ranks)
     .forEach(([
@@ -556,11 +556,11 @@ client.once(Events.ClientReady, async (c) => {
     `logged in as ${c.user.tag}\n`
   );
 
-  await checkVoiceChannels();
+  checkVoiceChannels();
   await checkBirthdays(true);
-  await checkMinecraftServer();
+  checkMinecraftServer();
   await getNewSplash();
-  await addDecayToStats();
+  addDecayToStats();
   await backupStats();
 
   /* eslint-disable line-comment-position */
@@ -585,7 +585,7 @@ client.on(Events.MessageCreate, async (msg) => {
   }
 
   await checkMessageResponse(msg);
-  await checkMessageReactions(msg);
+  checkMessageReactions(msg);
 
   return await addToStats({
     "guildId": msg.guild.id,

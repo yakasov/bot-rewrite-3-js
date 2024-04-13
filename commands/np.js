@@ -21,7 +21,7 @@ module.exports = {
     await interaction.reply(`Set splash to ${splash}!`);
     return splash;
   },
-  "run": async ([client]) => {
+  "run": ([client]) => {
     const splash = splashes[Math.floor(Math.random() * splashes.length)];
     client.user.setPresence({
       "activities": [

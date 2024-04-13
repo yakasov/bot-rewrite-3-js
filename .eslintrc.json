@@ -70,7 +70,6 @@
     ],
     "quotes": ["warn", "double"],
     "require-atomic-updates": "warn",
-    "require-await": "off",
     "semi": ["warn", "always"],
     "space-before-function-paren": "off"
   }
