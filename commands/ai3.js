@@ -96,13 +96,11 @@ module.exports = {
       resArray.forEach(async (r) => {
         await interaction.followUp(r);
       });
+    } else {
+      await interaction.followUp(
+        "Failed after 3 attempts, please try again - your conversation shouldn't be affected!"
+      );
     }
-
-    await module.exports.returnFail(
-      interaction,
-      `Failed after 3 attempts, please try again - 
-        your conversation shouldn't be affected!`
-    );
   },
   formatMsgs: (e, ms) => {
     let s = `${e}\n\n`;
@@ -111,9 +109,4 @@ module.exports = {
     });
     return s;
   },
-  returnFail: async (m, r) => {
-    await m.reactions.removeAll();
-    await m.react(module.exports.reactions.fail);
-    return m.reply(r);
-  }
 };

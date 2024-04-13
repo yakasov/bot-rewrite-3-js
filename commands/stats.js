@@ -24,8 +24,7 @@ module.exports = {
         k,
         v.nerdsGiven ?? 0
       ])
-      .sort(([, f], [, s]) => s - f).first;
-
+      .sort(([, f], [, s]) => s - f)[0];
 
     const topNerded = Object.entries(guildStats)
       .filter(([k]) => k.length === 18)
@@ -36,8 +35,7 @@ module.exports = {
         k,
         Object.values(v.nerdEmojis).reduce((sum, count) => sum + count, 0)
       ])
-      .sort(([, f], [, s]) => s - f).first;
-
+      .sort(([, f], [, s]) => s - f)[0];
 
     const topScores = Object.entries(guildStats)
       .filter(([k]) => k.length === 18)
@@ -50,7 +48,6 @@ module.exports = {
       ])
       .sort(([, f], [, s]) => s - f);
 
-
     const reputations = Object.entries(guildStats)
       .filter(([k]) => k.length === 18)
       .map(([
@@ -62,9 +59,9 @@ module.exports = {
       ]);
 
     const topReputation =
-      [...reputations].sort(([, f], [, s]) => s - f).first;
+      [...reputations].sort(([, f], [, s]) => s - f)[0];
     const bottomReputation =
-      [...reputations].sort(([, f], [, s]) => f - s).first;
+      [...reputations].sort(([, f], [, s]) => f - s)[0];
 
     let outputMessage = `Top nerder: ${module.exports.getNickname(
       interaction,

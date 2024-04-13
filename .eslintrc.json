@@ -16,7 +16,7 @@
         "properties": "never"
       }
     ],
-    "complexity": ["warn", {"max": 25}],
+    "complexity": ["warn", { "max": 25 }],
     "consistent-return": "off",
     "dot-location": ["error", "property"],
     "func-names": "off",
@@ -52,6 +52,22 @@
     "object-curly-spacing": "off",
     "one-var": ["warn", "never"],
     "padded-blocks": "off",
+    "prefer-destructuring": [
+      "error",
+      {
+        "VariableDeclarator": {
+          "array": false,
+          "object": true
+        },
+        "AssignmentExpression": {
+          "array": true,
+          "object": false
+        }
+      },
+      {
+        "enforceForRenamedProperties": false
+      }
+    ],
     "quote-props": "off",
     "quotes": ["warn", "double"],
     "require-atomic-updates": "warn",

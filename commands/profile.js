@@ -53,7 +53,7 @@ module.exports = {
         v,
         i
       ])
-      .find(([k, ,]) => k === (user?.interaction.id ?? user?.id));
+      .find(([k, ,]) => k === (user?? interaction.user.id));
 
     const allUserStats = guildStats[userStats[0]];
 
