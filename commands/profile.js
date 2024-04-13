@@ -10,10 +10,12 @@ module.exports = {
     .setName("profile")
     .setDescription("Shows personal statistics")
     .addUserOption((opt) =>
-      opt.setName("user").setDescription("The user to get the profile of")
+      opt.setName("user")
+        .setDescription("The user to get the profile of")
     )
     .addBooleanOption((opt) =>
-      opt.setName("debug").setDescription("Whether to print the raw statistics")
+      opt.setName("debug")
+        .setDescription("Whether to print the raw statistics")
     ),
   async execute(interaction) {
     await interaction.deferReply();
@@ -93,10 +95,11 @@ module.exports = {
     )}\n\n    Nerd Emojis given: ${
       allUserStats.nerdsGiven ?? 0
     }\n    Nerd Emojis received: ${
-      Object.values(allUserStats.nerdEmojis).reduce(
-        (sum, a) => sum + a,
-        0
-      ) ?? 0
+      Object.values(allUserStats.nerdEmojis)
+        .reduce(
+          (sum, a) => sum + a,
+          0
+        ) ?? 0
     }${userStats[2]
       ? ""
       : "\n    == #1 of friends! =="
@@ -117,7 +120,9 @@ module.exports = {
      */
     const date = new Date(null);
     date.setSeconds(seconds);
-    const unitArray = date.toISOString().substr(8, 11).split(/:|T/u);
+    const unitArray = date.toISOString()
+      .substr(8, 11)
+      .split(/:|T/u);
     return `${parseInt(unitArray[0], 10) - 1}d 
     ${unitArray[1]}h ${unitArray[2]}m ${unitArray[3]}s`;
   },
@@ -133,14 +138,15 @@ module.exports = {
     )}\u001b[0m`,
   "getRanking": (memberStats) => {
     let rankString = "MISSINGNO";
-    Object.entries(ranks).forEach(([
-      k,
-      v
-    ]) => {
-      if (v[0] <= memberStats.score) {
-        rankString = `${v[1]}${k}\u001b[0m`;
-      }
-    });
+    Object.entries(ranks)
+      .forEach(([
+        k,
+        v
+      ]) => {
+        if (v[0] <= memberStats.score) {
+          rankString = `${v[1]}${k}\u001b[0m`;
+        }
+      });
     return rankString;
   }
 };

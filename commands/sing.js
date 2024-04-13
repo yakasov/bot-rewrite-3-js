@@ -30,7 +30,8 @@ module.exports = {
         "adapterCreator": interaction.guild.voiceAdapterCreator,
         "channelId": interaction.member.voice.channelId,
         "guildId": interaction.guild.id
-      }).subscribe(player);
+      })
+        .subscribe(player);
 
       const res = createAudioResource(await ytdl(url));
       player.play(res);

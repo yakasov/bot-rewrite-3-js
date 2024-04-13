@@ -30,7 +30,7 @@
     "max-lines": ["warn", 750],
     "max-lines-per-function": ["warn", 200],
     "max-statements": ["warn", 30],
-    "newline-per-chained-call": "off",
+    "newline-per-chained-call": ["warn", { "ignoreChainWithDepth": 1 }],
     "no-await-in-loop": "off",
     "no-console": "off",
     "no-inline-comments": "off",
@@ -68,7 +68,6 @@
         "enforceForRenamedProperties": false
       }
     ],
-    //"quote-props": "off",
     "quotes": ["warn", "double"],
     "require-atomic-updates": "warn",
     "require-await": "off",

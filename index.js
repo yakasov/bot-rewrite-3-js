@@ -37,7 +37,9 @@ const client = new Client({
     GatewayIntentBits.MessageContent
   ]
 });
-let date = moment().tz("Europe/London").format("DD/MM");
+let date = moment()
+  .tz("Europe/London")
+  .format("DD/MM");
 let splash = "";
 let botUptime = 0;
 
@@ -109,7 +111,8 @@ async function getNewSplash() {
 }
 
 function getNickname(msg) {
-  return msg.guild.members.cache.filter((m) => m.id === msg.author.id).first()
+  return msg.guild.members.cache.filter((m) => m.id === msg.author.id)
+    .first()
     .displayName;
 }
 
@@ -133,16 +136,17 @@ async function backupStats() {
 
 async function addDecayToStats() {
   // This function should really be a separate task!!!
-  Object.entries(stats).forEach(([
-    guild,
-    gv
-  ]) => {
-    if (stats[guild].allowDecay ?? true) {
-      Object.keys(gv)
-        .filter((k) => k.length === 18)
-        .forEach((member) => {
-          if (
-            stats[guild][member].score >
+  Object.entries(stats)
+    .forEach(([
+      guild,
+      gv
+    ]) => {
+      if (stats[guild].allowDecay ?? true) {
+        Object.keys(gv)
+          .filter((k) => k.length === 18)
+          .forEach((member) => {
+            if (
+              stats[guild][member].score >
             statsConfig.decaySRLossThreshold &&
             Math.floor(Date.now() / 1000) -
             Math.max(
@@ -150,15 +154,15 @@ async function addDecayToStats() {
               stats[guild][member].lastGainTime
             ) >
             getTime(0, 0, 24) / 1000
-          ) {
-            stats[guild][member].lastGainTime = Math.floor(
-              Date.now() / 1000
-            );
-            stats[guild][member].decay += statsConfig.decaySRLoss;
-          }
-        });
-    }
-  });
+            ) {
+              stats[guild][member].lastGainTime = Math.floor(
+                Date.now() / 1000
+              );
+              stats[guild][member].decay += statsConfig.decaySRLoss;
+            }
+          });
+      }
+    });
 }
 
 async function checkVoiceChannels() {
@@ -225,7 +229,10 @@ async function checkMessageResponse(msg) {
           .then((c) => getNickname([...c.values()].pop()));
       }
 
-      const following = msg.content.toLowerCase().split(k).slice(1).join(k);
+      const following = msg.content.toLowerCase()
+        .split(k)
+        .slice(1)
+        .join(k);
       v = v.replace(
         "{FOLLOWING}",
         lastMsg || !following.trim()
@@ -263,40 +270,41 @@ async function checkMessageResponse(msg) {
 }
 
 async function checkMessageReactions(msg) {
-  Object.values(chanceResponses).some((v) => {
-    const roll = Math.random();
+  Object.values(chanceResponses)
+    .some((v) => {
+      const roll = Math.random();
 
-    if (roll < v.chance / 100) {
-      switch (v.type) {
-      case "message":
-        msg.reply(v.string);
-        break;
+      if (roll < v.chance / 100) {
+        switch (v.type) {
+        case "message":
+          msg.reply(v.string);
+          break;
 
-      case "react":
-        msg.react(v.string);
-        break;
+        case "react":
+          msg.react(v.string);
+          break;
 
-      case "react_custom":
-        if (v.user === msg.author.id && Math.random() < 0.25) {
-          const reaction = msg.guild.emojis.cache.find(
-            (e) => e.name === v.string
-          );
+        case "react_custom":
+          if (v.user === msg.author.id && Math.random() < 0.25) {
+            const reaction = msg.guild.emojis.cache.find(
+              (e) => e.name === v.string
+            );
 
-          if (reaction) {
-            msg.react(reaction);
+            if (reaction) {
+              msg.react(reaction);
+            }
           }
-        }
-        break;
+          break;
 
-      default:
-        break;
+        default:
+          break;
+        }
+
+        return true;
       }
 
-      return true;
-    }
-
-    return false;
-  });
+      return false;
+    });
 }
 
 async function initialiseStats(guildId, userId) {
@@ -325,20 +333,22 @@ async function initialiseStats(guildId, userId) {
     return null;
   }
 
-  Object.entries(baseObj).forEach(([
-    k,
-    v
-  ]) => {
-    if (!stats[guildId][userId][k]) {
-      stats[guildId][userId][k] = v;
-    }
-  });
+  Object.entries(baseObj)
+    .forEach(([
+      k,
+      v
+    ]) => {
+      if (!stats[guildId][userId][k]) {
+        stats[guildId][userId][k] = v;
+      }
+    });
 
-  Object.keys(stats[guildId][userId]).forEach((k) => {
-    if (baseObj[k] === undefined) {
-      delete stats[guildId][userId][k];
-    }
-  });
+  Object.keys(stats[guildId][userId])
+    .forEach((k) => {
+      if (baseObj[k] === undefined) {
+        delete stats[guildId][userId][k];
+      }
+    });
 }
 
 async function addToStats(a) {
@@ -444,29 +454,31 @@ async function addToStats(a) {
 }
 
 async function updateScores() {
-  Object.entries(stats).forEach(async ([
-    guild,
-    guildStats
-  ]) => {
-    Object.keys(guildStats)
-      .filter((k) => k.length === 18)
-      .forEach(async (user) => {
-        await addToStats({
-          "guildId": guild,
-          "type": "init",
-          "userId": user
-        });
-        const nerdPower = (stats[guild][user].prestige ?? 0) > 0
-          ? 2.8
-          : 1.8;
-        stats[guild][user].nerdScore =
-          Object.values(stats[guild][user].nerdEmojis).reduce(
-            (sum, a) => sum + Math.max(nerdPower ** a + 1, 0) - 1,
-            0
-          ) - (stats[guild][user].nerdHandicap ?? 0);
+  Object.entries(stats)
+    .forEach(async ([
+      guild,
+      guildStats
+    ]) => {
+      Object.keys(guildStats)
+        .filter((k) => k.length === 18)
+        .forEach(async (user) => {
+          await addToStats({
+            "guildId": guild,
+            "type": "init",
+            "userId": user
+          });
+          const nerdPower = (stats[guild][user].prestige ?? 0) > 0
+            ? 2.8
+            : 1.8;
+          stats[guild][user].nerdScore =
+          Object.values(stats[guild][user].nerdEmojis)
+            .reduce(
+              (sum, a) => sum + Math.max(nerdPower ** a + 1, 0) - 1,
+              0
+            ) - (stats[guild][user].nerdHandicap ?? 0);
 
-        const score = Math.floor(
-          (stats[guild][user].voiceTime * statsConfig.voiceChatSRGain +
+          const score = Math.floor(
+            (stats[guild][user].voiceTime * statsConfig.voiceChatSRGain +
             stats[guild][user].messages * statsConfig.messageSRGain) *
           Math.max(
             1 +
@@ -477,62 +489,63 @@ async function updateScores() {
           1.2 ** (stats[guild][user].prestige ?? 0) -
           stats[guild][user].nerdScore -
           stats[guild][user].decay
-        );
+          );
 
-        if (
-          stats[guild][user].score > statsConfig.prestigeRequirement &&
+          if (
+            stats[guild][user].score > statsConfig.prestigeRequirement &&
           stats[guild][user].prestige < statsConfig.prestigeMaximum
-        ) {
-          stats[guild][user].score = statsConfig.prestigeRequirement;
-        } else {
-          stats[guild][user].score = score;
-        }
+          ) {
+            stats[guild][user].score = statsConfig.prestigeRequirement;
+          } else {
+            stats[guild][user].score = score;
+          }
 
-        if (
-          stats[guild][user].score >
+          if (
+            stats[guild][user].score >
           (stats[guild][user].bestScore ?? 0) ||
           // Fix for bestScore being stuck at 50K after prestige
           stats[guild][user].bestScore === 50000
-        ) {
-          stats[guild][user].bestScore = stats[guild][user].score;
+          ) {
+            stats[guild][user].bestScore = stats[guild][user].score;
 
-          if (
-            stats[guild][user].bestRanking !==
+            if (
+              stats[guild][user].bestRanking !==
             await getRanking(stats[guild][user].score) &&
             stats[guild].rankUpChannel &&
             botUptime > 120
-          ) {
-            const guildObject = await client.guilds.fetch(guild);
-            const userObject = guildObject.members.cache
-              .filter((m) => m.id === user)
-              .first();
-            const channel = await guildObject.channels.fetch(
-              stats[guild].rankUpChannel
-            );
-            channel.send(
-              `## Rank Up!\n\`\`\`ansi\n${userObject.displayName
-              } has reached rank ${await getRanking(stats[guild][user].score)
-              }!\`\`\``
+            ) {
+              const guildObject = await client.guilds.fetch(guild);
+              const userObject = guildObject.members.cache
+                .filter((m) => m.id === user)
+                .first();
+              const channel = await guildObject.channels.fetch(
+                stats[guild].rankUpChannel
+              );
+              channel.send(
+                `## Rank Up!\n\`\`\`ansi\n${userObject.displayName
+                } has reached rank ${await getRanking(stats[guild][user].score)
+                }!\`\`\``
+              );
+            }
+            stats[guild][user].bestRanking = await getRanking(
+              stats[guild][user].score
             );
           }
-          stats[guild][user].bestRanking = await getRanking(
-            stats[guild][user].score
-          );
-        }
-      });
-  });
+        });
+    });
 }
 
 async function getRanking(score) {
   let rankString = "MISSINGNO";
-  Object.entries(ranks).forEach(([
-    k,
-    v
-  ]) => {
-    if (v[0] <= score) {
-      rankString = `${v[1]}${k}\u001b[0m`;
-    }
-  });
+  Object.entries(ranks)
+    .forEach(([
+      k,
+      v
+    ]) => {
+      if (v[0] <= score) {
+        rankString = `${v[1]}${k}\u001b[0m`;
+      }
+    });
   return rankString;
 }
 

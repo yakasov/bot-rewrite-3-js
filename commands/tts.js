@@ -28,7 +28,8 @@ module.exports = {
       "adapterCreator": interaction.guild.voiceAdapterCreator,
       "channelId": interaction.member.voice.channelId,
       "guildId": interaction.guild.id
-    }).subscribe(player);
+    })
+      .subscribe(player);
 
     const response = await fetch(
       "https://tiktok-tts.weilnet.workers.dev/api/generation",
@@ -42,14 +43,17 @@ module.exports = {
       }
     );
 
-    await response.json().then(async (r) => {
-      if (r.data) {
-        fs.writeFileSync("resources/tts.mp3", r.data, { "encoding": "base64" });
-        const res = createAudioResource("resources/tts.mp3");
-        player.play(res);
-      } else {
-        await interaction.reply(r.error);
-      }
-    });
+    await response.json()
+      .then(async (r) => {
+        if (r.data) {
+          fs.writeFileSync(
+            "resources/tts.mp3", r.data, { "encoding": "base64" }
+          );
+          const res = createAudioResource("resources/tts.mp3");
+          player.play(res);
+        } else {
+          await interaction.reply(r.error);
+        }
+      });
   }
 };

@@ -61,7 +61,8 @@ module.exports = {
       .setLabel("No")
       .setStyle(ButtonStyle.Danger);
 
-    const row = new ActionRowBuilder().addComponents(confirm, cancel);
+    const row = new ActionRowBuilder()
+      .addComponents(confirm, cancel);
 
     const response = await interaction.reply({
       "components": [row],

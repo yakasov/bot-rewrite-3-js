@@ -33,7 +33,8 @@ module.exports = {
         v
       ]) => [
         k,
-        Object.values(v.nerdEmojis).reduce((sum, count) => sum + count, 0)
+        Object.values(v.nerdEmojis)
+          .reduce((sum, count) => sum + count, 0)
       ])
       .sort(([, f], [, s]) => s - f)[0];
 
@@ -86,22 +87,23 @@ module.exports = {
     const data = [];
 
     /* eslint-disable sort-keys*/
-    topScores.slice(0, 10, topScores.length).forEach((a, i) => {
-      data.push({
-        "#": i + 1,
-        "Name": module.exports.getNickname(interaction, a[0]),
-        "Msgs":
+    topScores.slice(0, 10, topScores.length)
+      .forEach((a, i) => {
+        data.push({
+          "#": i + 1,
+          "Name": module.exports.getNickname(interaction, a[0]),
+          "Msgs":
           guildStats[a[0]].messages + guildStats[a[0]].previousMessages,
-        "Time": module.exports.formatTime(
-          guildStats[a[0]].voiceTime + guildStats[a[0]].previousVoiceTime
-        ),
-        "Rep": module.exports.formatReputation(
-          module.exports.addLeadingZero(guildStats[a[0]].reputation ?? 0)
-        ),
-        "Rank": `${module.exports.getRanking(guildStats[a[0]])} (${a[1]}SR)`,
-        "★": module.exports.getPrestige(guildStats[a[0]].prestige)
+          "Time": module.exports.formatTime(
+            guildStats[a[0]].voiceTime + guildStats[a[0]].previousVoiceTime
+          ),
+          "Rep": module.exports.formatReputation(
+            module.exports.addLeadingZero(guildStats[a[0]].reputation ?? 0)
+          ),
+          "Rank": `${module.exports.getRanking(guildStats[a[0]])} (${a[1]}SR)`,
+          "★": module.exports.getPrestige(guildStats[a[0]].prestige)
+        });
       });
-    });
     /* eslint-enable sort-keys*/
 
     outputMessage += generateTable(data);
@@ -145,7 +147,9 @@ module.exports = {
      */
     const date = new Date(null);
     date.setSeconds(seconds);
-    const unitArray = date.toISOString().substr(8, 11).split(/:|T/u);
+    const unitArray = date.toISOString()
+      .substr(8, 11)
+      .split(/:|T/u);
     return `${parseInt(unitArray[0], 10) - 1 > 9
       ? ""
       : " "}${
@@ -163,7 +167,8 @@ module.exports = {
     }
     return "\u001b[1;00m";
   },
-  "getPrestige": (prestige) => `\u001b[33m${"★".repeat(prestige ?? 0)}\u001b[0m`,
+  "getPrestige": (prestige) =>
+    `\u001b[33m${"★".repeat(prestige ?? 0)}\u001b[0m`,
   "getNickname": (interaction, id) => {
     const member = interaction.guild.members.cache
       .filter((m) => m.id === id)
@@ -172,14 +177,15 @@ module.exports = {
   },
   "getRanking": (memberStats) => {
     let rankString = "MISSINGNO";
-    Object.entries(ranks).forEach(([
-      k,
-      v
-    ]) => {
-      if (v[0] <= memberStats.score) {
-        rankString = `${v[1]}${k}\u001b[0m`;
-      }
-    });
+    Object.entries(ranks)
+      .forEach(([
+        k,
+        v
+      ]) => {
+        if (v[0] <= memberStats.score) {
+          rankString = `${v[1]}${k}\u001b[0m`;
+        }
+      });
     return rankString;
   }
 };

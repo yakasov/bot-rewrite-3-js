@@ -9,7 +9,9 @@ module.exports = {
     .setName("edit")
     .setDescription("Edit a user's statistics")
     .addUserOption((opt) =>
-      opt.setName("user").setDescription("The user to edit").setRequired(true)
+      opt.setName("user")
+        .setDescription("The user to edit")
+        .setRequired(true)
     )
     .addStringOption((opt) =>
       opt
@@ -24,7 +26,8 @@ module.exports = {
         .setRequired(true)
     )
     .addBooleanOption((opt) =>
-      opt.setName("add").setDescription("If the value should be set or added")
+      opt.setName("add")
+        .setDescription("If the value should be set or added")
     ),
   async execute(interaction) {
     const user = interaction.options.getUser("user").id;
