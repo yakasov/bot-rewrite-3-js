@@ -5,7 +5,7 @@ const {
   Events,
   GatewayIntentBits,
   Message,
-  Collection,
+  Collection
 } = require("discord.js");
 const moment = require("moment-timezone");
 const fs = require("fs");
@@ -20,7 +20,13 @@ const path = require("node:path");
 globalThis.fetch = fetch;
 
 const client = new Client({
-  allowedMentions: { parse: ["users", "roles"], repliedUser: true },
+  allowedMentions: {
+    parse: [
+      "users",
+      "roles"
+    ],
+    repliedUser: true
+  },
   intents: [
     GatewayIntentBits.Guilds,
     GatewayIntentBits.GuildMembers,
@@ -28,8 +34,8 @@ const client = new Client({
     GatewayIntentBits.GuildMessageReactions,
     GatewayIntentBits.GuildPresences,
     GatewayIntentBits.GuildVoiceStates,
-    GatewayIntentBits.MessageContent,
-  ],
+    GatewayIntentBits.MessageContent
+  ]
 });
 let date = moment().tz("Europe/London").format("DD/MM");
 let splash = "";
@@ -38,7 +44,10 @@ let botUptime = 0;
 const superReply = Message.prototype.reply;
 Message.prototype.reply = async function (s) {
   try {
-    return superReply.call(this, { content: s, failIfNotExists: false });
+    return superReply.call(this, {
+      content: s,
+      failIfNotExists: false
+    });
   } catch (e) {
     return console.log(e.message);
   }
@@ -60,13 +69,14 @@ const commandFiles = fs
   .filter((file) => file.endsWith(".js"));
 for (const file of commandFiles) {
   const filePath = path.join(commandsPath, file);
-  const command = require(`./${  filePath}`);
+  const command = require(`./${filePath}`);
 
   if ("data" in command && "execute" in command) {
     client.commands.set(command.data.name, command);
   } else {
     console.log(
-      `[WARNING] The command at ${filePath} is missing a required "data" or "execute" property.`
+      `[WARNING] The command at ${filePath} is 
+      missing a required "data" or "execute" property.`
     );
   }
 }
@@ -123,20 +133,23 @@ async function backupStats() {
 
 async function addDecayToStats() {
   // This function should really be a separate task!!!
-  Object.entries(stats).forEach(([guild, gv]) => {
+  Object.entries(stats).forEach(([
+    guild,
+    gv
+  ]) => {
     if (stats[guild].allowDecay ?? true) {
       Object.keys(gv)
         .filter((k) => k.length === 18)
         .forEach((member) => {
           if (
             stats[guild][member].score >
-              statsConfig.decaySRLossThreshold &&
+            statsConfig.decaySRLossThreshold &&
             Math.floor(Date.now() / 1000) -
-              Math.max(
-                stats[guild][member].joinTime,
-                stats[guild][member].lastGainTime
-              ) >
-              getTime(0, 0, 24) / 1000
+            Math.max(
+              stats[guild][member].joinTime,
+              stats[guild][member].lastGainTime
+            ) >
+            getTime(0, 0, 24) / 1000
           ) {
             stats[guild][member].lastGainTime = Math.floor(
               Date.now() / 1000
@@ -154,14 +167,14 @@ async function checkVoiceChannels() {
   guilds.forEach(async (guild) => {
     const channels = guild.channels.cache.filter(
       // Voice channel is type 2
-      (channel) => channel.type === 2 
+      (channel) => channel.type === 2
     );
     channels.forEach(async (channel) => {
       channel.members.forEach(async (member) => {
         await addToStats({
           guildId: member.guild.id,
           type: "inVoiceChannel",
-          userId: member.user.id,
+          userId: member.user.id
         });
       });
     });
@@ -171,7 +184,10 @@ async function checkVoiceChannels() {
 async function checkMessageResponse(msg) {
   // Swap Twitter/X URLs for proper embedding ones
   if (
-    ["https://x.com/", "https://twitter.com/"].find((l) =>
+    [
+      "https://x.com/",
+      "https://twitter.com/"
+    ].find((l) =>
       msg.content.includes(l)
     )
   ) {
@@ -191,6 +207,7 @@ async function checkMessageResponse(msg) {
       .split(" ")
       .find((m) => m.includes("https://steamcommunity.com"));
     msg.channel.send(
+      /* eslint-disable-next-line max-len */
       `Embedded link: https://yakasov.github.io/pages/miscellaneous/steam_direct.html?page=${steamLink}`
     );
   }
@@ -224,7 +241,7 @@ async function checkMessageResponse(msg) {
       );
       if (sticker.size) {
         return msg.channel.send({
-          stickers: sticker,
+          stickers: sticker
         });
       }
       return null;
@@ -235,7 +252,10 @@ async function checkMessageResponse(msg) {
 
   const entries = Object.entries(responses);
   for (let i = 0; i < entries.length; i++) {
-    const [k, v] = entries[i];
+    const [
+      k,
+      v
+    ] = entries[i];
     if (` ${msg.content.toLowerCase()} `.includes(` ${k} `)) {
       return f(k, v);
     }
@@ -300,9 +320,15 @@ async function initialiseStats(guildId, userId) {
     "voiceTime": 0
   };
 
-  if (!stats[guildId][userId]) {return (stats[guildId][userId] = baseObj);}
+  if (!stats[guildId][userId]) {
+    stats[guildId][userId] = baseObj;
+    return null;
+  }
 
-  Object.entries(baseObj).forEach(([k, v]) => {
+  Object.entries(baseObj).forEach(([
+    k,
+    v
+  ]) => {
     if (!stats[guildId][userId][k]) {
       stats[guildId][userId][k] = v;
     }
@@ -322,13 +348,16 @@ async function addToStats(a) {
   }
 
   const { type, userId, guildId, messageId, giver } = a;
-  const giverId = giver ? giver.id : 0;
+  const giverId = giver
+    ? giver.id
+    : 0;
 
-  if (!stats[guildId])
-  {stats[guildId] = {
-    allowDecay: true,
-    rankUpChannel: "",
-  };}
+  if (!stats[guildId]) {
+    stats[guildId] = {
+      allowDecay: true,
+      rankUpChannel: ""
+    };
+  }
 
   await initialiseStats(guildId, userId);
   await initialiseStats(guildId, giverId);
@@ -342,8 +371,9 @@ async function addToStats(a) {
     if (
       f() - stats[guildId][userId].lastGainTime <
         statsConfig.messageSRGainCooldown
-    )
-    {return;}
+    ) {
+      return;
+    }
     stats[guildId][userId].lastGainTime = f();
     stats[guildId][userId].messages += 1;
     break;
@@ -359,9 +389,9 @@ async function addToStats(a) {
     stats[guildId][userId].voiceTime +=
         Math.floor(
           f() -
-            (stats[guildId][userId].joinTime === 0
-              ? f()
-              : stats[guildId][userId].joinTime)
+          (stats[guildId][userId].joinTime === 0
+            ? f()
+            : stats[guildId][userId].joinTime)
         );
     stats[guildId][userId].joinTime = f();
     break;
@@ -373,7 +403,9 @@ async function addToStats(a) {
     break;
 
   case "nerdEmojiAdded":
-    if (!messageId) {return;}
+    if (!messageId) {
+      return;
+    }
     if (!giver.bot) {
       stats[guildId][giverId].nerdsGiven =
           (stats[guildId][giverId].nerdsGiven ?? 0) + 1;
@@ -386,7 +418,9 @@ async function addToStats(a) {
     break;
 
   case "nerdEmojiRemoved":
-    if (!messageId) {return;}
+    if (!messageId) {
+      return;
+    }
     if (!giver.bot) {
       stats[guildId][giverId].nerdsGiven = Math.max(
         0,
@@ -397,7 +431,7 @@ async function addToStats(a) {
     stats[guildId][userId].nerdEmojis[messageId] = Math.max(
       0,
       (stats[guildId][userId].nerdEmojis[messageId] ?? 0) -
-          (1 + (Math.floor(stats[guildId][giverId].prestige / 2) ?? 0))
+        (1 + (Math.floor(stats[guildId][giverId].prestige / 2) ?? 0))
     );
     break;
 
@@ -410,12 +444,21 @@ async function addToStats(a) {
 }
 
 async function updateScores() {
-  Object.entries(stats).forEach(async ([guild, guildStats]) => {
+  Object.entries(stats).forEach(async ([
+    guild,
+    guildStats
+  ]) => {
     Object.keys(guildStats)
       .filter((k) => k.length === 18)
       .forEach(async (user) => {
-        await addToStats({ guildId: guild, type: "init", userId: user,  });
-        const nerdPower = (stats[guild][user].prestige ?? 0) > 0 ? 2.8 : 1.8;
+        await addToStats({
+          guildId: guild,
+          type: "init",
+          userId: user
+        });
+        const nerdPower = (stats[guild][user].prestige ?? 0) > 0
+          ? 2.8
+          : 1.8;
         stats[guild][user].nerdScore =
           Object.values(stats[guild][user].nerdEmojis).reduce(
             (sum, a) => sum + Math.max(nerdPower ** a + 1, 0) - 1,
@@ -425,15 +468,15 @@ async function updateScores() {
         const score = Math.floor(
           (stats[guild][user].voiceTime * statsConfig.voiceChatSRGain +
             stats[guild][user].messages * statsConfig.messageSRGain) *
-            Math.max(
-              1 +
-                (stats[guild][user].reputation ?? 0) *
-                  statsConfig.reputationGain,
-              0.01
-            ) *
-            1.2 ** (stats[guild][user].prestige ?? 0) -
-            stats[guild][user].nerdScore -
-            stats[guild][user].decay
+          Math.max(
+            1 +
+            (stats[guild][user].reputation ?? 0) *
+            statsConfig.reputationGain,
+            0.01
+          ) *
+          1.2 ** (stats[guild][user].prestige ?? 0) -
+          stats[guild][user].nerdScore -
+          stats[guild][user].decay
         );
 
         if (
@@ -447,15 +490,15 @@ async function updateScores() {
 
         if (
           stats[guild][user].score >
-            (stats[guild][user].bestScore ?? 0) ||
+          (stats[guild][user].bestScore ?? 0) ||
           // Fix for bestScore being stuck at 50K after prestige
-          stats[guild][user].bestScore === 50000 
+          stats[guild][user].bestScore === 50000
         ) {
           stats[guild][user].bestScore = stats[guild][user].score;
 
           if (
             stats[guild][user].bestRanking !==
-              (await getRanking(stats[guild][user].score)) &&
+            await getRanking(stats[guild][user].score) &&
             stats[guild].rankUpChannel &&
             botUptime > 120
           ) {
@@ -467,10 +510,8 @@ async function updateScores() {
               stats[guild].rankUpChannel
             );
             channel.send(
-              `## Rank Up!\n\`\`\`ansi\n${ 
-                userObject.displayName 
-              } has reached rank ${ 
-                await getRanking(stats[guild][user].score) 
+              `## Rank Up!\n\`\`\`ansi\n${userObject.displayName
+              } has reached rank ${await getRanking(stats[guild][user].score)
               }!\`\`\``
             );
           }
@@ -484,7 +525,10 @@ async function updateScores() {
 
 async function getRanking(score) {
   let rankString = "MISSINGNO";
-  Object.entries(ranks).forEach(([k, v]) => {
+  Object.entries(ranks).forEach(([
+    k,
+    v
+  ]) => {
     if (v[0] <= score) {
       rankString = `${v[1]}${k}\u001b[0m`;
     }
@@ -495,8 +539,8 @@ async function getRanking(score) {
 client.once(Events.ClientReady, async (c) => {
   console.log(
     "Connected and ready to go!\n" +
-      `Current date is ${date}, ` +
-      `logged in as ${c.user.tag}\n`
+    `Current date is ${date}, ` +
+    `logged in as ${c.user.tag}\n`
   );
 
   await checkVoiceChannels();
@@ -520,7 +564,9 @@ client.once(Events.ClientReady, async (c) => {
 });
 
 client.on(Events.MessageCreate, async (msg) => {
-  if (msg.author.bot || !msg.guild) {return;}
+  if (msg.author.bot || !msg.guild) {
+    return;
+  }
   if (msg.author.id === "269143269336809483") {
     console.log(`${getNickname(msg)} in ${msg.guild}: ${msg.content}`);
   }
@@ -531,12 +577,14 @@ client.on(Events.MessageCreate, async (msg) => {
   return await addToStats({
     guildId: msg.guild.id,
     type: "message",
-    userId: msg.author.id,
+    userId: msg.author.id
   });
 });
 
 client.on(Events.InteractionCreate, async (interaction) => {
-  if (!interaction.isChatInputCommand()) {return;}
+  if (!interaction.isChatInputCommand()) {
+    return;
+  }
 
   const command = interaction.client.commands.get(interaction.commandName);
 
@@ -552,31 +600,33 @@ client.on(Events.InteractionCreate, async (interaction) => {
     if (interaction.replied || interaction.deferred) {
       await interaction.followUp({
         content: "There was an error while executing this command!",
-        ephemeral: true,
+        ephemeral: true
       });
     } else {
       await interaction.reply({
         content: "There was an error while executing this command!",
-        ephemeral: true,
+        ephemeral: true
       });
     }
   }
 });
 
 client.on(Events.VoiceStateUpdate, async (oldState, newState) => {
-  if (newState.member.bot) {return;}
+  if (newState.member.bot) {
+    return;
+  }
 
   if (oldState.channel && !newState.channel) {
     await addToStats({
       guildId: newState.guild.id,
       type: "leftVoiceChannel",
-      userId: newState.member.id,
+      userId: newState.member.id
     });
   } else if (!oldState.channel && newState.channel) {
     await addToStats({
       guildId: newState.guild.id,
       type: "joinedVoiceChannel",
-      userId: newState.member.id,
+      userId: newState.member.id
     });
   }
 });
@@ -588,7 +638,7 @@ client.on(Events.MessageReactionAdd, async (reaction, user) => {
       guildId: reaction.message.guildId,
       messageId: reaction.message.id,
       type: "nerdEmojiAdded",
-      userId: reaction.message.author.id,
+      userId: reaction.message.author.id
     });
   }
 });
@@ -600,7 +650,7 @@ client.on(Events.MessageReactionRemove, async (reaction, user) => {
       guildId: reaction.message.guildId,
       messageId: reaction.message.id,
       type: "nerdEmojiRemoved",
-      userId: reaction.message.author.id,
+      userId: reaction.message.author.id
     });
   }
 });

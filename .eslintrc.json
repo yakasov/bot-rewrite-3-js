@@ -26,6 +26,7 @@
     "id-length": "off",
     "implicit-arrow-linebreak": "off",
     "indent": ["warn", 2],
+    "linebreak-style": "off",
     "max-lines": ["warn", 750],
     "max-lines-per-function": ["warn", 200],
     "max-statements": ["warn", 30],
