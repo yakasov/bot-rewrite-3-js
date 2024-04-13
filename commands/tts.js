@@ -1,8 +1,10 @@
+"use strict";
+
 const { SlashCommandBuilder } = require("discord.js");
 const {
   createAudioPlayer,
   joinVoiceChannel,
-  createAudioResource,
+  createAudioResource
 } = require("@discordjs/voice");
 const fs = require("node:fs");
 
@@ -23,20 +25,20 @@ module.exports = {
 
     const player = createAudioPlayer();
     joinVoiceChannel({
-      channelId: interaction.member.voice.channelId,
-      guildId: interaction.guild.id,
       adapterCreator: interaction.guild.voiceAdapterCreator,
+      channelId: interaction.member.voice.channelId,
+      guildId: interaction.guild.id
     }).subscribe(player);
 
     const response = await fetch(
       "https://tiktok-tts.weilnet.workers.dev/api/generation",
       {
-        method: "post",
         body: JSON.stringify({
           text: prompt,
-          voice: "en_us_001",
+          voice: "en_us_001"
         }),
         headers: { "Content-Type": "application/json" },
+        method: "post"
       }
     );
 
@@ -49,5 +51,5 @@ module.exports = {
         await interaction.reply(r.error);
       }
     });
-  },
+  }
 };

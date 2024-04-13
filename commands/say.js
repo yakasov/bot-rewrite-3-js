@@ -1,3 +1,5 @@
+"use strict";
+
 const { SlashCommandBuilder } = require("discord.js");
 
 module.exports = {
@@ -14,5 +16,5 @@ module.exports = {
     const message = interaction.options.getString("message");
 
     await interaction.reply(message);
-  },
+  }
 };

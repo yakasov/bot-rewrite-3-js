@@ -1,3 +1,5 @@
+"use strict";
+
 const { SlashCommandBuilder } = require("discord.js");
 const fs = require("fs");
 const stats = require("./../resources/stats.json");
@@ -20,5 +22,10 @@ module.exports = {
         `Set the rank up channel to ${interaction.channel.name}.`
       );
     }
-  },
+
+    return interaction.reply({
+      content: "You are not an admin user!",
+      ephemeral: true
+    });
+  }
 };

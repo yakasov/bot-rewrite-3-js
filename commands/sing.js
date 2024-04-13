@@ -1,8 +1,10 @@
+"use strict";
+
 const { SlashCommandBuilder } = require("discord.js");
 const {
   createAudioPlayer,
   joinVoiceChannel,
-  createAudioResource,
+  createAudioResource
 } = require("@discordjs/voice");
 const ytdl = require("ytdl-core-discord");
 
@@ -25,9 +27,9 @@ module.exports = {
     try {
       const player = createAudioPlayer();
       joinVoiceChannel({
-        channelId: interaction.member.voice.channelId,
-        guildId: interaction.guild.id,
         adapterCreator: interaction.guild.voiceAdapterCreator,
+        channelId: interaction.member.voice.channelId,
+        guildId: interaction.guild.id
       }).subscribe(player);
 
       const res = createAudioResource(await ytdl(url));
@@ -35,5 +37,5 @@ module.exports = {
     } catch (e) {
       await interaction.reply(e.message);
     }
-  },
+  }
 };

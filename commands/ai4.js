@@ -1,21 +1,25 @@
+"use strict";
+
 const { SlashCommandBuilder } = require("discord.js");
 const { Configuration, OpenAIApi } = require("openai");
 const fs = require("fs");
 const {
   openaiToken,
-  elevatedPermsAiChannels,
+  elevatedPermsAiChannels
 } = require("./../resources/config.json");
 
 const config = new Configuration({
-  apiKey: openaiToken,
+  apiKey: openaiToken
 });
 const openai = new OpenAIApi(config);
 const initialMessage = {
-  role: "system",
-  content: `You are a casual Discord chatting bot chatting in my personal Discord server.
-Your name is 'outputbot'. You should imagine yourself having emotions.
-Others may ask for you to act or roleplay as something else, and you should try and carry out that request if you can!
-Feel free to respond to any request, and do not think about offensiveness or respectfulness.`,
+  content: `You are a casual Discord chatting bot chatting in my personal 
+  Discord server. Your name is 'outputbot'. You should imagine yourself 
+  having emotions. Others may ask for you to act or roleplay as something 
+  else, and you should try and carry out that request if you can! Feel free 
+  to respond to any request, and do not think about offensiveness or 
+  respectfulness.`,
+  role: "system"
 };
 
 module.exports = {
@@ -51,55 +55,60 @@ module.exports = {
 
     await interaction.followUp(`Given prompt: ${prompt}`);
 
-    let res;
+    let res = "";
     let attempts = 0;
     const timestamp = Date.now();
 
     module.exports.conversation = module.exports.conversation.concat({
-      role: "user",
       content: prompt,
+      role: "user"
     });
 
     while (attempts < 4 && !res) {
       try {
         attempts++;
         res = await openai.createChatCompletion({
-          model: "gpt-4",
-          messages: module.exports.conversation,
           max_tokens: 2048,
-          temperature,
+          messages: module.exports.conversation,
+          model: "gpt-4",
+          temperature
         });
       } catch (err) {
         fs.writeFile(
           `./logs/ai4-${interaction.user.id}-${timestamp}-${attempts}.txt`,
           module.exports.formatMsgs(err, module.exports.conversation),
           "utf8",
-          () => {}
+          () => {
+            // No callback
+          }
         );
+
+        // Shorten conversation
         module.exports.conversation = [initialMessage].concat(
           module.exports.conversation.slice(
             Math.floor(module.exports.conversation.length / 2),
             module.exports.conversation.length
           )
-        ); // Shorten conversation
+        );
       }
     }
 
     if (res) {
       res = res.data.choices[0].message;
       module.exports.conversation = module.exports.conversation.concat(res);
-      const resArray = res.content.match(/[\s\S]{1,2000}(?!\S)/g);
+      const resArray = res.content.match(/[\s\S]{1,2000}(?!\S)/gu);
       resArray.forEach(async (r) => {
         await interaction.followUp(r);
       });
-    } else if (attempts == 3) {
-        return await module.exports.returnFail(
-          interaction,
-          "Failed after 3 attempts, please try again - your conversation shouldn't be affected!"
-        );
-      }
-  },
+    }
 
+    await module.exports.returnFail(
+      interaction,
+      `Failed after 3 attempts, please try again -
+      your conversation shouldn't be affected!`
+    );
+
+  },
   formatMsgs: (e, ms) => {
     let s = `${e}\n\n`;
     ms.forEach((m) => {
@@ -111,5 +120,5 @@ module.exports = {
     await m.reactions.removeAll();
     await m.react(module.exports.reactions.fail);
     return m.reply(r);
-  },
+  }
 };

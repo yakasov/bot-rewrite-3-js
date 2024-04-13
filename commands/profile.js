@@ -1,4 +1,5 @@
-/* eslint-disable indent */
+"use strict";
+
 const { SlashCommandBuilder } = require("discord.js");
 const { statsConfig } = require("./../resources/config.json");
 const stats = require("./../resources/stats.json");
@@ -18,34 +19,52 @@ module.exports = {
     await interaction.deferReply();
 
     let user = interaction.options.getUser("user") ?? null;
-    if (user) {user = user.id;}
+    if (user) {
+      user = user.id;
+    }
     const debug = interaction.options.getBoolean("debug") ?? false;
 
     const guildStats = stats[interaction.guild.id];
-    if (!guildStats)
-      {return interaction.reply("This server has no statistics yet!");}
+    if (!guildStats) {
+      return interaction.reply("This server has no statistics yet!");
+    }
 
     if (user) {
-      if (!guildStats[user])
-        {return interaction.reply("This user has no statistics yet!");}
+      if (!guildStats[user]) {
+        return interaction.reply("This user has no statistics yet!");
+      }
     }
 
     const userStats = Object.entries(guildStats)
-      .filter((k) => k[0].length == 18)
-      .map(([k, v]) => [k, v.score])
-      .sort((f, s) => s[1] - f[1])
-      .map((a, i) => [a[0], a[1], i])
-      .filter((a) => a[0] == (user ?? interaction.user.id))[0];
+      .filter(([k]) => k.length === 18)
+      .map(([
+        k,
+        v
+      ]) => [
+        k,
+        v.score
+      ])
+      .sort(([, f], [, s]) => s - f)
+      .map(([
+        k,
+        v
+      ], i) => [
+        k,
+        v,
+        i
+      ])
+      .find(([k, ,]) => k === (user?.interaction.id ?? user?.id));
+
     const allUserStats = guildStats[userStats[0]];
 
     if (debug) {
       const outputMessage =
-        `\`\`\`\n${  JSON.stringify(allUserStats, null, 4)  }\`\`\``;
-      const outputArray = outputMessage.match(/[\s\S]{1,1980}(?!\S)/g);
+        `\`\`\`\n${JSON.stringify(allUserStats, null, 4)}\`\`\``;
+      const outputArray = outputMessage.match(/[\s\S]{1,1980}(?!\S)/gu);
       outputArray.forEach(async (r) => {
-        await interaction.followUp(`\`\`\`json\n${  r  }\n\`\`\``);
+        await interaction.followUp(`\`\`\`json\n${r}\n\`\`\``);
       });
-      return;
+      return null;
     }
 
     const outputMessage = `=== Profile for ${module.exports.getNickname(
@@ -78,14 +97,19 @@ module.exports = {
         (sum, a) => sum + a,
         0
       ) ?? 0
-    }${!userStats[2] ? "\n    == #1 of friends! ==" : ""}\n\n`;
+    }${userStats[2]
+      ? ""
+      : "\n    == #1 of friends! =="
+    }\n\n`;
 
-    const outputArray = outputMessage.match(/[\s\S]{1,1980}(?!\S)/g);
+    const outputArray = outputMessage.match(/[\s\S]{1,1980}(?!\S)/gu);
     outputArray.forEach(async (r) => {
-      await interaction.followUp(`\`\`\`ansi\n${  r  }\n\`\`\``);
+      await interaction.followUp(`\`\`\`ansi\n${r}\n\`\`\``);
     });
+    return null;
   },
   formatTime: (seconds) => {
+
     /*
      * Note: this will only work up to 30d 23h 59m 59s
      * this is because toISOString() returns 1970-01-01T03:12:49.000Z (eg)
@@ -93,27 +117,30 @@ module.exports = {
      */
     const date = new Date(null);
     date.setSeconds(seconds);
-    const unitArray = date.toISOString().substr(8, 11).split(/:|T/);
-    return `${parseInt(unitArray[0]) - 1}d ${unitArray[1]}h ${unitArray[2]}m ${
-      unitArray[3]
-    }s`;
+    const unitArray = date.toISOString().substr(8, 11).split(/:|T/u);
+    return `${parseInt(unitArray[0], 10) - 1}d 
+    ${unitArray[1]}h ${unitArray[2]}m ${unitArray[3]}s`;
   },
-  getPrestige: (memberStats) => `${memberStats.prestige ?? 0} \u001b[33m${"★".repeat(
-      memberStats.prestige ?? 0
-    )}\u001b[0m`,
   getNickname: (interaction, id) => {
     const member = interaction.guild.members.cache
-      .filter((m) => m.id == id)
+      .filter((m) => m.id === id)
       .first();
     return `${member.displayName}`;
   },
+  getPrestige: (memberStats) =>
+    `${memberStats.prestige ?? 0} \u001b[33m${"★".repeat(
+      memberStats.prestige ?? 0
+    )}\u001b[0m`,
   getRanking: (memberStats) => {
     let rankString = "MISSINGNO";
-    Object.entries(ranks).forEach(([k, v]) => {
+    Object.entries(ranks).forEach(([
+      k,
+      v
+    ]) => {
       if (v[0] <= memberStats.score) {
         rankString = `${v[1]}${k}\u001b[0m`;
       }
     });
     return rankString;
-  },
+  }
 };

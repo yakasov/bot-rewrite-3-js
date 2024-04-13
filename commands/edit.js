@@ -1,3 +1,5 @@
+"use strict";
+
 const { SlashCommandBuilder } = require("discord.js");
 const fs = require("fs");
 const stats = require("./../resources/stats.json");
@@ -36,11 +38,14 @@ module.exports = {
       interaction.user.id === (await interaction.guild.fetchOwner()).user.id
     ) {
       try {
-        const newVal = /^-?\d+$/.test(value) ? parseInt(value) : value;
+        const newVal = (/^-?\d+$/u).test(value)
+          ? parseInt(value, 10)
+          : value;
         stats[interaction.guild.id][user][attribute] = add
           ? stats[interaction.guild.id][user][attribute] + newVal
           : newVal;
-        fs.writeFileSync("./resources/stats.json", JSON.stringify(stats));
+        fs.writeFileSync("./resources/stats.json",
+          JSON.stringify(stats));
 
         return interaction.reply(
           `Set user ${user} attribute ${attribute} to value ${
@@ -51,5 +56,10 @@ module.exports = {
         return interaction.reply(e.message);
       }
     }
-  },
+
+    return interaction.reply({
+      content: "You are not an admin user!",
+      ephemeral: true
+    });
+  }
 };

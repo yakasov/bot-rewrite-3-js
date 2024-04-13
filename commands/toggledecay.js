@@ -1,3 +1,5 @@
+"use strict";
+
 const { SlashCommandBuilder } = require("discord.js");
 const fs = require("fs");
 const stats = require("./../resources/stats.json");
@@ -12,7 +14,8 @@ module.exports = {
       interaction.user === interaction.client.application.owner ||
       interaction.user.id === (await interaction.guild.fetchOwner()).user.id
     ) {
-      stats[interaction.guild.id].allowDecay = !stats[interaction.guild.id].allowDecay;
+      stats[interaction.guild.id].allowDecay =
+        !stats[interaction.guild.id].allowDecay;
       const statsString = JSON.stringify(stats);
 
       fs.writeFileSync("./resources/stats.json", statsString);
@@ -23,5 +26,10 @@ module.exports = {
         }).`
       );
     }
-  },
+
+    return interaction.reply({
+      content: "You are not an admin user!",
+      ephemeral: true
+    });
+  }
 };

@@ -1,3 +1,5 @@
+"use strict";
+
 const { SlashCommandBuilder } = require("discord.js");
 const fs = require("fs");
 const stats = require("./../resources/stats.json");
@@ -13,7 +15,9 @@ module.exports = {
         .setName("type")
         .setDescription("Whether to give or take reputation")
         .setRequired(true)
-        .addChoices({ name: "+", value: "+" }, { name: "-", value: "-" })
+        .addChoices({ name: "+",
+          value: "+" }, { name: "-",
+          value: "-" })
     )
     .addUserOption((opt) =>
       opt
@@ -29,11 +33,13 @@ module.exports = {
     const giver = interaction.member;
     const amount =
       (1 + (stats[interaction.guild.id][giver.id].prestige ?? 0)) *
-      (type === "+" ? 1 : -1);
+      (type === "+"
+        ? 1
+        : -1);
 
     // Do not allow giving reputation to yourself
     if (user.id === giver.id) {
-      return await interaction.followUp(
+      return interaction.followUp(
         "You cannot give reputation to yourself!"
       );
     }
@@ -44,7 +50,7 @@ module.exports = {
         (stats[interaction.guild.id][giver.id].reputationTime ?? 0) <
       statsConfig.reputationGainCooldown
     ) {
-      return await interaction.followUp(
+      return interaction.followUp(
         `You need to wait ${
           statsConfig.reputationGainCooldown -
           (module.exports.f() -
@@ -63,11 +69,14 @@ module.exports = {
     }
 
     await interaction.followUp(
-      `Reputation ${type === "+" ? "adding" : "removing"} successful!`
+      `Reputation ${type === "+"
+        ? "adding"
+        : "removing"} successful!`
     );
     await interaction.followUp({
-      content: `${giver.displayName} has given ${amount} rep to ${user.displayName}!`,
-      ephemeral: false,
+      content:
+      `${giver.displayName} has given ${amount} rep to ${user.displayName}!`,
+      ephemeral: false
     });
 
     stats[interaction.guild.id][giver.id].reputationTime =
@@ -76,10 +85,10 @@ module.exports = {
     fs.writeFileSync("./resources/stats.json", JSON.stringify(stats));
 
     await wait(statsConfig.reputationGainCooldown * 1000);
-    return await interaction.followUp({
+    return interaction.followUp({
       content: "Your reputation cooldown has expired!",
-      ephemeral: true,
+      ephemeral: true
     });
   },
-  f: () => Math.floor(Date.now() / 1000),
+  f: () => Math.floor(Date.now() / 1000)
 };

@@ -1,9 +1,11 @@
+"use strict";
+
 const { SlashCommandBuilder } = require("discord.js");
 const { status } = require("minecraft-server-util");
 const {
   minecraftServerIp,
   minecraftServerPort,
-  minecraftServerOwnerId,
+  minecraftServerOwnerId
 } = require("./../resources/config.json");
 
 module.exports = {
@@ -12,16 +14,17 @@ module.exports = {
     .setDescription("Get information about the current Minecraft server"),
   async execute(interaction) {
     if (!(minecraftServerIp.length && minecraftServerPort)) {
-      return await interaction.reply(
+      return interaction.reply(
         "There is no current Minecraft server set up!"
       );
     }
 
-    status(minecraftServerIp, minecraftServerPort)
+    return status(minecraftServerIp, minecraftServerPort)
       .then(async (res) => {
-        res.favicon = null; // Favicon is a base64 encoded image, remove it
+        // Favicon is a base64 encoded image, remove it
+        res.favicon = null;
         await interaction.reply(
-          `\`\`\`\n${  JSON.stringify(res, null, 4)  }\n\`\`\``
+          `\`\`\`\n${JSON.stringify(res, null, 4)}\n\`\`\``
         );
       })
       .catch(async (e) => {
@@ -33,5 +36,5 @@ module.exports = {
 
         await interaction.reply(str);
       });
-  },
+  }
 };
