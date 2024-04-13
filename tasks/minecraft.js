@@ -29,9 +29,9 @@ exports.run = async (client, splash) => {
       }
 
       client.user.setPresence({
-        activities: [
-          { name: activityString,
-            type: ActivityType.Watching }
+        "activities": [
+          { "name": activityString,
+            "type": ActivityType.Watching }
         ]
       });
     })

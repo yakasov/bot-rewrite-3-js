@@ -6,7 +6,7 @@ const stats = require("./../resources/stats.json");
 const ranks = require("./../resources/ranks.json");
 
 module.exports = {
-  data: new SlashCommandBuilder()
+  "data": new SlashCommandBuilder()
     .setName("profile")
     .setDescription("Shows personal statistics")
     .addUserOption((opt) =>
@@ -108,7 +108,7 @@ module.exports = {
     });
     return null;
   },
-  formatTime: (seconds) => {
+  "formatTime": (seconds) => {
 
     /*
      * Note: this will only work up to 30d 23h 59m 59s
@@ -121,17 +121,17 @@ module.exports = {
     return `${parseInt(unitArray[0], 10) - 1}d 
     ${unitArray[1]}h ${unitArray[2]}m ${unitArray[3]}s`;
   },
-  getNickname: (interaction, id) => {
+  "getNickname": (interaction, id) => {
     const member = interaction.guild.members.cache
       .filter((m) => m.id === id)
       .first();
     return `${member.displayName}`;
   },
-  getPrestige: (memberStats) =>
+  "getPrestige": (memberStats) =>
     `${memberStats.prestige ?? 0} \u001b[33m${"★".repeat(
       memberStats.prestige ?? 0
     )}\u001b[0m`,
-  getRanking: (memberStats) => {
+  "getRanking": (memberStats) => {
     let rankString = "MISSINGNO";
     Object.entries(ranks).forEach(([
       k,

@@ -68,7 +68,7 @@
         "enforceForRenamedProperties": false
       }
     ],
-    "quote-props": "off",
+    //"quote-props": "off",
     "quotes": ["warn", "double"],
     "require-atomic-updates": "warn",
     "require-await": "off",

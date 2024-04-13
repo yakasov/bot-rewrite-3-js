@@ -20,14 +20,14 @@ const path = require("node:path");
 globalThis.fetch = fetch;
 
 const client = new Client({
-  allowedMentions: {
-    parse: [
+  "allowedMentions": {
+    "parse": [
       "users",
       "roles"
     ],
-    repliedUser: true
+    "repliedUser": true
   },
-  intents: [
+  "intents": [
     GatewayIntentBits.Guilds,
     GatewayIntentBits.GuildMembers,
     GatewayIntentBits.GuildMessages,
@@ -45,8 +45,8 @@ const superReply = Message.prototype.reply;
 Message.prototype.reply = async function (s) {
   try {
     return superReply.call(this, {
-      content: s,
-      failIfNotExists: false
+      "content": s,
+      "failIfNotExists": false
     });
   } catch (e) {
     return console.log(e.message);
@@ -172,9 +172,9 @@ async function checkVoiceChannels() {
     channels.forEach(async (channel) => {
       channel.members.forEach(async (member) => {
         await addToStats({
-          guildId: member.guild.id,
-          type: "inVoiceChannel",
-          userId: member.user.id
+          "guildId": member.guild.id,
+          "type": "inVoiceChannel",
+          "userId": member.user.id
         });
       });
     });
@@ -221,7 +221,7 @@ async function checkMessageResponse(msg) {
       let lastMsg = "";
       if (msg.content.trim() === k) {
         lastMsg = await msg.channel.messages
-          .fetch({ limit: 2 })
+          .fetch({ "limit": 2 })
           .then((c) => getNickname([...c.values()].pop()));
       }
 
@@ -241,7 +241,7 @@ async function checkMessageResponse(msg) {
       );
       if (sticker.size) {
         return msg.channel.send({
-          stickers: sticker
+          "stickers": sticker
         });
       }
       return null;
@@ -354,8 +354,8 @@ async function addToStats(a) {
 
   if (!stats[guildId]) {
     stats[guildId] = {
-      allowDecay: true,
-      rankUpChannel: ""
+      "allowDecay": true,
+      "rankUpChannel": ""
     };
   }
 
@@ -452,9 +452,9 @@ async function updateScores() {
       .filter((k) => k.length === 18)
       .forEach(async (user) => {
         await addToStats({
-          guildId: guild,
-          type: "init",
-          userId: user
+          "guildId": guild,
+          "type": "init",
+          "userId": user
         });
         const nerdPower = (stats[guild][user].prestige ?? 0) > 0
           ? 2.8
@@ -575,9 +575,9 @@ client.on(Events.MessageCreate, async (msg) => {
   await checkMessageReactions(msg);
 
   return await addToStats({
-    guildId: msg.guild.id,
-    type: "message",
-    userId: msg.author.id
+    "guildId": msg.guild.id,
+    "type": "message",
+    "userId": msg.author.id
   });
 });
 
@@ -599,13 +599,13 @@ client.on(Events.InteractionCreate, async (interaction) => {
     console.error(error);
     if (interaction.replied || interaction.deferred) {
       await interaction.followUp({
-        content: "There was an error while executing this command!",
-        ephemeral: true
+        "content": "There was an error while executing this command!",
+        "ephemeral": true
       });
     } else {
       await interaction.reply({
-        content: "There was an error while executing this command!",
-        ephemeral: true
+        "content": "There was an error while executing this command!",
+        "ephemeral": true
       });
     }
   }
@@ -618,15 +618,15 @@ client.on(Events.VoiceStateUpdate, async (oldState, newState) => {
 
   if (oldState.channel && !newState.channel) {
     await addToStats({
-      guildId: newState.guild.id,
-      type: "leftVoiceChannel",
-      userId: newState.member.id
+      "guildId": newState.guild.id,
+      "type": "leftVoiceChannel",
+      "userId": newState.member.id
     });
   } else if (!oldState.channel && newState.channel) {
     await addToStats({
-      guildId: newState.guild.id,
-      type: "joinedVoiceChannel",
-      userId: newState.member.id
+      "guildId": newState.guild.id,
+      "type": "joinedVoiceChannel",
+      "userId": newState.member.id
     });
   }
 });
@@ -634,11 +634,11 @@ client.on(Events.VoiceStateUpdate, async (oldState, newState) => {
 client.on(Events.MessageReactionAdd, async (reaction, user) => {
   if (reaction.emoji.name === "🤓") {
     await addToStats({
-      giver: user,
-      guildId: reaction.message.guildId,
-      messageId: reaction.message.id,
-      type: "nerdEmojiAdded",
-      userId: reaction.message.author.id
+      "giver": user,
+      "guildId": reaction.message.guildId,
+      "messageId": reaction.message.id,
+      "type": "nerdEmojiAdded",
+      "userId": reaction.message.author.id
     });
   }
 });
@@ -646,11 +646,11 @@ client.on(Events.MessageReactionAdd, async (reaction, user) => {
 client.on(Events.MessageReactionRemove, async (reaction, user) => {
   if (reaction.emoji.name === "🤓") {
     await addToStats({
-      giver: user,
-      guildId: reaction.message.guildId,
-      messageId: reaction.message.id,
-      type: "nerdEmojiRemoved",
-      userId: reaction.message.author.id
+      "giver": user,
+      "guildId": reaction.message.guildId,
+      "messageId": reaction.message.id,
+      "type": "nerdEmojiRemoved",
+      "userId": reaction.message.author.id
     });
   }
 });

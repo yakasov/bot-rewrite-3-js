@@ -9,7 +9,7 @@ const {
 } = require("./../resources/config.json");
 
 module.exports = {
-  data: new SlashCommandBuilder()
+  "data": new SlashCommandBuilder()
     .setName("mcstatus")
     .setDescription("Get information about the current Minecraft server"),
   async execute(interaction) {

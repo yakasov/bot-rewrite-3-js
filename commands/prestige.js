@@ -11,7 +11,7 @@ const { statsConfig } = require("./../resources/config.json");
 const stats = require("./../resources/stats.json");
 
 module.exports = {
-  data: new SlashCommandBuilder()
+  "data": new SlashCommandBuilder()
     .setName("prestige")
     .setDescription("Prestige to the next prestige level.")
     .addUserOption((opt) =>
@@ -64,8 +64,8 @@ module.exports = {
     const row = new ActionRowBuilder().addComponents(confirm, cancel);
 
     const response = await interaction.reply({
-      components: [row],
-      content:
+      "components": [row],
+      "content":
         `Prestiging will reset your SR back to 0, 
 and your rank will be adjusted accordingly.\n
 In return, you will gain a prestige mark and your 
@@ -78,14 +78,14 @@ Are you sure you want to prestige?`
 
     try {
       const confirmation = await response.awaitMessageComponent({
-        filter: collectorFilter,
-        time: 60_000
+        "filter": collectorFilter,
+        "time": 60_000
       });
 
       if (confirmation.customId === "y") {
         await confirmation.update({
-          components: [],
-          content: `${
+          "components": [],
+          "content": `${
             interaction.guild.members.cache
               .filter((m) => m.id === idToUse)
               .first().displayName
@@ -99,18 +99,18 @@ Are you sure you want to prestige?`
           JSON.stringify(stats));
       }
       return confirmation.update({
-        components: [],
-        content: "Prestige cancelled"
+        "components": [],
+        "content": "Prestige cancelled"
       });
 
     } catch (e) {
       return interaction.editReply({
-        components: [],
-        content: "Confirmation not received within 1 minute, cancelling"
+        "components": [],
+        "content": "Confirmation not received within 1 minute, cancelling"
       });
     }
   },
-  updateStats: (userStats) => {
+  "updateStats": (userStats) => {
     userStats.prestige =
           (userStats.prestige ?? 0) + 1;
     userStats.bestRanking = "";

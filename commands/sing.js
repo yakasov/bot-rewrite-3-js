@@ -9,7 +9,7 @@ const {
 const ytdl = require("ytdl-core-discord");
 
 module.exports = {
-  data: new SlashCommandBuilder()
+  "data": new SlashCommandBuilder()
     .setName("sing")
     .setDescription("Streams from a YouTube url")
     .addStringOption((opt) =>
@@ -27,9 +27,9 @@ module.exports = {
     try {
       const player = createAudioPlayer();
       joinVoiceChannel({
-        adapterCreator: interaction.guild.voiceAdapterCreator,
-        channelId: interaction.member.voice.channelId,
-        guildId: interaction.guild.id
+        "adapterCreator": interaction.guild.voiceAdapterCreator,
+        "channelId": interaction.member.voice.channelId,
+        "guildId": interaction.guild.id
       }).subscribe(player);
 
       const res = createAudioResource(await ytdl(url));
