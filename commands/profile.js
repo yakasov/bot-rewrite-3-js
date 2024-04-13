@@ -34,7 +34,7 @@ module.exports = {
     const userStats = Object.entries(guildStats)
       .filter((k) => k[0].length == 18)
       .map(([k, v]) => {
-        return [k, v["realScore"]];
+        return [k, v["score"]];
       })
       .sort((f, s) => {
         return s[1] - f[1];
@@ -63,7 +63,7 @@ module.exports = {
     )}\n    Prestige: ${module.exports.getPrestige(
       allUserStats
     )}\n\n    Ranking: ${module.exports.getRanking(allUserStats)} (${
-      allUserStats["realScore"]
+      allUserStats["score"]
     }SR)\n    Ranking before penalties: ${Math.floor(
       (allUserStats["voiceTime"] * statsConfig["voiceChatSRGain"] +
         allUserStats["messages"] * statsConfig["messageSRGain"]) *
@@ -115,7 +115,7 @@ module.exports = {
   getRanking: (memberStats) => {
     var rankString = "MISSINGNO";
     Object.entries(ranks).forEach(([k, v]) => {
-      if (v[0] <= memberStats["realScore"]) {
+      if (v[0] <= memberStats["score"]) {
         rankString = `${v[1]}${k}\u001b[0m`;
       }
     });

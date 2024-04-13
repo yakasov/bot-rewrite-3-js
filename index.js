@@ -288,7 +288,6 @@ async function initialiseStats(guildId, userId) {
     nerdHandicap: 0,
     nerdScore: 0,
     score: 0,
-    realScore: 0,
     reputation: 0,
     reputationTime: 0,
     bestScore: 0,
@@ -421,7 +420,7 @@ async function updateScores() {
             0
           ) - (stats[guild][user]["nerdHandicap"] ?? 0);
 
-        const realScore = Math.floor(
+        const score = Math.floor(
           (stats[guild][user]["voiceTime"] * statsConfig["voiceChatSRGain"] +
             stats[guild][user]["messages"] * statsConfig["messageSRGain"]) *
             Math.max(
@@ -434,9 +433,7 @@ async function updateScores() {
             stats[guild][user]["nerdScore"] -
             stats[guild][user]["decay"]
         );
-        const score = Math.max(0, realScore);
 
-        stats[guild][user]["realScore"] = realScore;
         if (
           stats[guild][user]["score"] > statsConfig["prestigeRequirement"] &&
           stats[guild][user]["prestige"] < statsConfig["prestigeMaximum"]
@@ -455,7 +452,7 @@ async function updateScores() {
 
           if (
             stats[guild][user]["bestRanking"] !=
-              (await getRanking(stats[guild][user]["realScore"])) &&
+              (await getRanking(stats[guild][user]["score"])) &&
             stats[guild]["rankUpChannel"] &&
             botUptime > 120
           ) {
@@ -470,12 +467,12 @@ async function updateScores() {
               "## Rank Up!\n```ansi\n" +
                 userObject.displayName +
                 " has reached rank " +
-                (await getRanking(stats[guild][user]["realScore"])) +
+                (await getRanking(stats[guild][user]["score"])) +
                 "!```"
             );
           }
           stats[guild][user]["bestRanking"] = await getRanking(
-            stats[guild][user]["realScore"]
+            stats[guild][user]["score"]
           );
         }
       });
