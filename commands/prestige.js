@@ -10,7 +10,6 @@ const { statsConfig } = require("./../resources/config.json");
 const stats = require("./../resources/stats.json");
 
 module.exports = {
-  aliases: ["rankup"],
   data: new SlashCommandBuilder()
     .setName("prestige")
     .setDescription("Prestige to the next prestige level.")

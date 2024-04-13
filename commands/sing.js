@@ -7,7 +7,6 @@ const {
 const ytdl = require("ytdl-core-discord");
 
 module.exports = {
-  aliases: ["play", "stream"],
   data: new SlashCommandBuilder()
     .setName("sing")
     .setDescription("Streams from a YouTube url")

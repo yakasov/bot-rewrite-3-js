@@ -3,7 +3,6 @@ const fs = require("fs");
 const stats = require("./../resources/stats.json");
 
 module.exports = {
-  aliases: ["use_channel", "setchannel", "set_channel"],
   data: new SlashCommandBuilder()
     .setName("edit")
     .setDescription("Edit a user's statistics")

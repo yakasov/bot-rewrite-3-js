@@ -5,7 +5,6 @@ const stats = require("./../resources/stats.json");
 const ranks = require("./../resources/ranks.json");
 
 module.exports = {
-  aliases: ["mystats"],
   data: new SlashCommandBuilder()
     .setName("profile")
     .setDescription("Shows personal statistics")

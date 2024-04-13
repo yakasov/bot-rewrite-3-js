@@ -5,7 +5,6 @@ const stats = require("./../resources/stats.json");
 const ranks = require("./../resources/ranks.json");
 
 module.exports = {
-  aliases: ["statistics", "leaderboard", "scores"],
   data: new SlashCommandBuilder()
     .setName("stats")
     .setDescription("Show server statistics"),

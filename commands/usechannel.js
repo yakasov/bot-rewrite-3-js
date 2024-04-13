@@ -3,7 +3,6 @@ const fs = require("fs");
 var stats = require("./../resources/stats.json");
 
 module.exports = {
-  aliases: ["use_channel", "setchannel", "set_channel"],
   data: new SlashCommandBuilder()
     .setName("usechannel")
     .setDescription("Designates the channel to use for rank up messages"),
