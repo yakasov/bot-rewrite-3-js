@@ -1,3 +1,5 @@
+"use strict";
+
 const { EmbedBuilder, SlashCommandBuilder } = require("discord.js");
 
 module.exports = {
@@ -15,13 +17,14 @@ module.exports = {
     const user = interaction.options.getUser("user");
 
     try {
-      var avatar;
+      let avatar = null;
       if (user) {
-        avatar = user.displayAvatarURL({ size: 1024, dynamic: true });
+        avatar = user.displayAvatarURL({dynamic: true,
+          size: 1024});
       } else {
         avatar = interaction.user.displayAvatarURL({
-          size: 1024,
           dynamic: true,
+          size: 1024
         });
       }
 
@@ -32,5 +35,5 @@ module.exports = {
     } catch (e) {
       await interaction.reply(e.message);
     }
-  },
+  }
 };

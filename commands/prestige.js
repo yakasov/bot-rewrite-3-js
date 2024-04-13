@@ -1,16 +1,16 @@
-/* eslint-disable indent */
+"use strict";
+
 const {
   ActionRowBuilder,
   SlashCommandBuilder,
   ButtonBuilder,
-  ButtonStyle,
+  ButtonStyle
 } = require("discord.js");
 const fs = require("fs");
 const { statsConfig } = require("./../resources/config.json");
 const stats = require("./../resources/stats.json");
 
 module.exports = {
-  aliases: ["rankup"],
   data: new SlashCommandBuilder()
     .setName("prestige")
     .setDescription("Prestige to the next prestige level.")
@@ -26,23 +26,29 @@ module.exports = {
     const elevated =
       interaction.user === interaction.client.application.owner ||
       interaction.user.id === (await interaction.guild.fetchOwner()).user.id;
-    const idToUse = elevated && user ? user.id : interaction.user.id;
+    const idToUse = elevated && user
+      ? user.id
+      : interaction.user.id;
 
     const guildStats = stats[interaction.guild.id];
-    if (!guildStats)
-      return await interaction.reply("This server has no statistics yet!");
-    if (!guildStats[idToUse])
-      return await interaction.reply("You do not have any statistics yet!");
+    if (!guildStats) {
+      return interaction.reply("This server has no statistics yet!");
+    }
+    if (!guildStats[idToUse]) {
+      return interaction.reply("You do not have any statistics yet!");
+    }
 
     if (!(elevated && user)) {
       if (
-        (guildStats[idToUse]["prestige"] ?? 0) >= statsConfig["prestigeMaximum"]
-      )
-        return await interaction.reply("You have reached max prestige!");
-      if (guildStats[idToUse]["score"] < statsConfig["prestigeRequirement"])
-        return await interaction.reply(
-          `You cannot prestige until ${statsConfig["prestigeRequirement"]}SR!`
+        (guildStats[idToUse].prestige ?? 0) >= statsConfig.prestigeMaximum
+      ) {
+        return interaction.reply("You have reached max prestige!");
+      }
+      if (guildStats[idToUse].score < statsConfig.prestigeRequirement) {
+        return interaction.reply(
+          `You cannot prestige until ${statsConfig.prestigeRequirement}SR!`
         );
+      }
     }
 
     const confirm = new ButtonBuilder()
@@ -58,9 +64,14 @@ module.exports = {
     const row = new ActionRowBuilder().addComponents(confirm, cancel);
 
     const response = await interaction.reply({
-      content:
-        "Prestiging will reset your SR back to 0, and your rank will be adjusted accordingly.\n\nIn return, you will gain a prestige mark and your SR gain will be boosted. Additionally, your +/-reps and reactions will have more weight.\n\nAre you sure you want to prestige?",
       components: [row],
+      content:
+        `Prestiging will reset your SR back to 0, 
+        and your rank will be adjusted accordingly.\n\n
+        In return, you will gain a prestige mark and your 
+        SR gain will be boosted. Additionally, 
+        your +/-reps and reactions will have more weight.\n\n
+        Are you sure you want to prestige?`
     });
 
     const collectorFilter = (i) => elevated || i.user.id === idToUse;
@@ -68,56 +79,65 @@ module.exports = {
     try {
       const confirmation = await response.awaitMessageComponent({
         filter: collectorFilter,
-        time: 60_000,
+        time: 60_000
       });
 
-      if (confirmation.customId == "y") {
+      if (confirmation.customId === "y") {
         await confirmation.update({
+          components: [],
           content: `${
             interaction.guild.members.cache
-              .filter((m) => m.id == idToUse)
+              .filter((m) => m.id === idToUse)
               .first().displayName
-          } has prestiged to prestige ${guildStats[idToUse]["prestige"] + 1}!`,
-          components: [],
+          } has prestiged to prestige ${guildStats[idToUse].prestige + 1}!`
         });
 
-        stats[interaction.guild.id][idToUse]["prestige"] =
-          (stats[interaction.guild.id][idToUse]["prestige"] ?? 0) + 1;
-        stats[interaction.guild.id][idToUse]["bestRanking"] = "";
-        stats[interaction.guild.id][idToUse]["bestScore"] = 0;
+        stats[interaction.guild.id][idToUse] =
+          module.exports.updateStats(stats[interaction.guild.id][idToUse]);
 
-        // Store message + voiceTime values then reset them
-        stats[interaction.guild.id][idToUse]["previousMessages"] =
-          (stats[interaction.guild.id][idToUse]["previousMessages"] ?? 0) +
-          stats[interaction.guild.id][idToUse]["messages"];
-        stats[interaction.guild.id][idToUse]["previousVoiceTime"] =
-          (stats[interaction.guild.id][idToUse]["previousVoiceTime"] ?? 0) +
-          stats[interaction.guild.id][idToUse]["voiceTime"];
-
-        // Add nerdHandicap to offset nerdScore
-        stats[interaction.guild.id][idToUse]["nerdHandicap"] =
-          stats[interaction.guild.id][idToUse]["nerdScore"] **
-            (stats[interaction.guild.id][idToUse]["prestige"] == 1 ? 1.55 : 0) *
-          0.8;
-
-        // Reset decay
-        stats[interaction.guild.id][idToUse]["decay"] = 0;
-
-        stats[interaction.guild.id][idToUse]["messages"] = 0;
-        stats[interaction.guild.id][idToUse]["voiceTime"] = 0;
-
-        fs.writeFileSync("./resources/stats.json", JSON.stringify(stats));
-      } else {
-        await confirmation.update({
-          content: "Prestige cancelled",
-          components: [],
-        });
+        return fs.writeFileSync("./resources/stats.json",
+          JSON.stringify(stats));
       }
-    } catch (e) {
-      await interaction.editReply({
-        content: "Confirmation not received within 1 minute, cancelling",
+      return confirmation.update({
         components: [],
+        content: "Prestige cancelled"
+      });
+
+    } catch (e) {
+      return interaction.editReply({
+        components: [],
+        content: "Confirmation not received within 1 minute, cancelling"
       });
     }
   },
+  updateStats: (userStats) => {
+    userStats.prestige =
+          (userStats.prestige ?? 0) + 1;
+    userStats.bestRanking = "";
+    userStats.bestScore = 0;
+
+    // Store message + voiceTime values then reset them
+    userStats.previousMessages =
+          (userStats.previousMessages ?? 0) +
+          userStats.messages;
+    userStats.previousVoiceTime =
+          (userStats.previousVoiceTime ?? 0) +
+          userStats.voiceTime;
+
+    // Add nerdHandicap to offset nerdScore
+    userStats.nerdHandicap =
+          userStats.nerdScore **
+            (userStats.prestige === 1
+              ? 1.55
+              : 0) *
+          0.8;
+
+    // Reset decay
+    userStats.decay = 0;
+
+    userStats.messages = 0;
+    userStats.voiceTime = 0;
+
+    return userStats;
+  }
 };

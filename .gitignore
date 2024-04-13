@@ -10,3 +10,5 @@ config.json
 tts.mp3
 !run.bat
 stats-*
+.DS_Store
+stats.json

@@ -1,9 +1,10 @@
+"use strict";
+
 const { SlashCommandBuilder } = require("discord.js");
 const fs = require("fs");
-var stats = require("./../resources/stats.json");
+const stats = require("./../resources/stats.json");
 
 module.exports = {
-  aliases: ["use_channel", "setchannel", "set_channel"],
   data: new SlashCommandBuilder()
     .setName("usechannel")
     .setDescription("Designates the channel to use for rank up messages"),
@@ -13,7 +14,7 @@ module.exports = {
       interaction.user === interaction.client.application.owner ||
       interaction.user.id === (await interaction.guild.fetchOwner()).user.id
     ) {
-      stats[interaction.guild.id]["rankUpChannel"] = interaction.channel.id;
+      stats[interaction.guild.id].rankUpChannel = interaction.channel.id;
 
       fs.writeFileSync("./resources/stats.json", JSON.stringify(stats));
 
@@ -21,5 +22,10 @@ module.exports = {
         `Set the rank up channel to ${interaction.channel.name}.`
       );
     }
-  },
+
+    return interaction.reply({
+      content: "You are not an admin user!",
+      ephemeral: true
+    });
+  }
 };

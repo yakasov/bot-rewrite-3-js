@@ -1,3 +1,5 @@
+"use strict";
+
 function generateTable(data) {
   if (!data || data.length === 0) {
     return "No data provided.";
@@ -5,26 +7,26 @@ function generateTable(data) {
 
   const headers = Object.keys(data[0]);
 
-  const columnWidths = headers.map((header) => {
-    return Math.max(
-      header.length,
-      ...data.map((row) =>
-        row[header] || row[header] === 0 ? row[header].toString().length : 0
-      )
-    );
-  });
+  const columnWidths = headers.map((header) => Math.max(
+    header.length,
+    ...data.map((row) =>
+      row[header] || row[header] === 0 ? row[header].toString().length : 0
+    )
+  ));
 
   let tableString =
-    headers
+    `${headers
       .map((header, index) => {
-        if (header === "★") return;
+        if (header === "★") {
+          return null;
+        }
         return header.padEnd(header === "Rep" ? 5 : columnWidths[index] + 2);
       })
-      .join("") + "\n";
+      .join("")  }\n`;
 
   tableString +=
-    "-".repeat(columnWidths.reduce((acc, length) => acc + length + 2, 0)) +
-    "\n";
+    `${"-".repeat(columnWidths.reduce((acc, length) => acc + length + 2, 0)) 
+    }\n`;
 
   data.forEach((item) => {
     const row = headers
@@ -42,7 +44,7 @@ function generateTable(data) {
         return cellValue;
       })
       .join(" ".repeat(2));
-    tableString += row + "\n";
+    tableString += `${row  }\n`;
   });
 
   return tableString;

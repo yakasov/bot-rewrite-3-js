@@ -1,32 +1,41 @@
+"use strict";
+
 const { ActivityType } = require("discord.js");
 const { queryFull } = require("minecraft-server-util");
 const {
   minecraftServerIp,
-  minecraftServerPort,
+  minecraftServerPort
 } = require("./../resources/config.json");
 
 exports.run = async (client, splash) => {
-  if (!(minecraftServerIp && minecraftServerPort)) return;
+  if (!(minecraftServerIp && minecraftServerPort)) {
+    return;
+  }
 
   queryFull(minecraftServerIp, minecraftServerPort)
     .then(async (res) => {
-      const online = res.players.online;
-      var activityString;
-      if (!online) {
-        if (client.user.presence.activities[0].name === splash) return;
-        // if nobody is online and the splash is already set, don't set it again
-
-        activityString = splash;
-      } else {
+      const {online} = res.players;
+      let activityString = "";
+      if (online) {
         const players = res.players.list;
         activityString = `(${players.length}) ${players.join(", ")}`;
+      } else {
+        // If nobody is online and the splash is already set, don't set it again
+        if (client.user.presence.activities[0].name === splash) {
+          return;
+        }
+
+        activityString = splash;
       }
 
       client.user.setPresence({
-        activities: [{ name: activityString, type: ActivityType.Watching }],
+        activities: [
+          { name: activityString,
+            type: ActivityType.Watching }
+        ]
       });
     })
     .catch(() => {
-      return;
+      // No catch (hmm...)
     });
 };
