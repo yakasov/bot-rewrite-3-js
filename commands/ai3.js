@@ -98,7 +98,8 @@ module.exports = {
       });
     } else {
       await interaction.followUp(
-        "Failed after 3 attempts, please try again - your conversation shouldn't be affected!"
+        `Failed after 3 attempts, please try again - 
+your conversation shouldn't be affected!`
       );
     }
   },
@@ -108,5 +109,5 @@ module.exports = {
       s += `Role: ${m.role}\nContent: ${m.content}\n\n`;
     });
     return s;
-  },
+  }
 };
