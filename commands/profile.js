@@ -6,15 +6,15 @@ const stats = require("./../resources/stats.json");
 const ranks = require("./../resources/ranks.json");
 
 module.exports = {
-  data: new SlashCommandBuilder()
+  "data": new SlashCommandBuilder()
     .setName("profile")
     .setDescription("Shows personal statistics")
     .addUserOption((opt) =>
-      opt.setName("user").setDescription("The user to get the profile of")
-    )
+      opt.setName("user")
+        .setDescription("The user to get the profile of"))
     .addBooleanOption((opt) =>
-      opt.setName("debug").setDescription("Whether to print the raw statistics")
-    ),
+      opt.setName("debug")
+        .setDescription("Whether to print the raw statistics")),
   async execute(interaction) {
     await interaction.deferReply();
 
@@ -53,7 +53,7 @@ module.exports = {
         v,
         i
       ])
-      .find(([k, ,]) => k === (user?? interaction.user.id));
+      .find(([k, ,]) => k === (user ?? interaction.user.id));
 
     const allUserStats = guildStats[userStats[0]];
 
@@ -82,21 +82,22 @@ module.exports = {
       (allUserStats.voiceTime * statsConfig.voiceChatSRGain +
         allUserStats.messages * statsConfig.messageSRGain) *
         Math.max(
-          1 + (allUserStats.reputation ?? 0) * statsConfig.reputationGain,
+          1 + allUserStats.reputation * statsConfig.reputationGain,
           1
         ) *
-        1.2 ** (allUserStats.prestige ?? 0)
+        1.2 ** allUserStats.prestige
     )}SR\n    Reputation: ${
-      allUserStats.reputation ?? 0
+      allUserStats.reputation
     }\n    Decay: ${Math.round(
       allUserStats.decay
     )}\n\n    Nerd Emojis given: ${
-      allUserStats.nerdsGiven ?? 0
+      allUserStats.nerdsGiven
     }\n    Nerd Emojis received: ${
-      Object.values(allUserStats.nerdEmojis).reduce(
-        (sum, a) => sum + a,
-        0
-      ) ?? 0
+      Object.values(allUserStats.nerdEmojis)
+        .reduce(
+          (sum, a) => sum + a,
+          0
+        ) ?? 0
     }${userStats[2]
       ? ""
       : "\n    == #1 of friends! =="
@@ -108,7 +109,7 @@ module.exports = {
     });
     return null;
   },
-  formatTime: (seconds) => {
+  "formatTime": (seconds) => {
 
     /*
      * Note: this will only work up to 30d 23h 59m 59s
@@ -117,30 +118,33 @@ module.exports = {
      */
     const date = new Date(null);
     date.setSeconds(seconds);
-    const unitArray = date.toISOString().substr(8, 11).split(/:|T/u);
+    const unitArray = date.toISOString()
+      .substr(8, 11)
+      .split(/:|T/u);
     return `${parseInt(unitArray[0], 10) - 1}d 
-    ${unitArray[1]}h ${unitArray[2]}m ${unitArray[3]}s`;
+${unitArray[1]}h ${unitArray[2]}m ${unitArray[3]}s`;
   },
-  getNickname: (interaction, id) => {
+  "getNickname": (interaction, id) => {
     const member = interaction.guild.members.cache
       .filter((m) => m.id === id)
       .first();
     return `${member.displayName}`;
   },
-  getPrestige: (memberStats) =>
-    `${memberStats.prestige ?? 0} \u001b[33m${"★".repeat(
-      memberStats.prestige ?? 0
+  "getPrestige": (memberStats) =>
+    `${memberStats.prestige} \u001b[33m${"★".repeat(
+      memberStats.prestige
     )}\u001b[0m`,
-  getRanking: (memberStats) => {
+  "getRanking": (memberStats) => {
     let rankString = "MISSINGNO";
-    Object.entries(ranks).forEach(([
-      k,
-      v
-    ]) => {
-      if (v[0] <= memberStats.score) {
-        rankString = `${v[1]}${k}\u001b[0m`;
-      }
-    });
+    Object.entries(ranks)
+      .forEach(([
+        k,
+        v
+      ]) => {
+        if (v[0] <= memberStats.score) {
+          rankString = `${v[1]}${k}\u001b[0m`;
+        }
+      });
     return rankString;
   }
 };

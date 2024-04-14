@@ -9,9 +9,12 @@ function generateTable(data) {
 
   const columnWidths = headers.map((header) => Math.max(
     header.length,
-    ...data.map((row) =>
-      row[header] || row[header] === 0 ? row[header].toString().length : 0
-    )
+    ...data.map((row) => {
+      const value = row[header];
+      return value || value === 0
+        ? value.toString().length
+        : 0;
+    })
   ));
 
   let tableString =
@@ -20,12 +23,14 @@ function generateTable(data) {
         if (header === "★") {
           return null;
         }
-        return header.padEnd(header === "Rep" ? 5 : columnWidths[index] + 2);
+        return header.padEnd(header === "Rep"
+          ? 5
+          : columnWidths[index] + 2);
       })
-      .join("")  }\n`;
+      .join("")}\n`;
 
   tableString +=
-    `${"-".repeat(columnWidths.reduce((acc, length) => acc + length + 2, 0)) 
+    `${"-".repeat(columnWidths.reduce((acc, length) => acc + length + 2, 0))
     }\n`;
 
   data.forEach((item) => {
@@ -36,7 +41,10 @@ function generateTable(data) {
             ? item[header].toString()
             : "";
 
-        if (["Rep", "Msgs"].includes(header)) {
+        if ([
+          "Rep",
+          "Msgs"
+        ].includes(header)) {
           cellValue = cellValue.padStart(columnWidths[index]);
         } else {
           cellValue = cellValue.padEnd(columnWidths[index]);
@@ -44,7 +52,7 @@ function generateTable(data) {
         return cellValue;
       })
       .join(" ".repeat(2));
-    tableString += `${row  }\n`;
+    tableString += `${row}\n`;
   });
 
   return tableString;

@@ -9,7 +9,9 @@ const {
 } = require("./../resources/config.json");
 
 exports.run = async (client, date, force = false) => {
-  const today = moment().tz("Europe/London").format("DD/MM");
+  const today = moment()
+    .tz("Europe/London")
+    .format("DD/MM");
   let newDate = "";
 
   if (today > date || force) {
@@ -25,11 +27,12 @@ exports.run = async (client, date, force = false) => {
     const guildMembers = guild.members.cache;
 
     // Check for members not in server anymore
-    Object.keys(birthdays).forEach((id) => {
-      if (!guildMembers.some((gm) => gm.id === id)) {
-        console.log(`${id} is not present in the server!`);
-      }
-    });
+    Object.keys(birthdays)
+      .forEach((id) => {
+        if (!guildMembers.some((gm) => gm.id === id)) {
+          console.log(`${id} is not present in the server!`);
+        }
+      });
 
     // Remove role if not their birthday anymore
     roleMembers.forEach((m) => {

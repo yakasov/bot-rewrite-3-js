@@ -2,8 +2,10 @@
 
 const fs = require("fs");
 
-exports.run = async () => {
-  const dateString = new Date().toISOString().replace(/:/gu, "-");
+exports.run = () => {
+  const dateString = new Date()
+    .toISOString()
+    .replace(/:/gu, "-");
   const backupDir = "./resources/backup";
   const backupFile = `${backupDir}/stats-${dateString}.json`;
 

@@ -7,14 +7,14 @@ const {
   minecraftServerPort
 } = require("./../resources/config.json");
 
-exports.run = async (client, splash) => {
+exports.run = (client, splash) => {
   if (!(minecraftServerIp && minecraftServerPort)) {
     return;
   }
 
   queryFull(minecraftServerIp, minecraftServerPort)
-    .then(async (res) => {
-      const {online} = res.players;
+    .then((res) => {
+      const online = res.players;
       let activityString = "";
       if (online) {
         const players = res.players.list;
@@ -29,9 +29,9 @@ exports.run = async (client, splash) => {
       }
 
       client.user.setPresence({
-        activities: [
-          { name: activityString,
-            type: ActivityType.Watching }
+        "activities": [
+          { "name": activityString,
+            "type": ActivityType.Watching }
         ]
       });
     })

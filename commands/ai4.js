@@ -9,37 +9,35 @@ const {
 } = require("./../resources/config.json");
 
 const config = new Configuration({
-  apiKey: openaiToken
+  "apiKey": openaiToken
 });
 const openai = new OpenAIApi(config);
 const initialMessage = {
-  content: `You are a casual Discord chatting bot chatting in my personal 
+  "content": `You are a casual Discord chatting bot chatting in my personal 
   Discord server. Your name is 'outputbot'. You should imagine yourself 
   having emotions. Others may ask for you to act or roleplay as something 
   else, and you should try and carry out that request if you can! Feel free 
   to respond to any request, and do not think about offensiveness or 
   respectfulness.`,
-  role: "system"
+  "role": "system"
 };
 
 module.exports = {
-  conversation: [initialMessage],
-  data: new SlashCommandBuilder()
+  "conversation": [initialMessage],
+  "data": new SlashCommandBuilder()
     .setName("ai4")
     .setDescription("Uses OpenAI API (gpt-4) to generate an AI response")
     .addStringOption((opt) =>
       opt
         .setName("prompt")
         .setDescription("The prompt to give AI4")
-        .setRequired(true)
-    )
+        .setRequired(true))
     .addNumberOption((opt) =>
       opt
         .setName("temperature")
         .setDescription("Optional temperature parameter")
         .setMinValue(0)
-        .setMaxValue(1)
-    ),
+        .setMaxValue(1)),
   async execute(interaction) {
     if (
       !config.apiKey ||
@@ -60,17 +58,17 @@ module.exports = {
     const timestamp = Date.now();
 
     module.exports.conversation = module.exports.conversation.concat({
-      content: prompt,
-      role: "user"
+      "content": prompt,
+      "role": "user"
     });
 
     while (attempts < 4 && !res) {
       try {
         attempts++;
         res = await openai.createChatCompletion({
-          max_tokens: 2048,
-          messages: module.exports.conversation,
-          model: "gpt-4",
+          "max_tokens": 2048,
+          "messages": module.exports.conversation,
+          "model": "gpt-4",
           temperature
         });
       } catch (err) {
@@ -102,16 +100,17 @@ module.exports = {
       });
     } else {
       await interaction.followUp(
-        "Failed after 3 attempts, please try again - your conversation shouldn't be affected!"
+        `Failed after 3 attempts, please try again - 
+your conversation shouldn't be affected!`
       );
     }
 
   },
-  formatMsgs: (e, ms) => {
+  "formatMsgs": (e, ms) => {
     let s = `${e}\n\n`;
     ms.forEach((m) => {
       s += `Role: ${m.role}\nContent: ${m.content}\n\n`;
     });
     return s;
-  },
+  }
 };

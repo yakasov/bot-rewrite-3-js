@@ -28,7 +28,8 @@ for (const file of commandFiles) {
   }
 }
 
-const rest = new REST().setToken(token);
+const rest = new REST()
+  .setToken(token);
 
 (async () => {
   try {
@@ -38,7 +39,7 @@ const rest = new REST().setToken(token);
 
     const data = await rest.put(
       Routes.applicationGuildCommands(applicationId, mainGuildId),
-      { body: commands }
+      { "body": commands }
     );
 
     console.log(

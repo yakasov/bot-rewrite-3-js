@@ -11,14 +11,13 @@ const { statsConfig } = require("./../resources/config.json");
 const stats = require("./../resources/stats.json");
 
 module.exports = {
-  data: new SlashCommandBuilder()
+  "data": new SlashCommandBuilder()
     .setName("prestige")
     .setDescription("Prestige to the next prestige level.")
     .addUserOption((opt) =>
       opt
         .setName("user")
-        .setDescription("The user to force prestige (admin only)")
-    ),
+        .setDescription("The user to force prestige (admin only)")),
   async execute(interaction) {
     await interaction.client.application.fetch();
 
@@ -40,7 +39,7 @@ module.exports = {
 
     if (!(elevated && user)) {
       if (
-        (guildStats[idToUse].prestige ?? 0) >= statsConfig.prestigeMaximum
+        guildStats[idToUse].prestige >= statsConfig.prestigeMaximum
       ) {
         return interaction.reply("You have reached max prestige!");
       }
@@ -61,11 +60,12 @@ module.exports = {
       .setLabel("No")
       .setStyle(ButtonStyle.Danger);
 
-    const row = new ActionRowBuilder().addComponents(confirm, cancel);
+    const row = new ActionRowBuilder()
+      .addComponents(confirm, cancel);
 
     const response = await interaction.reply({
-      components: [row],
-      content:
+      "components": [row],
+      "content":
         `Prestiging will reset your SR back to 0, 
 and your rank will be adjusted accordingly.\n
 In return, you will gain a prestige mark and your 
@@ -78,14 +78,14 @@ Are you sure you want to prestige?`
 
     try {
       const confirmation = await response.awaitMessageComponent({
-        filter: collectorFilter,
-        time: 60_000
+        "filter": collectorFilter,
+        "time": 60_000
       });
 
       if (confirmation.customId === "y") {
         await confirmation.update({
-          components: [],
-          content: `${
+          "components": [],
+          "content": `${
             interaction.guild.members.cache
               .filter((m) => m.id === idToUse)
               .first().displayName
@@ -95,34 +95,31 @@ Are you sure you want to prestige?`
         stats[interaction.guild.id][idToUse] =
           module.exports.updateStats(stats[interaction.guild.id][idToUse]);
 
-        return fs.writeFileSync("./resources/stats.json",
-          JSON.stringify(stats));
+        return fs.writeFileSync(
+          "./resources/stats.json",
+          JSON.stringify(stats)
+        );
       }
       return confirmation.update({
-        components: [],
-        content: "Prestige cancelled"
+        "components": [],
+        "content": "Prestige cancelled"
       });
 
     } catch (e) {
       return interaction.editReply({
-        components: [],
-        content: "Confirmation not received within 1 minute, cancelling"
+        "components": [],
+        "content": "Confirmation not received within 1 minute, cancelling"
       });
     }
   },
-  updateStats: (userStats) => {
-    userStats.prestige =
-          (userStats.prestige ?? 0) + 1;
+  "updateStats": (userStats) => {
+    userStats.prestige++;
     userStats.bestRanking = "";
     userStats.bestScore = 0;
 
     // Store message + voiceTime values then reset them
-    userStats.previousMessages =
-          (userStats.previousMessages ?? 0) +
-          userStats.messages;
-    userStats.previousVoiceTime =
-          (userStats.previousVoiceTime ?? 0) +
-          userStats.voiceTime;
+    userStats.previousMessages += userStats.messages;
+    userStats.previousVoiceTime += userStats.voiceTime;
 
     // Add nerdHandicap to offset nerdScore
     userStats.nerdHandicap =
