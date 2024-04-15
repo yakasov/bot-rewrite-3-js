@@ -200,7 +200,8 @@ function checkMessageResponse(msg) {
         .replace("https://twitter.com/", "https://fxtwitter.com/")}`
     );
 
-    msg.delete();
+    msg.delete()
+      .catch(console.error);
     return;
   }
 
