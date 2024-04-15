@@ -423,7 +423,7 @@ function addToStats(a) {
     }
 
     stats[guildId][userId].nerdEmojis[messageId] =
-      stats[guildId][userId].nerdEmojis[messageId] +
+      (stats[guildId][userId].nerdEmojis[messageId] ?? 0) +
       1 +
       Math.floor(stats[guildId][giverId].prestige / 2);
     break;
@@ -435,7 +435,7 @@ function addToStats(a) {
     if (!giver.bot) {
       stats[guildId][giverId].nerdsGiven = Math.max(
         0,
-        stats[guildId][giverId].nerdsGiven - 1
+        (stats[guildId][giverId].nerdsGiven ?? 0) - 1
       );
     }
 
