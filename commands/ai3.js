@@ -36,7 +36,7 @@ module.exports = {
         .setName("temperature")
         .setDescription("Optional temperature parameter")
         .setMinValue(0)
-        .setMaxValue(1)),
+        .setMaxValue(2)),
   async execute(interaction) {
     if (!config.apiKey || !aiChannels.includes(`${interaction.channelId}`)) {
       return;
