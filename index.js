@@ -217,11 +217,12 @@ function checkMessageResponse(msg) {
   }
 
   async function f(k, v) {
-    if (v.includes("{AUTHOR}")) {
-      v = v.replace("{AUTHOR}", getNickname(msg));
+    let res = v;
+    if (res.includes("{AUTHOR}")) {
+      res = res.replace("{AUTHOR}", getNickname(msg));
     }
 
-    if (v.includes("{FOLLOWING}")) {
+    if (res.includes("{FOLLOWING}")) {
       let lastMsg = "";
       if (msg.content.trim() === k) {
         lastMsg = await msg.channel.messages
@@ -233,7 +234,7 @@ function checkMessageResponse(msg) {
         .split(k)
         .slice(1)
         .join(k);
-      v = v.replace(
+      res = res.replace(
         "{FOLLOWING}",
         lastMsg || !following.trim()
           ? lastMsg ?? getNickname(msg)
@@ -241,8 +242,8 @@ function checkMessageResponse(msg) {
       );
     }
 
-    if (v.includes("{STICKER:")) {
-      const stickerId = v.split(":")[1].slice(0, -1);
+    if (res.includes("{STICKER:")) {
+      const stickerId = res.split(":")[1].slice(0, -1);
       const sticker = msg.guild.stickers.cache.filter(
         (s) => s.id === stickerId
       );
@@ -254,7 +255,7 @@ function checkMessageResponse(msg) {
       return null;
     }
 
-    return msg.channel.send(v);
+    return msg.channel.send(res);
   }
 
   const entries = Object.entries(responses);

@@ -44,7 +44,6 @@
         ]
       }
     ],
-    "no-param-reassign": "off",
     "no-plusplus": "off",
     "no-ternary": "off",
     "no-undefined": "off",
