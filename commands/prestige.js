@@ -116,6 +116,8 @@ Are you sure you want to prestige?`
     userStats.prestige++;
     userStats.bestRanking = "";
     userStats.bestScore = 0;
+    // Potential fix for weird adjustment post-prestige
+    userStats.score = 0;
 
     // Store message + voiceTime values then reset them
     userStats.previousMessages += userStats.messages;
