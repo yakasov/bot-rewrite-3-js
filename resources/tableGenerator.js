@@ -30,7 +30,7 @@ function generateTable(data) {
       .join("")}\n`;
 
   tableString +=
-    `${"-".repeat(columnWidths.reduce((acc, length) => acc + length + 2, 0))
+    `${"-".repeat(columnWidths.reduce((acc, length) => acc + length, 0))
     }\n`;
 
   data.forEach((item) => {
