@@ -58,6 +58,8 @@ module.exports = {
     }
 
     stats[interaction.guild.id][user.id].reputation += amount;
+    stats[interaction.guild.id][giver.id].reputationTime =
+      module.exports.f();
 
     if (stats[interaction.guild.id][user.id].reputation >= 100) {
       stats[interaction.guild.id][user.id].reputation = -99;
@@ -75,9 +77,6 @@ module.exports = {
       `${giver.displayName} has given ${amount} rep to ${user.displayName}!`,
       "ephemeral": false
     });
-
-    stats[interaction.guild.id][giver.id].reputationTime =
-      module.exports.f();
 
     fs.writeFileSync("./resources/stats.json", JSON.stringify(stats));
 
