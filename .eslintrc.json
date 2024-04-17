@@ -69,7 +69,6 @@
       }
     ],
     "quotes": ["warn", "double"],
-    "require-atomic-updates": "warn",
     "semi": ["warn", "always"],
     "space-before-function-paren": [
       "error",
