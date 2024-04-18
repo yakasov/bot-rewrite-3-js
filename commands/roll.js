@@ -21,13 +21,20 @@ module.exports = {
     stats[interaction.guild.id][interaction.user.id].luckTokens--;
     const roll = module.exports.rollDice();
     const result = module.exports.getLuckAction(roll);
-    
+    /* eslint-disable-next-line array-element-newline*/
+    const aOrAn = [8, 11, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89]
+      .includes(roll)
+      ? "an"
+      : "a";
+
     switch (result.action.type) {
     case "reputation":
-      stats[interaction.guild.id][interaction.user.id].reputation += result.action.amount;
+      stats[interaction.guild.id][interaction.user.id].reputation +=
+        result.action.amount;
       break;
     case "score":
-      stats[interaction.guild.id][interaction.user.id].luckHandicap += result.action.amount;
+      stats[interaction.guild.id][interaction.user.id].luckHandicap +=
+        result.action.amount;
       break;
     case "token":
       stats[interaction.guild.id][interaction.user.id].luckTokens += 2;
@@ -41,7 +48,7 @@ module.exports = {
       JSON.stringify(stats)
     );
 
-    const response = `You rolled a ${roll}.
+    const response = `You rolled ${aOrAn} ${roll}.
 ${result.description}\n
 ${module.exports.getTokenString(
     stats[interaction.guild.id][interaction.user.id].luckTokens
@@ -50,11 +57,13 @@ ${module.exports.getTokenString(
     return interaction.editReply(response);
   },
   getLuckAction(roll) {
-    return luckTable.find(result => roll >= result.min && roll < result.max);
+    return luckTable.find((result) => roll >= result.min && roll < result.max);
   },
   getTokenString(tokens) {
     if (tokens) {
-      return `You have ${tokens} token${tokens === 1 ? "" : "s"} left.`;
+      return `You have ${tokens} token${tokens === 1
+        ? ""
+        : "s"} left.`;
     }
     return "You have no more tokens!";
   },

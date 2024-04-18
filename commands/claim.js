@@ -60,13 +60,13 @@ module.exports = {
             "content": `You have removed the role ${role.name}.`,
             "ephemeral": true
           });
-        } 
+        }
         return confirmation.update({
           "components": [],
           "content": "Role claim cancelled.",
           "ephemeral": true
         });
-        
+
       } catch (e) {
         return interaction.editReply({
           "components": [],
@@ -76,6 +76,8 @@ module.exports = {
     }
 
     await interaction.member.roles.add(role);
-    return interaction.editReply(`You have successfully claimed the ${role.name} role!`);
-  },
+    return interaction.editReply(
+      `You have successfully claimed the ${role.name} role!`
+    );
+  }
 };

@@ -15,11 +15,11 @@ exports.run = async (stats) => {
 
   Object.keys(stats)
     .forEach((gk) => {
-      if (f() - stats[gk].lastTokenTime <  getTime(0, 0, 24)) {
+      if (f() - stats[gk].lastTokenTime < getTime(0, 0, 24)) {
         Object.keys(stats[gk])
           .filter((mk) => mk.length === 18)
           .forEach((mk) => {
-            stats[gk][mk].tokens = (stats[gk][mk].tokens ?? 0) + 1;
+            stats[gk][mk].tokens = (stats[gk][mk].tokens ?? 0) + 3;
           });
 
         stats[gk].lastTokenTime = f();
@@ -29,6 +29,7 @@ exports.run = async (stats) => {
   try {
     fs.writeFileSync("./resources/stats.json", JSON.stringify(stats));
   } catch {
+
     /*
      * Hacky fix for stats.json deadlock
      * Should probably change to streams...
