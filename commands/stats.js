@@ -1,7 +1,7 @@
 "use strict";
 
 const { SlashCommandBuilder } = require("discord.js");
-const { generateTable } = require("./../resources/tableGenerator.js");
+const { generateTable } = require("./../util/tableGenerator.js");
 const stats = require("./../resources/stats.json");
 const ranks = require("./../resources/ranks.json");
 

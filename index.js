@@ -134,6 +134,15 @@ function backupStats() {
   }
 }
 
+function addTokens() {
+  try {
+    const task = require("./tasks/addTokens.js");
+    return task.run(stats);
+  } catch (e) {
+    return console.error(e);
+  }
+}
+
 function addDecayToStats() {
   // This function should really be a separate task!!!
   Object.entries(stats)
@@ -316,6 +325,8 @@ function initialiseStats(guildId, userId) {
     "decay": 0,
     "joinTime": 0,
     "lastGainTime": 0,
+    "luckHandicap": 0,
+    "luckTokens": 5,
     "messages": 0,
     "nerdEmojis": {},
     "nerdHandicap": 0,
@@ -369,8 +380,14 @@ function addToStats(a) {
   if (!stats[guildId]) {
     stats[guildId] = {
       "allowDecay": true,
-      "rankUpChannel": ""
+      "luckTokenTime": 0,
+      "rankUpChannel": "",
     };
+  }
+
+  if (!stats[guildId].luckTokenTime) {
+    // Post-casino update patch
+    stats[guildId].luckTokenTime = 0;
   }
 
   initialiseStats(guildId, userId);
@@ -488,7 +505,8 @@ function updateScores() {
             statsConfig.reputationGain,
             0.01
           ) *
-          1.2 ** stats[guild][user].prestige -
+          1.2 ** stats[guild][user].prestige + 
+          stats[guild][user].luckHandicap -
           stats[guild][user].nerdScore -
           stats[guild][user].decay
           );
@@ -564,6 +582,7 @@ client.once(Events.ClientReady, (c) => {
   getNewSplash();
   addDecayToStats();
   backupStats();
+  addTokens();
 
   /* eslint-disable line-comment-position */
   setInterval(() => {
@@ -575,6 +594,7 @@ client.once(Events.ClientReady, (c) => {
   setInterval(addDecayToStats, getTime(0, 0, 1)); // 1 hour
   setInterval(checkVoiceChannels, getTime(15)); // 15 seconds
   setInterval(backupStats, getTime(0, 15)); // 15 minutes
+  setInterval(addTokens, getTime(0, 0, 1)); // 1 hour
   /* eslint-enable line-comment-position */
 });
 
