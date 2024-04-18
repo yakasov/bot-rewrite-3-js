@@ -381,7 +381,7 @@ function addToStats(a) {
     stats[guildId] = {
       "allowDecay": true,
       "luckTokenTime": 0,
-      "rankUpChannel": "",
+      "rankUpChannel": ""
     };
   }
 
@@ -505,7 +505,7 @@ function updateScores() {
             statsConfig.reputationGain,
             0.01
           ) *
-          1.2 ** stats[guild][user].prestige + 
+          1.2 ** stats[guild][user].prestige +
           stats[guild][user].luckHandicap -
           stats[guild][user].nerdScore -
           stats[guild][user].decay

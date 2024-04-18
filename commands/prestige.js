@@ -1,10 +1,10 @@
 "use strict";
 
-const { 
-  ActionRowBuilder, 
-  ButtonBuilder, 
-  ButtonStyle, 
-  SlashCommandBuilder 
+const {
+  ActionRowBuilder,
+  ButtonBuilder,
+  ButtonStyle,
+  SlashCommandBuilder
 } = require("discord.js");
 const fs = require("fs");
 const { statsConfig } = require("./../resources/config.json");
