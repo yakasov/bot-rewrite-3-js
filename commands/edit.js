@@ -1,8 +1,6 @@
 "use strict";
 
 const { SlashCommandBuilder } = require("discord.js");
-const fs = require("fs");
-const stats = require("./../resources/stats.json");
 
 module.exports = {
   "data": new SlashCommandBuilder()
@@ -40,17 +38,13 @@ module.exports = {
         const newVal = (/^-?\d+$/u).test(value)
           ? parseInt(value, 10)
           : value;
-        stats[interaction.guild.id][user][attribute] = add
-          ? stats[interaction.guild.id][user][attribute] + newVal
+        globalThis.stats[interaction.guild.id][user][attribute] = add
+          ? globalThis.stats[interaction.guild.id][user][attribute] + newVal
           : newVal;
-        fs.writeFileSync(
-          "./resources/stats.json",
-          JSON.stringify(stats)
-        );
 
         return interaction.reply(
           `Set user ${user} attribute ${attribute} to value ${
-            stats[interaction.guild.id][user][attribute]
+            globalThis.stats[interaction.guild.id][user][attribute]
           }`
         );
       } catch (e) {

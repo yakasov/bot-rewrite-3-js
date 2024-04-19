@@ -1,8 +1,6 @@
 "use strict";
 
-const fs = require("fs");
 const { SlashCommandBuilder } = require("discord.js");
-const stats = require("./../resources/stats.json");
 const luckTable = require("./../resources/luckTable.json");
 
 
@@ -12,13 +10,14 @@ module.exports = {
     .setDescription("Use tokens to gamble for rewards!"),
   async execute(interaction) {
     await interaction.deferReply();
-    const tokens = stats[interaction.guild.id][interaction.user.id].luckTokens;
+    const tokens =
+      globalThis.stats[interaction.guild.id][interaction.user.id].luckTokens;
 
     if (!tokens) {
       return interaction.editReply("You don't have any tokens!");
     }
 
-    stats[interaction.guild.id][interaction.user.id].luckTokens--;
+    globalThis.stats[interaction.guild.id][interaction.user.id].luckTokens--;
     const roll = module.exports.rollDice();
     const result = module.exports.getLuckAction(roll);
     /* eslint-disable-next-line array-element-newline*/
@@ -29,29 +28,25 @@ module.exports = {
 
     switch (result.action.type) {
     case "reputation":
-      stats[interaction.guild.id][interaction.user.id].reputation +=
-        result.action.amount;
+      globalThis.stats[interaction.guild.id][interaction.user.id]
+        .reputation += result.action.amount;
       break;
     case "score":
-      stats[interaction.guild.id][interaction.user.id].luckHandicap +=
-        result.action.amount;
+      globalThis.stats[interaction.guild.id][interaction.user.id]
+        .luckHandicap += result.action.amount;
       break;
     case "token":
-      stats[interaction.guild.id][interaction.user.id].luckTokens += 2;
+      globalThis.stats[interaction.guild.id][interaction.user.id]
+        .luckTokens += 2;
       break;
     default:
       break;
     }
 
-    fs.writeFileSync(
-      "./resources/stats.json",
-      JSON.stringify(stats)
-    );
-
     const response = `You rolled ${aOrAn} ${roll}.
 ${result.description}\n
 ${module.exports.getTokenString(
-    stats[interaction.guild.id][interaction.user.id].luckTokens
+    globalThis.stats[interaction.guild.id][interaction.user.id].luckTokens
   )}`;
 
     return interaction.editReply(response);

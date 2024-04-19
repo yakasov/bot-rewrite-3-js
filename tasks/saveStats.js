@@ -2,6 +2,6 @@
 
 const fs = require("fs");
 
-exports.run = (stats) => {
-  fs.writeFileSync("./resources/stats.json", JSON.stringify(stats));
+exports.run = () => {
+  fs.writeFileSync("./resources/stats.json", JSON.stringify(globalThis.stats));
 };

@@ -1,9 +1,6 @@
 "use strict";
 
-const fs = require("fs");
-const { setTimeout } = require("timers/promises");
-
-exports.run = async (stats) => {
+exports.run = () => {
   function f() {
     // Returns UNIX time in seconds.
     return Math.floor(Date.now() / 1000);
@@ -13,28 +10,17 @@ exports.run = async (stats) => {
     return 1000 * seconds + 1000 * 60 * minutes + 1000 * 60 * 60 * hours;
   }
 
-  Object.keys(stats)
+  Object.keys(globalThis.stats)
     .forEach((gk) => {
-      if (f() - stats[gk].lastTokenTime < getTime(0, 0, 24)) {
-        Object.keys(stats[gk])
+      if (f() - globalThis.stats[gk].lastTokenTime < getTime(0, 0, 24)) {
+        Object.keys(globalThis.stats[gk])
           .filter((mk) => mk.length === 18)
           .forEach((mk) => {
-            stats[gk][mk].tokens = (stats[gk][mk].tokens ?? 0) + 3;
+            globalThis.stats[gk][mk].tokens =
+              (globalThis.stats[gk][mk].tokens ?? 0) + 3;
           });
 
-        stats[gk].lastTokenTime = f();
+        globalThis.stats[gk].lastTokenTime = f();
       }
     });
-
-  try {
-    fs.writeFileSync("./resources/stats.json", JSON.stringify(stats));
-  } catch {
-
-    /*
-     * Hacky fix for stats.json deadlock
-     * Should probably change to streams...
-     */
-    await setTimeout(1500);
-    fs.writeFileSync("./resources/stats.json", JSON.stringify(stats));
-  }
 };

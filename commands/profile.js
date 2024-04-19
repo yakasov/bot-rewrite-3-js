@@ -2,7 +2,6 @@
 
 const { SlashCommandBuilder } = require("discord.js");
 const { statsConfig } = require("./../resources/config.json");
-const stats = require("./../resources/stats.json");
 const ranks = require("./../resources/ranks.json");
 
 module.exports = {
@@ -24,7 +23,7 @@ module.exports = {
     }
     const debug = interaction.options.getBoolean("debug") ?? false;
 
-    const guildStats = stats[interaction.guild.id];
+    const guildStats = globalThis.stats[interaction.guild.id];
     if (!guildStats) {
       return interaction.reply("This server has no statistics yet!");
     }

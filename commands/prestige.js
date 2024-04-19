@@ -6,9 +6,7 @@ const {
   ButtonStyle,
   SlashCommandBuilder
 } = require("discord.js");
-const fs = require("fs");
 const { statsConfig } = require("./../resources/config.json");
-const stats = require("./../resources/stats.json");
 
 module.exports = {
   "data": new SlashCommandBuilder()
@@ -29,7 +27,7 @@ module.exports = {
       ? user.id
       : interaction.user.id;
 
-    const guildStats = stats[interaction.guild.id];
+    const guildStats = globalThis.stats[interaction.guild.id];
     if (!guildStats) {
       return interaction.reply("This server has no statistics yet!");
     }
@@ -92,13 +90,10 @@ Are you sure you want to prestige?`
           } has prestiged to prestige ${guildStats[idToUse].prestige + 1}!`
         });
 
-        stats[interaction.guild.id][idToUse] =
-          module.exports.updateStats(stats[interaction.guild.id][idToUse]);
-
-        return fs.writeFileSync(
-          "./resources/stats.json",
-          JSON.stringify(stats)
-        );
+        globalThis.stats[interaction.guild.id][idToUse] =
+          module.exports.updateStats(
+            globalThis.stats[interaction.guild.id][idToUse]
+          );
       }
       return confirmation.update({
         "components": [],
