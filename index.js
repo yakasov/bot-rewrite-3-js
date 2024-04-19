@@ -10,14 +10,18 @@ const {
 const moment = require("moment-timezone");
 const fs = require("fs");
 const npFile = require("./commands/np.js");
-const { token, statsConfig } = require("./resources/config.json");
+const {
+  token,
+  statsConfig
+} = require("./resources/config.json");
 const responses = require("./resources/responses.json");
 const chanceResponses = require("./resources/chanceResponses.json");
-const stats = require("./resources/stats.json");
+const loadedStats = require("./resources/stats.json");
 const ranks = require("./resources/ranks.json");
 const fetch = require("node-fetch");
 const path = require("node:path");
 globalThis.fetch = fetch;
+globalThis.stats = loadedStats;
 
 const client = new Client({
   "allowedMentions": {
@@ -119,7 +123,7 @@ function getNickname(msg) {
 function saveStats() {
   try {
     const task = require("./tasks/saveStats.js");
-    return task.run(stats);
+    return task.run();
   } catch (e) {
     return console.error(e);
   }
@@ -128,7 +132,7 @@ function saveStats() {
 function backupStats() {
   try {
     const task = require("./tasks/backupstats.js");
-    return task.run(stats);
+    return task.run();
   } catch (e) {
     return console.error(e);
   }
@@ -137,7 +141,7 @@ function backupStats() {
 function addTokens() {
   try {
     const task = require("./tasks/addTokens.js");
-    return task.run(stats);
+    return task.run(globalThis.stats);
   } catch (e) {
     return console.error(e);
   }
@@ -145,29 +149,29 @@ function addTokens() {
 
 function addDecayToStats() {
   // This function should really be a separate task!!!
-  Object.entries(stats)
+  Object.entries(globalThis.stats)
     .forEach(([
       guild,
       gv
     ]) => {
-      if (stats[guild].allowDecay ?? true) {
+      if (globalThis.stats[guild].allowDecay ?? true) {
         Object.keys(gv)
           .filter((k) => k.length === 18)
           .forEach((member) => {
             if (
-              stats[guild][member].score >
-            statsConfig.decaySRLossThreshold &&
-            Math.floor(Date.now() / 1000) -
-            Math.max(
-              stats[guild][member].joinTime,
-              stats[guild][member].lastGainTime
-            ) >
-            getTime(0, 0, 24) / 1000
+              globalThis.stats[guild][member].score >
+              statsConfig.decaySRLossThreshold &&
+              Math.floor(Date.now() / 1000) -
+              Math.max(
+                globalThis.stats[guild][member].joinTime,
+                globalThis.stats[guild][member].lastGainTime
+              ) >
+              getTime(0, 0, 24) / 1000
             ) {
-              stats[guild][member].lastGainTime = Math.floor(
+              globalThis.stats[guild][member].lastGainTime = Math.floor(
                 Date.now() / 1000
               );
-              stats[guild][member].decay += statsConfig.decaySRLoss;
+              globalThis.stats[guild][member].decay += statsConfig.decaySRLoss;
             }
           });
       }
@@ -235,7 +239,9 @@ function checkMessageResponse(msg) {
       let lastMsg = "";
       if (msg.content.trim() === k) {
         lastMsg = await msg.channel.messages
-          .fetch({ "limit": 2 })
+          .fetch({
+            "limit": 2
+          })
           .then((c) => getNickname([...c.values()].pop()));
       }
 
@@ -341,8 +347,8 @@ function initialiseStats(guildId, userId) {
     "voiceTime": 0
   };
 
-  if (!stats[guildId][userId]) {
-    stats[guildId][userId] = baseObj;
+  if (!globalThis.stats[guildId][userId]) {
+    globalThis.stats[guildId][userId] = baseObj;
     return null;
   }
 
@@ -351,15 +357,15 @@ function initialiseStats(guildId, userId) {
       k,
       v
     ]) => {
-      if (!stats[guildId][userId][k]) {
-        stats[guildId][userId][k] = v;
+      if (!globalThis.stats[guildId][userId][k]) {
+        globalThis.stats[guildId][userId][k] = v;
       }
     });
 
-  Object.keys(stats[guildId][userId])
+  Object.keys(globalThis.stats[guildId][userId])
     .forEach((k) => {
       if (baseObj[k] === undefined) {
-        delete stats[guildId][userId][k];
+        delete globalThis.stats[guildId][userId][k];
       }
     });
 
@@ -372,22 +378,28 @@ function addToStats(a) {
     return Math.floor(Date.now() / 1000);
   }
 
-  const { type, userId, guildId, messageId, giver } = a;
+  const {
+    type,
+    userId,
+    guildId,
+    messageId,
+    giver
+  } = a;
   const giverId = giver
     ? giver.id
     : 0;
 
-  if (!stats[guildId]) {
-    stats[guildId] = {
+  if (!globalThis.stats[guildId]) {
+    globalThis.stats[guildId] = {
       "allowDecay": true,
       "luckTokenTime": 0,
       "rankUpChannel": ""
     };
   }
 
-  if (!stats[guildId].luckTokenTime) {
+  if (!globalThis.stats[guildId].luckTokenTime) {
     // Post-casino update patch
-    stats[guildId].luckTokenTime = 0;
+    globalThis.stats[guildId].luckTokenTime = 0;
   }
 
   initialiseStats(guildId, userId);
@@ -400,36 +412,36 @@ function addToStats(a) {
 
   case "message":
     if (
-      f() - stats[guildId][userId].lastGainTime <
+      f() - globalThis.stats[guildId][userId].lastGainTime <
         statsConfig.messageSRGainCooldown
     ) {
       return;
     }
-    stats[guildId][userId].lastGainTime = f();
-    stats[guildId][userId].messages += 1;
+    globalThis.stats[guildId][userId].lastGainTime = f();
+    globalThis.stats[guildId][userId].messages += 1;
     break;
 
   case "joinedVoiceChannel":
-    stats[guildId][userId].joinTime = f();
+    globalThis.stats[guildId][userId].joinTime = f();
     break;
 
   case "inVoiceChannel":
     if (botUptime < 10) {
-      stats[guildId][userId].joinTime = f();
+      globalThis.stats[guildId][userId].joinTime = f();
     }
-    stats[guildId][userId].voiceTime +=
-      Math.floor(
-        f() -
-        (stats[guildId][userId].joinTime === 0
+    globalThis.stats[guildId][userId].voiceTime += Math.floor(
+      f() -
+        (globalThis.stats[guildId][userId].joinTime === 0
           ? f()
-          : stats[guildId][userId].joinTime)
-      );
-    stats[guildId][userId].joinTime = f();
+          : globalThis.stats[guildId][userId].joinTime)
+    );
+    globalThis.stats[guildId][userId].joinTime = f();
     break;
 
   case "leftVoiceChannel":
-    stats[guildId][userId].voiceTime +=
-      Math.floor(f() - stats[guildId][userId].joinTime);
+    globalThis.stats[guildId][userId].voiceTime += Math.floor(
+      f() - globalThis.stats[guildId][userId].joinTime
+    );
     break;
 
   case "nerdEmojiAdded":
@@ -437,13 +449,13 @@ function addToStats(a) {
       return;
     }
     if (!giver.bot) {
-      stats[guildId][giverId].nerdsGiven++;
+      globalThis.stats[guildId][giverId].nerdsGiven++;
     }
 
-    stats[guildId][userId].nerdEmojis[messageId] =
-      (stats[guildId][userId].nerdEmojis[messageId] ?? 0) +
-      1 +
-      Math.floor(stats[guildId][giverId].prestige / 2);
+    globalThis.stats[guildId][userId].nerdEmojis[messageId] =
+        (globalThis.stats[guildId][userId].nerdEmojis[messageId] ?? 0) +
+        1 +
+        Math.floor(globalThis.stats[guildId][giverId].prestige / 2);
     break;
 
   case "nerdEmojiRemoved":
@@ -451,16 +463,16 @@ function addToStats(a) {
       return;
     }
     if (!giver.bot) {
-      stats[guildId][giverId].nerdsGiven = Math.max(
+      globalThis.stats[guildId][giverId].nerdsGiven = Math.max(
         0,
-        (stats[guildId][giverId].nerdsGiven ?? 0) - 1
+        (globalThis.stats[guildId][giverId].nerdsGiven ?? 0) - 1
       );
     }
 
-    stats[guildId][userId].nerdEmojis[messageId] = Math.max(
+    globalThis.stats[guildId][userId].nerdEmojis[messageId] = Math.max(
       0,
-      stats[guildId][userId].nerdEmojis[messageId] -
-        (1 + Math.floor(stats[guildId][giverId].prestige / 2))
+      globalThis.stats[guildId][userId].nerdEmojis[messageId] -
+        (1 + Math.floor(globalThis.stats[guildId][giverId].prestige / 2))
     );
     break;
 
@@ -473,7 +485,7 @@ function addToStats(a) {
 }
 
 function updateScores() {
-  Object.entries(stats)
+  Object.entries(globalThis.stats)
     .forEach(([
       guild,
       guildStats
@@ -486,69 +498,78 @@ function updateScores() {
             "type": "init",
             "userId": user
           });
-          const nerdPower = stats[guild][user].prestige > 0
-            ? 2.8
-            : 1.8;
-          stats[guild][user].nerdScore =
-          Object.values(stats[guild][user].nerdEmojis)
-            .reduce(
-              (sum, a) => sum + Math.max(nerdPower ** a + 1, 0) - 1,
-              0
-            ) - stats[guild][user].nerdHandicap;
+          const nerdPower =
+            globalThis.stats[guild][user].prestige > 0
+              ? 2.8
+              : 1.8;
+          globalThis.stats[guild][user].nerdScore =
+            Object.values(globalThis.stats[guild][user].nerdEmojis)
+              .reduce(
+                (sum, a) => sum + Math.max(nerdPower ** a + 1, 0) - 1,
+                0
+              ) - globalThis.stats[guild][user].nerdHandicap;
 
           const score = Math.floor(
-            (stats[guild][user].voiceTime * statsConfig.voiceChatSRGain +
-            stats[guild][user].messages * statsConfig.messageSRGain) *
-          Math.max(
-            1 +
-            stats[guild][user].reputation *
-            statsConfig.reputationGain,
-            0.01
-          ) *
-          1.2 ** stats[guild][user].prestige +
-          stats[guild][user].luckHandicap -
-          stats[guild][user].nerdScore -
-          stats[guild][user].decay
+            (globalThis.stats[guild][user].voiceTime *
+              statsConfig.voiceChatSRGain +
+              globalThis.stats[guild][user].messages *
+              statsConfig.messageSRGain) *
+            Math.max(
+              1 +
+              globalThis.stats[guild][user].reputation *
+              statsConfig.reputationGain,
+              0.01
+            ) *
+            1.2 ** globalThis.stats[guild][user].prestige +
+            globalThis.stats[guild][user].luckHandicap -
+            globalThis.stats[guild][user].nerdScore -
+            globalThis.stats[guild][user].decay
           );
 
           if (
-            stats[guild][user].score > statsConfig.prestigeRequirement &&
-          stats[guild][user].prestige < statsConfig.prestigeMaximum
+            globalThis.stats[guild][user].score >
+            statsConfig.prestigeRequirement &&
+            globalThis.stats[guild][user].prestige < statsConfig.prestigeMaximum
           ) {
-            stats[guild][user].score = statsConfig.prestigeRequirement;
+            globalThis.stats[guild][user].score =
+              statsConfig.prestigeRequirement;
           } else {
-            stats[guild][user].score = score;
+            globalThis.stats[guild][user].score = score;
           }
 
           if (
-            stats[guild][user].score >
-          stats[guild][user].bestScore ||
-          // Fix for bestScore being stuck at 50K after prestige
-          stats[guild][user].bestScore === statsConfig.prestigeRequirement
+            globalThis.stats[guild][user].score >
+            globalThis.stats[guild][user].bestScore ||
+            // Fix for bestScore being stuck at 50K after prestige
+            globalThis.stats[guild][user].bestScore ===
+            statsConfig.prestigeRequirement
           ) {
-            stats[guild][user].bestScore = stats[guild][user].score;
+            globalThis.stats[guild][user].bestScore =
+              globalThis.stats[guild][user].score;
 
             if (
-              stats[guild][user].bestRanking !==
-            getRanking(stats[guild][user].score) &&
-            stats[guild].rankUpChannel &&
-            botUptime > 120
+              globalThis.stats[guild][user].bestRanking !==
+              getRanking(globalThis.stats[guild][user].score) &&
+              globalThis.stats[guild].rankUpChannel &&
+              botUptime > 120
             ) {
               const guildObject = await client.guilds.fetch(guild);
               const userObject = guildObject.members.cache
                 .filter((m) => m.id === user)
                 .first();
               const channel = await guildObject.channels.fetch(
-                stats[guild].rankUpChannel
+                globalThis.stats[guild].rankUpChannel
               );
               channel.send(
-                `## Rank Up!\n\`\`\`ansi\n${userObject.displayName
-                } has reached rank ${getRanking(stats[guild][user].score)
-                }!\`\`\``
+                `## Rank Up!\n\`\`\`ansi\n${
+                  userObject.displayName
+                } has reached rank ${getRanking(
+                  globalThis.stats[guild][user].score
+                )}!\`\`\``
               );
             }
-            stats[guild][user].bestRanking = getRanking(
-              stats[guild][user].score
+            globalThis.stats[guild][user].bestRanking = getRanking(
+              globalThis.stats[guild][user].score
             );
           }
         });
@@ -593,6 +614,7 @@ client.once(Events.ClientReady, (c) => {
   setInterval(getNewSplash, getTime(0, 0, 1)); // 1 hour
   setInterval(addDecayToStats, getTime(0, 0, 1)); // 1 hour
   setInterval(checkVoiceChannels, getTime(15)); // 15 seconds
+  setInterval(saveStats, getTime(0, 3)); // 15 minutes
   setInterval(backupStats, getTime(0, 15)); // 15 minutes
   setInterval(addTokens, getTime(0, 0, 1)); // 1 hour
   /* eslint-enable line-comment-position */
