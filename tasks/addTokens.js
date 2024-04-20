@@ -1,5 +1,7 @@
 "use strict";
 
+const { statsConfig } = require("./../resources/config.json");
+
 exports.run = () => {
   function f() {
     // Returns UNIX time in seconds.
@@ -16,8 +18,9 @@ exports.run = () => {
         Object.keys(globalThis.stats[gk])
           .filter((mk) => mk.length === 18)
           .forEach((mk) => {
-            globalThis.stats[gk][mk].tokens =
-              (globalThis.stats[gk][mk].tokens ?? 0) + 3;
+            globalThis.stats[gk][mk].luckTokens =
+              (globalThis.stats[gk][mk].luckTokens ?? 0) + 
+              statsConfig.tokenRefreshAmount;
           });
 
         globalThis.stats[gk].lastTokenTime = f();
