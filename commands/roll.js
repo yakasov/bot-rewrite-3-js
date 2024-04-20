@@ -5,6 +5,13 @@ const luckTable = require("./../resources/luckTable.json");
 
 
 module.exports = {
+  aOrAn(roll) {
+    /* eslint-disable-next-line array-element-newline*/
+    return [8, 11, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89]
+      .includes(roll)
+      ? "an"
+      : "a";
+  },
   "data": new SlashCommandBuilder()
     .setName("roll")
     .setDescription("Use tokens to gamble for rewards!"),
@@ -18,13 +25,11 @@ module.exports = {
     }
 
     globalThis.stats[interaction.guild.id][interaction.user.id].luckTokens--;
-    const roll = module.exports.rollDice();
+    const roll1 = module.exports.rollDice();
+    const roll2 = module.exports.rollDice();
+    const roll3 = module.exports.rollDice() % 5 + 1;
+    const roll = (roll1 + roll2) / 2 + (1 / roll3);
     const result = module.exports.getLuckAction(roll);
-    /* eslint-disable-next-line array-element-newline*/
-    const aOrAn = [8, 11, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89]
-      .includes(roll)
-      ? "an"
-      : "a";
 
     switch (result.action.type) {
     case "reputation":
@@ -43,7 +48,10 @@ module.exports = {
       break;
     }
 
-    const response = `You rolled ${aOrAn} ${roll}.
+    const response = `You rolled ${
+      module.exports.aOrAn(roll1)} ${roll1}, ${
+      module.exports.aOrAn(roll2)} ${roll2} and ${
+      module.exports.aOrAn(roll3)} ${roll3} (= ${Math.floor(roll) + 1 / roll3}).
 ${result.description}\n
 ${module.exports.getTokenString(
     globalThis.stats[interaction.guild.id][interaction.user.id].luckTokens

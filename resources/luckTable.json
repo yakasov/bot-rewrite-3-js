@@ -2,7 +2,7 @@
   {
     "description": "You have gained 5 reputation!!",
     "min": 0,
-    "max": 1,
+    "max": 0.5,
     "action": {
       "type": "reputation",
       "amount": 5
@@ -10,8 +10,8 @@
   },
   {
     "description": "You have gained 3 reputation!",
-    "min": 1,
-    "max": 5,
+    "min": 0.5,
+    "max": 1.5,
     "action": {
       "type": "reputation",
       "amount": 3
@@ -19,8 +19,8 @@
   },
   {
     "description": "You have gained 1 reputation!",
-    "min": 5,
-    "max": 20,
+    "min": 1.5,
+    "max": 6.5,
     "action": {
       "type": "reputation",
       "amount": 1
@@ -28,8 +28,8 @@
   },
   {
     "description": "You have lost 3 reputation!!",
-    "min": 20,
-    "max": 21,
+    "min": 6.5,
+    "max": 10,
     "action": {
       "type": "reputation",
       "amount": -3
@@ -37,8 +37,8 @@
   },
   {
     "description": "You have lost 1 reputation!",
-    "min": 21,
-    "max": 25,
+    "min": 10,
+    "max": 15,
     "action": {
       "type": "reputation",
       "amount": -1
@@ -46,8 +46,8 @@
   },
   {
     "description": "You have gained 50 score!",
-    "min": 25,
-    "max": 65,
+    "min": 15,
+    "max": 60,
     "action": {
       "type": "score",
       "amount": 50
@@ -55,8 +55,8 @@
   },
   {
     "description": "You have gained 500 score!",
-    "min": 65,
-    "max": 80,
+    "min": 60,
+    "max": 70,
     "action": {
       "type": "score",
       "amount": 500
@@ -64,25 +64,34 @@
   },
   {
     "description": "You have gained 2500 score!!",
-    "min": 80,
-    "max": 85,
+    "min": 70,
+    "max": 75,
     "action": {
-      "type": "",
-      "amount": 0
+      "type": "score",
+      "amount": 2500
     }
   },
   {
     "description": "You have gained 2 tokens!",
-    "min": 85,
-    "max": 90,
+    "min": 75,
+    "max": 80,
     "action": {
       "type": "token",
       "amount": 2
     }
   },
   {
+    "description": "You can change the server icon! <@135410033524604928>",
+    "min": 80,
+    "max": 80.5,
+    "action": {
+      "type": "",
+      "amount": 0
+    }
+  },
+  {
     "description": "You didn't get anything...",
-    "min": 90,
+    "min": 80.5,
     "max": 101,
     "action": {
       "type": "",
