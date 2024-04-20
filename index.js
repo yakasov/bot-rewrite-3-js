@@ -357,7 +357,7 @@ function initialiseStats(guildId, userId) {
       k,
       v
     ]) => {
-      if (!globalThis.stats[guildId][userId][k]) {
+      if (globalThis.stats[guildId][userId][k] === undefined) {
         globalThis.stats[guildId][userId][k] = v;
       }
     });
