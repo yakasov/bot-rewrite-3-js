@@ -12,7 +12,7 @@ module.exports = {
       globalThis.stats[interaction.guild.id][interaction.user.id].luckTokens
     );
     interaction.reply({ "content": 
-      `${tokenString}\n\nYou will gain ${statsConfig.tokenRefreshAmount} tokens in ${
+      `${tokenString}\n\nYou will gain ${statsConfig.tokenRefreshAmount} tokens ${
         module.exports.getTimestamp(interaction)
       }.`,
     "ephemeral": true });
