@@ -617,6 +617,7 @@ client.once(Events.ClientReady, (c) => {
   setInterval(saveStats, getTime(0, 3)); // 15 minutes
   setInterval(backupStats, getTime(0, 15)); // 15 minutes
   setInterval(addTokens, getTime(0, 0, 1)); // 1 hour
+  setInterval(updateScores, getTime(30)); // 30 seconds
   /* eslint-enable line-comment-position */
 });
 
