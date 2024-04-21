@@ -28,7 +28,7 @@ module.exports = {
     const roll1 = module.exports.rollDice();
     const roll2 = module.exports.rollDice();
     const roll3 = module.exports.rollDice() % 5 + 1;
-    const roll = (roll1 + roll2) / 2 + (1 / roll3);
+    const roll = (roll1 + roll2) / 2 + (0.2 * roll3);
     const result = module.exports.getLuckAction(roll);
 
     switch (result.action.type) {
@@ -51,7 +51,8 @@ module.exports = {
     const response = `You rolled ${
       module.exports.aOrAn(roll1)} ${roll1}, ${
       module.exports.aOrAn(roll2)} ${roll2} and ${
-      module.exports.aOrAn(roll3)} ${roll3} (= ${Math.floor(roll) + 1 / roll3}).
+      module.exports.aOrAn(roll3)} ${roll3} (= ${
+      Math.floor(roll) + 0.2 * roll3}).
 ${result.description}\n
 ${module.exports.getTokenString(
     globalThis.stats[interaction.guild.id][interaction.user.id].luckTokens

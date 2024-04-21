@@ -392,6 +392,7 @@ function addToStats(a) {
   if (!globalThis.stats[guildId]) {
     globalThis.stats[guildId] = {
       "allowDecay": true,
+      "allowResponses": true,
       "luckTokenTime": 0,
       "rankUpChannel": ""
     };
@@ -400,6 +401,11 @@ function addToStats(a) {
   if (!globalThis.stats[guildId].luckTokenTime) {
     // Post-casino update patch
     globalThis.stats[guildId].luckTokenTime = 0;
+  }
+
+  if (!globalThis.stats[guildId].allowResponses) {
+    // Post-responses allow patch
+    globalThis.stats[guildId].allowResponses = true;
   }
 
   initialiseStats(guildId, userId);
@@ -630,7 +636,9 @@ client.on(Events.MessageCreate, async (msg) => {
   }
 
   await checkMessageResponse(msg);
-  checkMessageReactions(msg);
+  if ((globalThis.stats[msg.guild.id].allowResponses ?? true)) {
+    checkMessageReactions(msg);
+  }
 
   addToStats({
     "guildId": msg.guild.id,
