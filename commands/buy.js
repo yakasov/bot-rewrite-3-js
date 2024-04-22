@@ -18,8 +18,10 @@ module.exports = {
         .setDescription("The stat to purchase")
         .setRequired(true)
         .addChoices(
-          { "name": "x1 reputation", "value": "reputation" },
-          { "name": "x400 score", "value": "score" }
+          { "name": "x1 reputation",
+            "value": "reputation" },
+          { "name": "x400 score",
+            "value": "score" }
         ))
     .addIntegerOption((opt) =>
       opt
@@ -31,21 +33,23 @@ module.exports = {
     const type = interaction.options.getString("type");
     const amount = interaction.options.getInteger("amount");
 
-    const trueType = type === "score" ? "luckHandicap" : type;
+    const trueType = type === "score"
+      ? "luckHandicap"
+      : type;
     const buyAmount = amount * buy[type];
 
     const g = interaction.guild.id;
     const u = interaction.user.id;
 
     if (globalThis.stats[g][u].luckTokens === 0) {
-      return interaction.reply({ "content": 
-      "You cannot purchase anything without tokens!", 
+      return interaction.reply({ "content":
+      "You cannot purchase anything without tokens!",
       "ephemeral": true });
     }
 
     if (globalThis.stats[g][u].luckTokens < amount) {
-      return interaction.reply({ "content": 
-      `You do not have enough tokens to purchase ${buyAmount} ${type}!`, 
+      return interaction.reply({ "content":
+      `You do not have enough tokens to purchase ${buyAmount} ${type}!`,
       "ephemeral": true });
     }
 
@@ -66,7 +70,9 @@ module.exports = {
       "components": [row],
       "content":
         `Purchase ${buyAmount} ${type} for ${amount} token${
-          amount === 1 ? "" : "s"
+          amount === 1
+            ? ""
+            : "s"
         }?`,
       "ephemeral": true
     });

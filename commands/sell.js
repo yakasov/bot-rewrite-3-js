@@ -18,8 +18,10 @@ module.exports = {
         .setDescription("The stat to sell")
         .setRequired(true)
         .addChoices(
-          { "name": "x2 reputation", "value": "reputation" },
-          { "name": "x600 score", "value": "score" }
+          { "name": "x2 reputation",
+            "value": "reputation" },
+          { "name": "x600 score",
+            "value": "score" }
         ))
     .addIntegerOption((opt) =>
       opt
@@ -31,15 +33,17 @@ module.exports = {
     const type = interaction.options.getString("type");
     const amount = interaction.options.getInteger("amount");
 
-    const trueType = type === "score" ? "luckHandicap" : type;
+    const trueType = type === "score"
+      ? "luckHandicap"
+      : type;
     const sellAmount = amount * sell[type];
 
     const g = interaction.guild.id;
     const u = interaction.user.id;
 
     if (globalThis.stats[g][u][type] < sellAmount) {
-      return interaction.reply({ "content": 
-      `You do not have enough ${type} to sell!`, 
+      return interaction.reply({ "content":
+      `You do not have enough ${type} to sell!`,
       "ephemeral": true });
     }
 
@@ -60,7 +64,9 @@ module.exports = {
       "components": [row],
       "content":
         `Sell ${sellAmount} ${type} for ${amount} token${
-          amount === 1 ? "" : "s"
+          amount === 1
+            ? ""
+            : "s"
         }?`,
       "ephemeral": true
     });

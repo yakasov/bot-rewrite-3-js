@@ -15,7 +15,7 @@ exports.run = () => {
           .filter((mk) => mk.length === 18)
           .forEach((mk) => {
             globalThis.stats[gk][mk].luckTokens =
-              (globalThis.stats[gk][mk].luckTokens ?? 0) + 
+              (globalThis.stats[gk][mk].luckTokens ?? 0) +
               statsConfig.tokenRefreshAmount;
           });
 

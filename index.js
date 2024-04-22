@@ -636,7 +636,7 @@ client.on(Events.MessageCreate, async (msg) => {
   }
 
   await checkMessageResponse(msg);
-  if ((globalThis.stats[msg.guild.id].allowResponses ?? true)) {
+  if (globalThis.stats[msg.guild.id].allowResponses ?? true) {
     checkMessageReactions(msg);
   }
 
