@@ -21,7 +21,8 @@ module.exports = {
       globalThis.stats[interaction.guild.id][interaction.user.id].luckTokens;
 
     if (!tokens) {
-      return interaction.editReply("You don't have any tokens!");
+      return interaction.editReply("You don't have any tokens!" +
+      "\n\nWait, or get more with /sell!");
     }
 
     globalThis.stats[interaction.guild.id][interaction.user.id].luckTokens--;
