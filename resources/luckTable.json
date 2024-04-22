@@ -45,30 +45,39 @@
     }
   },
   {
-    "description": "You have gained 50 score!",
+    "description": "You have gained 100 score!",
     "min": 15,
-    "max": 60,
+    "max": 45,
     "action": {
       "type": "score",
-      "amount": 50
+      "amount": 100
     }
   },
   {
-    "description": "You have gained 500 score!",
+    "description": "You have lost 500 score!",
+    "min": 45,
+    "max": 60,
+    "action": {
+      "type": "score",
+      "amount": -500
+    }
+  },
+  {
+    "description": "You have gained 1000 score!",
     "min": 60,
     "max": 70,
     "action": {
       "type": "score",
-      "amount": 500
+      "amount": 1000
     }
   },
   {
-    "description": "You have gained 2500 score!!",
+    "description": "You have gained 5000 score!!",
     "min": 70,
     "max": 75,
     "action": {
       "type": "score",
-      "amount": 2500
+      "amount": 5000
     }
   },
   {
