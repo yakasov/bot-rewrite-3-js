@@ -622,7 +622,7 @@ client.once(Events.ClientReady, (c) => {
   setInterval(checkVoiceChannels, getTime(15)); // 15 seconds
   setInterval(saveStats, getTime(0, 3)); // 15 minutes
   setInterval(backupStats, getTime(0, 15)); // 15 minutes
-  setInterval(addTokens, getTime(0, 0, 1)); // 1 hour
+  setInterval(addTokens, getTime(0, 1)); // 1 minute
   setInterval(updateScores, getTime(30)); // 30 seconds
   /* eslint-enable line-comment-position */
 });
