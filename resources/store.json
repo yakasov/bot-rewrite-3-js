@@ -1,0 +1,10 @@
+{
+  "buy": {
+    "reputation": 1,
+    "score": 400
+  },
+  "sell": {
+    "reputation": 2,
+    "score": 600
+  }
+}
