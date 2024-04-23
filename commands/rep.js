@@ -1,7 +1,7 @@
 "use strict";
 
 const { SlashCommandBuilder } = require("discord.js");
-const { statsConfig } = require("./../resources/config.json");
+const { statsConfig } = require("../resources/config.json");
 const wait = require("node:timers/promises").setTimeout;
 
 module.exports = {

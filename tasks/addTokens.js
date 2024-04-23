@@ -1,6 +1,6 @@
 "use strict";
 
-const { statsConfig } = require("./../resources/config.json");
+const { statsConfig } = require("../resources/config.json");
 
 exports.run = () => {
   function f() {

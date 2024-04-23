@@ -1,12 +1,12 @@
 "use strict";
 
 const moment = require("moment-timezone");
-const birthdays = require("./../resources/birthdays.json");
+const birthdays = require("../resources/birthdays.json");
 const {
   mainGuildId,
   bdayChannelId,
   bdayRoleId
-} = require("./../resources/config.json");
+} = require("../resources/config.json");
 
 exports.run = async (client, date, force = false) => {
   const today = moment()

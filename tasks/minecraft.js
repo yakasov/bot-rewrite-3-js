@@ -5,7 +5,7 @@ const { queryFull } = require("minecraft-server-util");
 const {
   minecraftServerIp,
   minecraftServerPort
-} = require("./../resources/config.json");
+} = require("../resources/config.json");
 
 exports.run = (client, splash) => {
   if (!(minecraftServerIp && minecraftServerPort)) {

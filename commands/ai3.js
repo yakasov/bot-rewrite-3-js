@@ -3,7 +3,7 @@
 const { SlashCommandBuilder } = require("discord.js");
 const { Configuration, OpenAIApi } = require("openai");
 const fs = require("fs");
-const { openaiToken, aiChannels } = require("./../resources/config.json");
+const { openaiToken, aiChannels } = require("../resources/config.json");
 
 const config = new Configuration({
   "apiKey": openaiToken

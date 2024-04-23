@@ -1,8 +1,8 @@
 "use strict";
 
 const { SlashCommandBuilder } = require("discord.js");
-const { statsConfig } = require("./../resources/config.json");
-const ranks = require("./../resources/ranks.json");
+const { statsConfig } = require("../resources/config.json");
+const ranks = require("../resources/ranks.json");
 
 module.exports = {
   "data": new SlashCommandBuilder()
