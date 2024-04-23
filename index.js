@@ -18,10 +18,12 @@ const responses = require("./resources/responses.json");
 const chanceResponses = require("./resources/chanceResponses.json");
 const loadedStats = require("./resources/stats.json");
 const ranks = require("./resources/ranks.json");
+const insights = require("./resources/insights.json");
 const fetch = require("node-fetch");
 const path = require("node:path");
 globalThis.fetch = fetch;
 globalThis.stats = loadedStats;
+globalThis.insights = insights;
 
 const client = new Client({
   "allowedMentions": {
@@ -141,7 +143,16 @@ function backupStats() {
 function addTokens() {
   try {
     const task = require("./tasks/addTokens.js");
-    return task.run(globalThis.stats);
+    return task.run();
+  } catch (e) {
+    return console.error(e);
+  }
+}
+
+function saveInsights() {
+  try {
+    const task = require("./tasks/saveInsights.js");
+    return task.run();
   } catch (e) {
     return console.error(e);
   }
@@ -206,7 +217,9 @@ function checkMessageResponse(msg) {
 
     if (res.includes("{FOLLOWING}")) {
       let lastMsg = "";
-      if (msg.content.trim() === k) {
+      if (msg.content
+        .toLowerCase()
+        .trim() === k) {
         lastMsg = await msg.channel.messages
           .fetch({
             "limit": 2
@@ -584,10 +597,11 @@ client.once(Events.ClientReady, (c) => {
   setInterval(checkMinecraftServer, getTime(5)); // 5 seconds
   setInterval(getNewSplash, getTime(0, 0, 1)); // 1 hour
   setInterval(checkVoiceChannels, getTime(15)); // 15 seconds
-  setInterval(saveStats, getTime(0, 3)); // 15 minutes
+  setInterval(saveStats, getTime(0, 3)); // 3 minutes
   setInterval(backupStats, getTime(0, 15)); // 15 minutes
   setInterval(addTokens, getTime(0, 1)); // 1 minute
   setInterval(updateScores, getTime(30)); // 30 seconds
+  setInterval(saveInsights, getTime(0, 5)); // 5 minutes
   /* eslint-enable line-comment-position */
 });
 
@@ -625,6 +639,8 @@ client.on(Events.InteractionCreate, async (interaction) => {
 
   try {
     await command.execute(interaction);
+    globalThis.insights[interaction.commandName] = 
+      (globalThis.insights[interaction.commandName] ?? 0) + 1;
   } catch (error) {
     console.error(error);
     if (interaction.replied || interaction.deferred) {
