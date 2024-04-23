@@ -147,37 +147,6 @@ function addTokens() {
   }
 }
 
-function addDecayToStats() {
-  // This function should really be a separate task!!!
-  Object.entries(globalThis.stats)
-    .forEach(([
-      guild,
-      gv
-    ]) => {
-      if (globalThis.stats[guild].allowDecay ?? true) {
-        Object.keys(gv)
-          .filter((k) => k.length === 18)
-          .forEach((member) => {
-            if (
-              globalThis.stats[guild][member].score >
-              statsConfig.decaySRLossThreshold &&
-              Math.floor(Date.now() / 1000) -
-              Math.max(
-                globalThis.stats[guild][member].joinTime,
-                globalThis.stats[guild][member].lastGainTime
-              ) >
-              getTime(0, 0, 24) / 1000
-            ) {
-              globalThis.stats[guild][member].lastGainTime = Math.floor(
-                Date.now() / 1000
-              );
-              globalThis.stats[guild][member].decay += statsConfig.decaySRLoss;
-            }
-          });
-      }
-    });
-}
-
 function checkVoiceChannels() {
   // This function should ALSO really be a separate task!!!
   const guilds = client.guilds.cache;
@@ -328,7 +297,6 @@ function initialiseStats(guildId, userId) {
   const baseObj = {
     "bestRanking": "",
     "bestScore": 0,
-    "decay": 0,
     "joinTime": 0,
     "lastGainTime": 0,
     "luckHandicap": 0,
@@ -391,7 +359,6 @@ function addToStats(a) {
 
   if (!globalThis.stats[guildId]) {
     globalThis.stats[guildId] = {
-      "allowDecay": true,
       "allowResponses": true,
       "luckTokenTime": 0,
       "rankUpChannel": ""
@@ -528,8 +495,7 @@ function updateScores() {
             ) *
             1.2 ** globalThis.stats[guild][user].prestige +
             globalThis.stats[guild][user].luckHandicap -
-            globalThis.stats[guild][user].nerdScore -
-            globalThis.stats[guild][user].decay
+            globalThis.stats[guild][user].nerdScore
           );
 
           if (
@@ -607,7 +573,6 @@ client.once(Events.ClientReady, (c) => {
   checkBirthdays(true);
   checkMinecraftServer();
   getNewSplash();
-  addDecayToStats();
   backupStats();
   addTokens();
 
@@ -618,7 +583,6 @@ client.once(Events.ClientReady, (c) => {
   setInterval(checkBirthdays, getTime(0, 15)); // 15 minutes
   setInterval(checkMinecraftServer, getTime(5)); // 5 seconds
   setInterval(getNewSplash, getTime(0, 0, 1)); // 1 hour
-  setInterval(addDecayToStats, getTime(0, 0, 1)); // 1 hour
   setInterval(checkVoiceChannels, getTime(15)); // 15 seconds
   setInterval(saveStats, getTime(0, 3)); // 15 minutes
   setInterval(backupStats, getTime(0, 15)); // 15 minutes

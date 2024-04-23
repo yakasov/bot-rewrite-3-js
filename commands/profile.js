@@ -87,9 +87,7 @@ module.exports = {
         1.2 ** allUserStats.prestige
     )}SR\n    Reputation: ${
       allUserStats.reputation
-    }\n    Decay: ${Math.round(
-      allUserStats.decay
-    )}\n\n    Nerd Emojis given: ${
+    }\n\n    Nerd Emojis given: ${
       allUserStats.nerdsGiven
     }\n    Nerd Emojis received: ${
       Object.values(allUserStats.nerdEmojis)

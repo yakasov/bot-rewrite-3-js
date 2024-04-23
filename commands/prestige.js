@@ -126,9 +126,6 @@ Are you sure you want to prestige?`
               : 0) *
           0.8;
 
-    // Reset decay
-    userStats.decay = 0;
-
     // Cap max saved handicap at 10K
     userStats.luckHandicap = Math.max(userStats.luckHandicap, 10000);
 
