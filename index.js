@@ -18,10 +18,12 @@ const responses = require("./resources/responses.json");
 const chanceResponses = require("./resources/chanceResponses.json");
 const loadedStats = require("./resources/stats.json");
 const ranks = require("./resources/ranks.json");
+const insights = require("./resources/insights.json");
 const fetch = require("node-fetch");
 const path = require("node:path");
 globalThis.fetch = fetch;
 globalThis.stats = loadedStats;
+globalThis.insights = insights;
 
 const client = new Client({
   "allowedMentions": {
@@ -141,41 +143,19 @@ function backupStats() {
 function addTokens() {
   try {
     const task = require("./tasks/addTokens.js");
-    return task.run(globalThis.stats);
+    return task.run();
   } catch (e) {
     return console.error(e);
   }
 }
 
-function addDecayToStats() {
-  // This function should really be a separate task!!!
-  Object.entries(globalThis.stats)
-    .forEach(([
-      guild,
-      gv
-    ]) => {
-      if (globalThis.stats[guild].allowDecay ?? true) {
-        Object.keys(gv)
-          .filter((k) => k.length === 18)
-          .forEach((member) => {
-            if (
-              globalThis.stats[guild][member].score >
-              statsConfig.decaySRLossThreshold &&
-              Math.floor(Date.now() / 1000) -
-              Math.max(
-                globalThis.stats[guild][member].joinTime,
-                globalThis.stats[guild][member].lastGainTime
-              ) >
-              getTime(0, 0, 24) / 1000
-            ) {
-              globalThis.stats[guild][member].lastGainTime = Math.floor(
-                Date.now() / 1000
-              );
-              globalThis.stats[guild][member].decay += statsConfig.decaySRLoss;
-            }
-          });
-      }
-    });
+function saveInsights() {
+  try {
+    const task = require("./tasks/saveInsights.js");
+    return task.run();
+  } catch (e) {
+    return console.error(e);
+  }
 }
 
 function checkVoiceChannels() {
@@ -237,7 +217,9 @@ function checkMessageResponse(msg) {
 
     if (res.includes("{FOLLOWING}")) {
       let lastMsg = "";
-      if (msg.content.trim() === k) {
+      if (msg.content
+        .toLowerCase()
+        .trim() === k) {
         lastMsg = await msg.channel.messages
           .fetch({
             "limit": 2
@@ -328,7 +310,6 @@ function initialiseStats(guildId, userId) {
   const baseObj = {
     "bestRanking": "",
     "bestScore": 0,
-    "decay": 0,
     "joinTime": 0,
     "lastGainTime": 0,
     "luckHandicap": 0,
@@ -391,7 +372,6 @@ function addToStats(a) {
 
   if (!globalThis.stats[guildId]) {
     globalThis.stats[guildId] = {
-      "allowDecay": true,
       "allowResponses": true,
       "luckTokenTime": 0,
       "rankUpChannel": ""
@@ -528,8 +508,7 @@ function updateScores() {
             ) *
             1.2 ** globalThis.stats[guild][user].prestige +
             globalThis.stats[guild][user].luckHandicap -
-            globalThis.stats[guild][user].nerdScore -
-            globalThis.stats[guild][user].decay
+            globalThis.stats[guild][user].nerdScore
           );
 
           if (
@@ -607,7 +586,6 @@ client.once(Events.ClientReady, (c) => {
   checkBirthdays(true);
   checkMinecraftServer();
   getNewSplash();
-  addDecayToStats();
   backupStats();
   addTokens();
 
@@ -618,12 +596,12 @@ client.once(Events.ClientReady, (c) => {
   setInterval(checkBirthdays, getTime(0, 15)); // 15 minutes
   setInterval(checkMinecraftServer, getTime(5)); // 5 seconds
   setInterval(getNewSplash, getTime(0, 0, 1)); // 1 hour
-  setInterval(addDecayToStats, getTime(0, 0, 1)); // 1 hour
   setInterval(checkVoiceChannels, getTime(15)); // 15 seconds
-  setInterval(saveStats, getTime(0, 3)); // 15 minutes
+  setInterval(saveStats, getTime(0, 3)); // 3 minutes
   setInterval(backupStats, getTime(0, 15)); // 15 minutes
   setInterval(addTokens, getTime(0, 1)); // 1 minute
   setInterval(updateScores, getTime(30)); // 30 seconds
+  setInterval(saveInsights, getTime(0, 5)); // 5 minutes
   /* eslint-enable line-comment-position */
 });
 
@@ -661,6 +639,8 @@ client.on(Events.InteractionCreate, async (interaction) => {
 
   try {
     await command.execute(interaction);
+    globalThis.insights[interaction.commandName] = 
+      (globalThis.insights[interaction.commandName] ?? 0) + 1;
   } catch (error) {
     console.error(error);
     if (interaction.replied || interaction.deferred) {

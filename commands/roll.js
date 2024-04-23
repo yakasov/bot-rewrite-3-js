@@ -1,7 +1,7 @@
 "use strict";
 
 const { SlashCommandBuilder } = require("discord.js");
-const luckTable = require("./../resources/luckTable.json");
+const luckTable = require("../resources/luckTable.json");
 
 
 module.exports = {

@@ -6,7 +6,7 @@ const {
   ButtonStyle,
   SlashCommandBuilder
 } = require("discord.js");
-const roles = require("./../resources/roles.json");
+const roles = require("../resources/roles.json");
 
 module.exports = {
   "data": new SlashCommandBuilder()

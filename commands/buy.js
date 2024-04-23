@@ -6,7 +6,7 @@ const {
   ButtonStyle,
   SlashCommandBuilder
 } = require("discord.js");
-const { buy } = require("./../resources/store.json");
+const { buy } = require("../resources/store.json");
 
 module.exports = {
   "data": new SlashCommandBuilder()

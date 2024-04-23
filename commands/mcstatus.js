@@ -6,7 +6,7 @@ const {
   minecraftServerIp,
   minecraftServerPort,
   minecraftServerOwnerId
-} = require("./../resources/config.json");
+} = require("../resources/config.json");
 
 module.exports = {
   "data": new SlashCommandBuilder()

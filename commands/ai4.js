@@ -6,7 +6,7 @@ const fs = require("fs");
 const {
   openaiToken,
   elevatedPermsAiChannels
-} = require("./../resources/config.json");
+} = require("../resources/config.json");
 
 const config = new Configuration({
   "apiKey": openaiToken
