@@ -84,7 +84,8 @@ module.exports = {
           1 + allUserStats.reputation * statsConfig.reputationGain,
           1
         ) *
-        1.2 ** allUserStats.prestige
+        1.2 ** allUserStats.prestige +
+        Math.max(0, allUserStats.luckHandicap)
     )}SR\n    Reputation: ${
       allUserStats.reputation
     }\n\n    Nerd Emojis given: ${
