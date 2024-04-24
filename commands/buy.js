@@ -20,7 +20,7 @@ module.exports = {
         .addChoices(
           { "name": "x1 reputation",
             "value": "reputation" },
-          { "name": "x400 score",
+          { "name": "x600 score",
             "value": "score" }
         ))
     .addIntegerOption((opt) =>

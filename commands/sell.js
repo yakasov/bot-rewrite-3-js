@@ -18,9 +18,9 @@ module.exports = {
         .setDescription("The stat to sell")
         .setRequired(true)
         .addChoices(
-          { "name": "x2 reputation",
+          { "name": "x1 reputation",
             "value": "reputation" },
-          { "name": "x600 score",
+          { "name": "x750 score",
             "value": "score" }
         ))
     .addIntegerOption((opt) =>
