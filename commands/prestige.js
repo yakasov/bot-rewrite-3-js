@@ -127,7 +127,7 @@ Are you sure you want to prestige?`
           0.8;
 
     // Cap max saved handicap at 10K
-    userStats.luckHandicap = Math.max(userStats.luckHandicap, 10000);
+    userStats.luckHandicap = Math.min(userStats.luckHandicap, 10000);
 
     userStats.messages = 0;
     userStats.voiceTime = 0;
