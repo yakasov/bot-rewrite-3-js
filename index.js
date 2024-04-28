@@ -639,7 +639,7 @@ client.on(Events.InteractionCreate, async (interaction) => {
 
   try {
     await command.execute(interaction);
-    globalThis.insights[interaction.commandName] = 
+    globalThis.insights[interaction.commandName] =
       (globalThis.insights[interaction.commandName] ?? 0) + 1;
   } catch (error) {
     console.error(error);
