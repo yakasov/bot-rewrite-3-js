@@ -4,7 +4,7 @@ const fs = require("fs");
 
 exports.run = () => {
   fs.writeFileSync(
-    "./resources/insights.json", 
+    "./resources/insights.json",
     JSON.stringify(globalThis.insights)
   );
 };

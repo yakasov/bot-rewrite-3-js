@@ -1,1 +1,12 @@
-{}
+{
+  "roll": 81,
+  "tokens": 8,
+  "profile": 31,
+  "edit": 6,
+  "sell": 5,
+  "buy": 13,
+  "rep": 13,
+  "stats": 15,
+  "toggleresponses": 3,
+  "ai3": 11
+}
