@@ -723,6 +723,10 @@ client.on(Events.VoiceStateUpdate, (oldState, newState) => {
 });
 
 client.on(Events.MessageReactionAdd, (reaction, user) => {
+  if (user.id === reaction.message.author.id) {
+    return;
+  }
+
   if (reaction.emoji.name === "🤓" || reaction.emoji.name === "😎") {
     addToStats({
       "giver": user,
@@ -737,6 +741,10 @@ client.on(Events.MessageReactionAdd, (reaction, user) => {
 });
 
 client.on(Events.MessageReactionRemove, (reaction, user) => {
+  if (user.id === reaction.message.author.id) {
+    return;
+  }
+  
   if (reaction.emoji.name === "🤓" || reaction.emoji.name === "😎") {
     addToStats({
       "giver": user,
