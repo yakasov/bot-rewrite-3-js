@@ -310,6 +310,10 @@ function initialiseStats(guildId, userId) {
   const baseObj = {
     "bestRanking": "",
     "bestScore": 0,
+    "coolEmojis": {},
+    "coolHandicap": 0,
+    "coolScore": 0,
+    "coolsGiven": 0,
     "joinTime": 0,
     "lastGainTime": 0,
     "luckHandicap": 0,
@@ -462,6 +466,38 @@ function addToStats(a) {
     );
     break;
 
+  case "coolEmojiAdded":
+    if (!messageId) {
+      return;
+    }
+    if (!giver.bot) {
+      globalThis.stats[guildId][giverId].coolsGiven++;
+    }
+
+    globalThis.stats[guildId][userId].coolEmojis[messageId] =
+          (globalThis.stats[guildId][userId].coolEmojis[messageId] ?? 0) +
+          1 +
+          Math.floor(globalThis.stats[guildId][giverId].prestige / 2);
+    break;
+
+  case "coolEmojiRemoved":
+    if (!messageId) {
+      return;
+    }
+    if (!giver.bot) {
+      globalThis.stats[guildId][giverId].coolsGiven = Math.max(
+        0,
+        (globalThis.stats[guildId][giverId].coolsGiven ?? 0) - 1
+      );
+    }
+
+    globalThis.stats[guildId][userId].coolEmojis[messageId] = Math.max(
+      0,
+      globalThis.stats[guildId][userId].coolEmojis[messageId] -
+          (1 + Math.floor(globalThis.stats[guildId][giverId].prestige / 2))
+    );
+    break;
+
   default:
     break;
   }
@@ -495,6 +531,14 @@ function updateScores() {
                 0
               ) - globalThis.stats[guild][user].nerdHandicap;
 
+          globalThis.stats[guild][user].coolScore =
+            Object.values(globalThis.stats[guild][user].coolEmojis)
+              .reduce(
+                (sum, a) => sum + Math.max(2.8 ** a + 1, 0) - 1,
+                0
+              ) - globalThis.stats[guild][user].coolHandicap;
+
+
           const score = Math.floor(
             (globalThis.stats[guild][user].voiceTime *
               statsConfig.voiceChatSRGain +
@@ -507,8 +551,9 @@ function updateScores() {
               0.01
             ) *
             1.2 ** globalThis.stats[guild][user].prestige +
-            globalThis.stats[guild][user].luckHandicap -
-            globalThis.stats[guild][user].nerdScore
+            globalThis.stats[guild][user].luckHandicap +
+            globalThis.stats[guild][user].coolScore -
+            globalThis.stats[guild][user].nerdScore 
           );
 
           if (
@@ -678,24 +723,28 @@ client.on(Events.VoiceStateUpdate, (oldState, newState) => {
 });
 
 client.on(Events.MessageReactionAdd, (reaction, user) => {
-  if (reaction.emoji.name === "🤓") {
+  if (reaction.emoji.name === "🤓" || reaction.emoji.name === "😎") {
     addToStats({
       "giver": user,
       "guildId": reaction.message.guildId,
       "messageId": reaction.message.id,
-      "type": "nerdEmojiAdded",
+      "type": reaction.emoji.name === "🤓"
+        ? "nerdEmojiAdded"
+        : "coolEmojiAdded",
       "userId": reaction.message.author.id
     });
   }
 });
 
 client.on(Events.MessageReactionRemove, (reaction, user) => {
-  if (reaction.emoji.name === "🤓") {
+  if (reaction.emoji.name === "🤓" || reaction.emoji.name === "😎") {
     addToStats({
       "giver": user,
       "guildId": reaction.message.guildId,
       "messageId": reaction.message.id,
-      "type": "nerdEmojiRemoved",
+      "type": reaction.emoji.name === "🤓"
+        ? "nerdEmojiRemoved"
+        : "coolEmojiRemoved",
       "userId": reaction.message.author.id
     });
   }
