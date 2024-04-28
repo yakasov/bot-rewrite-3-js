@@ -27,8 +27,7 @@ module.exports = {
     let response = "";
 
     const rolls = [];
-    const changes = {
-      "reputation": 0,
+    const changes = { "reputation": 0,
       "score": 0,
       "tokens": 0 };
 
