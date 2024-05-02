@@ -553,7 +553,7 @@ function updateScores() {
             1.2 ** globalThis.stats[guild][user].prestige +
             globalThis.stats[guild][user].luckHandicap +
             globalThis.stats[guild][user].coolScore -
-            globalThis.stats[guild][user].nerdScore 
+            globalThis.stats[guild][user].nerdScore
           );
 
           if (
@@ -587,6 +587,12 @@ function updateScores() {
               const userObject = guildObject.members.cache
                 .filter((m) => m.id === user)
                 .first();
+
+              // Fix for .displayName on empty user object
+              if (!userObject) {
+                return;
+              }
+
               const channel = await guildObject.channels.fetch(
                 globalThis.stats[guild].rankUpChannel
               );
@@ -744,7 +750,7 @@ client.on(Events.MessageReactionRemove, (reaction, user) => {
   if (user.id === reaction.message.author.id) {
     return;
   }
-  
+
   if (reaction.emoji.name === "🤓" || reaction.emoji.name === "😎") {
     addToStats({
       "giver": user,
