@@ -24,6 +24,9 @@ const path = require("node:path");
 globalThis.fetch = fetch;
 globalThis.stats = loadedStats;
 globalThis.insights = insights;
+globalThis.currentDate = moment()
+  .tz("Europe/London")
+  .format("DD/MM");;
 
 const client = new Client({
   "allowedMentions": {
@@ -43,9 +46,6 @@ const client = new Client({
     GatewayIntentBits.MessageContent
   ]
 });
-let date = moment()
-  .tz("Europe/London")
-  .format("DD/MM");
 let splash = "";
 let botUptime = 0;
 
@@ -96,7 +96,7 @@ function getTime(seconds = 0, minutes = 0, hours = 0) {
 function checkBirthdays(force = false) {
   try {
     const task = require("./tasks/birthdays.js");
-    date = task.run(client, date, force);
+    task.run(client, force);
     return null;
   } catch (e) {
     return console.error(e);
@@ -629,7 +629,7 @@ function getRanking(score) {
 client.once(Events.ClientReady, (c) => {
   console.log(
     "Connected and ready to go!\n" +
-    `Current date is ${date}, ` +
+    `Current date is ${globalThis.currentData}, ` +
     `logged in as ${c.user.tag}\n`
   );
 
