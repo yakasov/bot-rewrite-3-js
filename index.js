@@ -24,9 +24,7 @@ const path = require("node:path");
 globalThis.fetch = fetch;
 globalThis.stats = loadedStats;
 globalThis.insights = insights;
-globalThis.currentDate = moment()
-  .tz("Europe/London")
-  .format("DD/MM");;
+globalThis.currentDate = moment();
 
 const client = new Client({
   "allowedMentions": {

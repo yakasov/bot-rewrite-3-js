@@ -9,11 +9,10 @@ const {
 } = require("../resources/config.json");
 
 exports.run = async (client, force = false) => {
-  const today = moment()
-    .tz("Europe/London")
-    .format("DD/MM");
+  const today = moment();
 
   if (today.diff(globalThis.currentDate, "days") > 0 || force) {
+    globalThis.currentDate = moment();
     const guild = await client.guilds.fetch(mainGuildId);
     const bdayChannel = await guild.channels.fetch(bdayChannelId);
 
@@ -42,7 +41,8 @@ exports.run = async (client, force = false) => {
     guildMembers.forEach((m) => {
       if (
         birthdays[m.id] &&
-        birthdays[m.id].date === today &&
+        birthdays[m.id].date === today.tz("Europe/London")
+          .format("DD/MM") &&
         !roleMembers.some((me) => me.user.id === m.id)
       ) {
         m.roles.add(bdayRoleId);
