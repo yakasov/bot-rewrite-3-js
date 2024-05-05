@@ -95,10 +95,15 @@ Are you sure you want to prestige?`
             globalThis.stats[interaction.guild.id][idToUse]
           );
       }
-      return confirmation.update({
-        "components": [],
-        "content": "Prestige cancelled"
-      });
+      try {
+        return confirmation.update({
+          "components": [],
+          "content": "Prestige cancelled"
+        }); }
+      catch (e) {
+        // Fix? for InteractionAlreadyReplied
+        return null;
+      }
 
     } catch (e) {
       return interaction.editReply({
