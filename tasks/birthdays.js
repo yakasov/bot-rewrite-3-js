@@ -8,15 +8,12 @@ const {
   bdayRoleId
 } = require("../resources/config.json");
 
-exports.run = async (client, date, force = false) => {
+exports.run = async (client, force = false) => {
   const today = moment()
     .tz("Europe/London")
     .format("DD/MM");
-  let newDate = "";
 
-  if (today > date || force) {
-    newDate = today;
-
+  if (today.diff(globalThis.currentDate, "days") > 0 || force) {
     const guild = await client.guilds.fetch(mainGuildId);
     const bdayChannel = await guild.channels.fetch(bdayChannelId);
 
@@ -55,6 +52,4 @@ exports.run = async (client, date, force = false) => {
       }
     });
   }
-
-  return newDate ?? date;
 };
