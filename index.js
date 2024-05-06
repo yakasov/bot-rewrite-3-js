@@ -267,6 +267,11 @@ function checkMessageResponse(msg) {
 }
 
 function checkMessageReactions(msg) {
+  if (!msg) {
+    // Fix for message being removed eg by Twitter fix
+    return;
+  }
+
   Object.values(chanceResponses)
     .some((v) => {
       const roll = Math.random();

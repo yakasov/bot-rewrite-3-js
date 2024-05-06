@@ -81,7 +81,12 @@ Are you sure you want to prestige?`
       });
 
       if (confirmation.customId === "y") {
-        await confirmation.update({
+        globalThis.stats[interaction.guild.id][idToUse] =
+          module.exports.updateStats(
+            globalThis.stats[interaction.guild.id][idToUse]
+          );
+
+        return confirmation.update({
           "components": [],
           "content": `${
             interaction.guild.members.cache
@@ -89,22 +94,12 @@ Are you sure you want to prestige?`
               .first().displayName
           } has prestiged to prestige ${guildStats[idToUse].prestige + 1}!`
         });
-
-        globalThis.stats[interaction.guild.id][idToUse] =
-          module.exports.updateStats(
-            globalThis.stats[interaction.guild.id][idToUse]
-          );
       }
-      try {
-        return confirmation.update({
-          "components": [],
-          "content": "Prestige cancelled"
-        }); }
-      catch (e) {
-        // Fix? for InteractionAlreadyReplied
-        return null;
-      }
-
+      
+      return confirmation.update({
+        "components": [],
+        "content": "Prestige cancelled"
+      }); 
     } catch (e) {
       return interaction.editReply({
         "components": [],
