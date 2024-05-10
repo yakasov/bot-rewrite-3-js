@@ -15,8 +15,13 @@ module.exports = {
       return interaction.reply("This server has no statistics yet!");
     }
 
-    const topNerder = Object.entries(guildStats)
+    const filterStats = Object.entries(guildStats)
       .filter(([k]) => k.length === 18)
+      .filter(([k]) =>
+        interaction.guild.members.cache.filter((m) => m.id === k)
+          .first());
+
+    const topNerder = filterStats
       .map(([
         k,
         v
@@ -26,8 +31,7 @@ module.exports = {
       ])
       .sort(([, f], [, s]) => s - f)[0];
 
-    const topNerded = Object.entries(guildStats)
-      .filter(([k]) => k.length === 18)
+    const topNerded = filterStats
       .map(([
         k,
         v
@@ -38,8 +42,7 @@ module.exports = {
       ])
       .sort(([, f], [, s]) => s - f)[0];
 
-    const topScores = Object.entries(guildStats)
-      .filter(([k]) => k.length === 18)
+    const topScores = filterStats
       .map(([
         k,
         v
@@ -49,20 +52,16 @@ module.exports = {
       ])
       .sort(([, f], [, s]) => s - f);
 
-    const reputations = Object.entries(guildStats)
-      .filter(([k]) => k.length === 18)
-      .map(([
-        k,
-        v
-      ]) => [
-        k,
-        v.reputation
-      ]);
+    const reputations = filterStats.map(([
+      k,
+      v
+    ]) => [
+      k,
+      v.reputation
+    ]);
 
-    const topReputation =
-      [...reputations].sort(([, f], [, s]) => s - f)[0];
-    const bottomReputation =
-      [...reputations].sort(([, f], [, s]) => f - s)[0];
+    const topReputation = [...reputations].sort(([, f], [, s]) => s - f)[0];
+    const bottomReputation = [...reputations].sort(([, f], [, s]) => f - s)[0];
 
     let outputMessage = `Top nerder: ${module.exports.getNickname(
       interaction,
@@ -92,8 +91,7 @@ module.exports = {
         data.push({
           "#": i + 1,
           "Name": module.exports.getNickname(interaction, a[0]),
-          "Msgs":
-          guildStats[a[0]].messages + guildStats[a[0]].previousMessages,
+          "Msgs": guildStats[a[0]].messages + guildStats[a[0]].previousMessages,
           "Time": module.exports.formatTime(
             guildStats[a[0]].voiceTime + guildStats[a[0]].previousVoiceTime
           ),
@@ -167,8 +165,7 @@ module.exports = {
     }
     return "\u001b[1;00m";
   },
-  "getPrestige": (prestige) =>
-    `\u001b[33m${"★".repeat(prestige)}\u001b[0m`,
+  "getPrestige": (prestige) => `\u001b[33m${"★".repeat(prestige)}\u001b[0m`,
   "getNickname": (interaction, id) => {
     const member = interaction.guild.members.cache
       .filter((m) => m.id === id)
