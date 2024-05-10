@@ -95,11 +95,11 @@ Are you sure you want to prestige?`
           } has prestiged to prestige ${guildStats[idToUse].prestige + 1}!`
         });
       }
-      
+
       return confirmation.update({
         "components": [],
         "content": "Prestige cancelled"
-      }); 
+      });
     } catch (e) {
       return interaction.editReply({
         "components": [],
