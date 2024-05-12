@@ -5,18 +5,16 @@ const { status } = require("minecraft-server-util");
 const {
   minecraftServerIp,
   minecraftServerPort,
-  minecraftServerOwnerId
+  minecraftServerOwnerId,
 } = require("../resources/config.json");
 
 module.exports = {
-  "data": new SlashCommandBuilder()
+  data: new SlashCommandBuilder()
     .setName("mcstatus")
     .setDescription("Get information about the current Minecraft server"),
   execute(interaction) {
     if (!(minecraftServerIp.length && minecraftServerPort)) {
-      return interaction.reply(
-        "There is no current Minecraft server set up!"
-      );
+      return interaction.reply("There is no current Minecraft server set up!");
     }
 
     return status(minecraftServerIp, minecraftServerPort)
@@ -36,5 +34,5 @@ module.exports = {
 
         await interaction.reply(str);
       });
-  }
+  },
 };
