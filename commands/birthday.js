@@ -31,6 +31,7 @@ module.exports = {
 
     const option = interaction.options.getString("type");
     const value = interaction.options.getString("value");
+    const botChannel = "1087133384758792272";
 
     if (interaction.guild.id !== mainGuildId) {
       return interaction.reply({
@@ -65,6 +66,12 @@ module.exports = {
               .filter((m) => m.id === interaction.client.user.id)
               .first()
               .setNickname(value));
+        await interaction.guild.channels.fetch()
+          .then((channels) =>
+            channels
+              .filter((c) => c.id === botChannel)
+              .first()
+              .setName(`chat-with-${value}`));
         break;
       case "server":
         await interaction.guild.setName(value);
