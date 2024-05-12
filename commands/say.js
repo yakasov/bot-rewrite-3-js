@@ -3,7 +3,7 @@
 const { SlashCommandBuilder } = require("discord.js");
 
 module.exports = {
-  "data": new SlashCommandBuilder()
+  data: new SlashCommandBuilder()
     .setName("say")
     .setDescription("Repeats any input given")
     .addStringOption((opt) =>
@@ -15,5 +15,5 @@ module.exports = {
     const message = interaction.options.getString("message");
 
     await interaction.reply(message);
-  }
+  },
 };

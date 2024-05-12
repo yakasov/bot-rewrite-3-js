@@ -16,7 +16,6 @@ exports.run = () => {
   fs.copyFile("./resources/stats.json", backupFile, (err) => {
     if (err) {
       console.error("Error backing up file:", err);
-
     }
   });
 };

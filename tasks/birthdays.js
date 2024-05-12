@@ -5,7 +5,7 @@ const birthdays = require("../resources/birthdays.json");
 const {
   mainGuildId,
   bdayChannelId,
-  bdayRoleId
+  bdayRoleId,
 } = require("../resources/config.json");
 
 exports.run = async (client, force = false) => {
@@ -32,7 +32,7 @@ exports.run = async (client, force = false) => {
 
     // Remove role if not their birthday anymore
     roleMembers.forEach((m) => {
-      if (birthdays[m.id] && birthdays[m.id].date !== today) {
+      if (birthdays[m.id] && birthdays[m.id].date !== today.format("DD/MM")) {
         m.roles.remove(bdayRoleId);
       }
     });

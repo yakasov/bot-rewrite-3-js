@@ -5,7 +5,7 @@ const { statsConfig } = require("../resources/config.json");
 const ranks = require("../resources/ranks.json");
 
 module.exports = {
-  "data": new SlashCommandBuilder()
+  data: new SlashCommandBuilder()
     .setName("profile")
     .setDescription("Shows personal statistics")
     .addUserOption((opt) =>
@@ -36,29 +36,15 @@ module.exports = {
 
     const userStats = Object.entries(guildStats)
       .filter(([k]) => k.length === 18)
-      .map(([
-        k,
-        v
-      ]) => [
-        k,
-        v.score
-      ])
+      .map(([k, v]) => [k, v.score])
       .sort(([, f], [, s]) => s - f)
-      .map(([
-        k,
-        v
-      ], i) => [
-        k,
-        v,
-        i
-      ])
+      .map(([k, v], i) => [k, v, i])
       .find(([k, ,]) => k === (user ?? interaction.user.id));
 
     const allUserStats = guildStats[userStats[0]];
 
     if (debug) {
-      const outputMessage =
-        `\`\`\`\n${JSON.stringify(allUserStats, null, 4)}\`\`\``;
+      const outputMessage = `\`\`\`\n${JSON.stringify(allUserStats, null, 4)}\`\`\``;
       const outputArray = outputMessage.match(/[\s\S]{1,1980}(?!\S)/gu);
       outputArray.forEach(async (r) => {
         await interaction.followUp(`\`\`\`json\n${r}\n\`\`\``);
@@ -80,10 +66,7 @@ module.exports = {
     }SR)\n    Ranking before penalties: ${Math.floor(
       (allUserStats.voiceTime * statsConfig.voiceChatSRGain +
         allUserStats.messages * statsConfig.messageSRGain) *
-        Math.max(
-          1 + allUserStats.reputation * statsConfig.reputationGain,
-          1
-        ) *
+        Math.max(1 + allUserStats.reputation * statsConfig.reputationGain, 1) *
         1.2 ** allUserStats.prestige +
         Math.max(0, allUserStats.luckHandicap)
     )}SR\n    Reputation: ${
@@ -92,14 +75,8 @@ module.exports = {
       allUserStats.nerdsGiven
     }\n    Nerd Emojis received: ${
       Object.values(allUserStats.nerdEmojis)
-        .reduce(
-          (sum, a) => sum + a,
-          0
-        ) ?? 0
-    }${userStats[2]
-      ? ""
-      : "\n    == #1 of friends! =="
-    }\n\n`;
+        .reduce((sum, a) => sum + a, 0) ?? 0
+    }${userStats[2] ? "" : "\n    == #1 of friends! =="}\n\n`;
 
     const outputArray = outputMessage.match(/[\s\S]{1,1980}(?!\S)/gu);
     outputArray.forEach(async (r) => {
@@ -107,8 +84,7 @@ module.exports = {
     });
     return null;
   },
-  "formatTime": (seconds) => {
-
+  formatTime: (seconds) => {
     /*
      * Note: this will only work up to 30d 23h 59m 59s
      * this is because toISOString() returns 1970-01-01T03:12:49.000Z (eg)
@@ -120,29 +96,27 @@ module.exports = {
       .substr(8, 11)
       .split(/:|T/u);
     return `${parseInt(unitArray[0], 10) - 1}d ${
-      unitArray[1]}h ${unitArray[2]}m ${unitArray[3]}s`;
+      unitArray[1]
+    }h ${unitArray[2]}m ${unitArray[3]}s`;
   },
-  "getNickname": (interaction, id) => {
+  getNickname: (interaction, id) => {
     const member = interaction.guild.members.cache
       .filter((m) => m.id === id)
       .first();
     return `${member.displayName}`;
   },
-  "getPrestige": (memberStats) =>
-    `${memberStats.prestige} \u001b[33m${"★".repeat(
-      memberStats.prestige
-    )}\u001b[0m`,
-  "getRanking": (memberStats) => {
+  getPrestige: (memberStats) =>
+    `${memberStats.prestige} \u001b[${
+      memberStats.score > statsConfig.prestigeRequirement ? "31" : "33"
+    }m${"★".repeat(memberStats.prestige)}\u001b[0m`,
+  getRanking: (memberStats) => {
     let rankString = "MISSINGNO";
     Object.entries(ranks)
-      .forEach(([
-        k,
-        v
-      ]) => {
+      .forEach(([k, v]) => {
         if (v[0] <= memberStats.score) {
           rankString = `${v[1]}${k}\u001b[0m`;
         }
       });
     return rankString;
-  }
+  },
 };
