@@ -7,31 +7,27 @@ function generateTable(data) {
 
   const headers = Object.keys(data[0]);
 
-  const columnWidths = headers.map((header) => Math.max(
-    header.length,
-    ...data.map((row) => {
-      const value = row[header];
-      return value || value === 0
-        ? value.toString().length
-        : 0;
-    })
-  ));
-
-  let tableString =
-    `${headers
-      .map((header, index) => {
-        if (header === "★") {
-          return null;
-        }
-        return header.padEnd(header === "Rep"
-          ? 5
-          : columnWidths[index] + 2);
+  const columnWidths = headers.map((header) =>
+    Math.max(
+      header.length,
+      ...data.map((row) => {
+        const value = row[header];
+        return value || value === 0 ? value.toString().length : 0;
       })
-      .join("")}\n`;
+    ));
 
-  tableString +=
-    `${"-".repeat(columnWidths.reduce((acc, length) => acc + length, 0))
-    }\n`;
+  let tableString = `${headers
+    .map((header, index) => {
+      if (header === "★") {
+        return null;
+      }
+      return header.padEnd(header === "Rep" ? 5 : columnWidths[index] + 2);
+    })
+    .join("")}\n`;
+
+  tableString += `${"-".repeat(
+    columnWidths.reduce((acc, length) => acc + length, 0)
+  )}\n`;
 
   data.forEach((item) => {
     const row = headers
@@ -41,10 +37,7 @@ function generateTable(data) {
             ? item[header].toString()
             : "";
 
-        if ([
-          "Rep",
-          "Msgs"
-        ].includes(header)) {
+        if (["Rep", "Msgs"].includes(header)) {
           cellValue = cellValue.padStart(columnWidths[index]);
         } else {
           cellValue = cellValue.padEnd(columnWidths[index]);
