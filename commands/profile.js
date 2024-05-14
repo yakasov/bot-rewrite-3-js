@@ -75,7 +75,21 @@ module.exports = {
       allUserStats.nerdsGiven
     }\n    Nerd Emojis received: ${
       Object.values(allUserStats.nerdEmojis).reduce((sum, a) => sum + a, 0) ?? 0
-    }${userStats[2] ? "" : "\n    == #1 of friends! =="}\n\n`;
+    }\n    Cool Emojis given: ${
+      allUserStats.coolsGiven
+    }\n    Cool Emojis received: ${
+      Object.values(allUserStats.coolEmojis).reduce((sum, a) => sum + a, 0) ?? 0
+    }\n\n    Nerd Penalty: ${allUserStats.nerdScore} ${
+      allUserStats.nerdHandicap
+        ? `(offset by ${allUserStats.nerdHandicap})`
+        : ""
+    }\n    Cool Bonus: ${allUserStats.coolScore} ${
+      allUserStats.coolHandicap
+        ? `(offset by ${allUserStats.coolHandicap})`
+        : ""
+    }\n    Luck Bonus: ${
+      allUserStats.luckHandicap
+    }${userStats[2] ? "" : "\n\n    == #1 of friends! =="}`;
 
     await interaction.followUp(
       `Showing profile for ${module.exports.getNickname(
