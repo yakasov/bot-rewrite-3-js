@@ -4,7 +4,7 @@ const { SlashCommandBuilder } = require("discord.js");
 const { getVoiceConnection } = require("@discordjs/voice");
 
 module.exports = {
-  data: new SlashCommandBuilder()
+  "data": new SlashCommandBuilder()
     .setName("dc")
     .setDescription("Disconnects the bot from voice chat"),
   execute(interaction) {
@@ -12,5 +12,5 @@ module.exports = {
     if (conn) {
       conn.destroy();
     }
-  },
+  }
 };

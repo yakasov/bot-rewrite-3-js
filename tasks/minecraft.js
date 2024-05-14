@@ -4,7 +4,7 @@ const { ActivityType } = require("discord.js");
 const { queryFull } = require("minecraft-server-util");
 const {
   minecraftServerIp,
-  minecraftServerPort,
+  minecraftServerPort
 } = require("../resources/config.json");
 
 exports.run = (client, splash) => {
@@ -29,7 +29,10 @@ exports.run = (client, splash) => {
       }
 
       client.user.setPresence({
-        activities: [{ name: activityString, type: ActivityType.Watching }],
+        "activities": [
+          { "name": activityString,
+            "type": ActivityType.Watching }
+        ]
       });
     })
     .catch(() => {

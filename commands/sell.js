@@ -4,12 +4,12 @@ const {
   ActionRowBuilder,
   ButtonBuilder,
   ButtonStyle,
-  SlashCommandBuilder,
+  SlashCommandBuilder
 } = require("discord.js");
 const { sell } = require("../resources/store.json");
 
 module.exports = {
-  data: new SlashCommandBuilder()
+  "data": new SlashCommandBuilder()
     .setName("sell")
     .setDescription("Sell stats for tokens")
     .addStringOption((opt) =>
@@ -18,8 +18,10 @@ module.exports = {
         .setDescription("The stat to sell")
         .setRequired(true)
         .addChoices(
-          { name: "x1 reputation", value: "reputation" },
-          { name: "x750 score", value: "score" }
+          { "name": "x1 reputation",
+            "value": "reputation" },
+          { "name": "x750 score",
+            "value": "score" }
         ))
     .addIntegerOption((opt) =>
       opt
@@ -31,7 +33,9 @@ module.exports = {
     const type = interaction.options.getString("type");
     const amount = interaction.options.getInteger("amount");
 
-    const trueType = type === "score" ? "luckHandicap" : type;
+    const trueType = type === "score"
+      ? "luckHandicap"
+      : type;
     const sellAmount = amount * sell[type];
 
     const g = interaction.guild.id;
@@ -39,8 +43,8 @@ module.exports = {
 
     if (globalThis.stats[g][u][type] < sellAmount) {
       return interaction.reply({
-        content: `You do not have enough ${type} to sell!`,
-        ephemeral: true,
+        "content": `You do not have enough ${type} to sell!`,
+        "ephemeral": true
       });
     }
 
@@ -58,19 +62,21 @@ module.exports = {
       .addComponents(confirm, cancel);
 
     const response = await interaction.reply({
-      components: [row],
-      content: `Sell ${sellAmount} ${type} for ${amount} token${
-        amount === 1 ? "" : "s"
+      "components": [row],
+      "content": `Sell ${sellAmount} ${type} for ${amount} token${
+        amount === 1
+          ? ""
+          : "s"
       }?`,
-      ephemeral: true,
+      "ephemeral": true
     });
 
     const collectorFilter = (i) => i.user.id === interaction.user.id;
 
     try {
       const confirmation = await response.awaitMessageComponent({
-        filter: collectorFilter,
-        time: 60_000,
+        "filter": collectorFilter,
+        "time": 60_000
       });
 
       if (confirmation.customId === "y") {
@@ -78,21 +84,21 @@ module.exports = {
         globalThis.stats[g][u][trueType] -= sellAmount;
 
         return confirmation.update({
-          components: [],
-          content: `You have sold ${sellAmount} ${type}!`,
+          "components": [],
+          "content": `You have sold ${sellAmount} ${type}!`
         });
       }
 
       return confirmation.update({
-        components: [],
-        content: "Sell order cancelled.",
+        "components": [],
+        "content": "Sell order cancelled."
       });
     } catch (e) {
       return interaction.editReply({
-        components: [],
-        content: "Confirmation not received within 1 minute, cancelling",
+        "components": [],
+        "content": "Confirmation not received within 1 minute, cancelling"
       });
     }
   },
-  f: () => Math.floor(Date.now() / 1000),
+  "f": () => Math.floor(Date.now() / 1000)
 };
