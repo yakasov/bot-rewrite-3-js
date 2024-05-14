@@ -99,13 +99,13 @@ module.exports = {
     }\n    Cool Emojis received: ${
       Object.values(allUserStats.coolEmojis)
         .reduce((sum, a) => sum + a, 0) ?? 0
-    }\n\n    Nerd Penalty: ${Math.floor(allUserStats.nerdScore)} ${
+    }\n\n    Nerd Penalty: -${Math.floor(allUserStats.nerdScore)} ${
       allUserStats.nerdHandicap
         ? `(offset by ${Math.floor(allUserStats.nerdHandicap)})`
         : ""
     }\n    Cool Bonus: ${Math.floor(allUserStats.coolScore)} ${
       allUserStats.coolHandicap
-        ? `(offset by ${Math.floor(allUserStats.coolHandicap)})`
+        ? `(offset by -${Math.floor(allUserStats.coolHandicap)})`
         : ""
     }\n    Luck Bonus: ${allUserStats.luckHandicap}${
       userStats[2]
