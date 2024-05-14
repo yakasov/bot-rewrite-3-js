@@ -43,14 +43,16 @@ module.exports = {
 
     if (globalThis.stats[g][u].luckTokens === 0) {
       return interaction.reply({
-        "content": "You cannot purchase anything without tokens!",
+        "content":
+          "You cannot purchase anything without tokens!",
         "ephemeral": true
       });
     }
 
     if (globalThis.stats[g][u].luckTokens < amount) {
       return interaction.reply({
-        "content": `You do not have enough tokens to purchase ${buyAmount} ${type}!`,
+        "content":
+          `You do not have enough tokens to purchase ${buyAmount} ${type}!`,
         "ephemeral": true
       });
     }

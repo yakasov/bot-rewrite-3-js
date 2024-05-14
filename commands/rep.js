@@ -76,7 +76,9 @@ module.exports = {
         : "removing"} successful!`
     );
     await interaction.followUp({
-      "content": `${giver.displayName} has given ${amount} rep to ${userMemberObject}!`,
+      "content": `${giver.displayName} has given ${
+        amount
+      } rep to ${userMemberObject}!`,
       "ephemeral": false
     });
 

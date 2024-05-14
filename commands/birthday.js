@@ -81,8 +81,8 @@ module.exports = {
         break;
       case "owner":
         return interaction.reply({
-          "content":
-              "Due to Discord limitations, this is not possible :(\n\nPlease message me instead!",
+          "content": `Due to Discord limitations, this is not possible :(
+\nPlease message me instead!`,
           "ephemeral": true
         });
       default:

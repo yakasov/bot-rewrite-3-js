@@ -45,7 +45,11 @@ module.exports = {
     await response.json()
       .then(async (r) => {
         if (r.data) {
-          fs.writeFileSync("resources/tts.mp3", r.data, { "encoding": "base64" });
+          fs.writeFileSync(
+            "resources/tts.mp3",
+            r.data,
+            { "encoding": "base64" }
+          );
           const res = createAudioResource("resources/tts.mp3");
           player.play(res);
         } else {

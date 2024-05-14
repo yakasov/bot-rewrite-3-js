@@ -85,7 +85,9 @@ module.exports = {
       allUserStats
     )}\n\n    Ranking: ${module.exports.getRanking(allUserStats)} (${
       allUserStats.score
-    }SR)\n    Ranking before penalties: ${rankingBeforePenalties}SR\n    Reputation: ${
+    }SR)\n    Ranking before penalties: ${
+      rankingBeforePenalties
+    }SR\n    Reputation: ${
       allUserStats.reputation
     }\n\n    Nerd Emojis given: ${
       allUserStats.nerdsGiven

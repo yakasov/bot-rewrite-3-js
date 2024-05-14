@@ -552,7 +552,8 @@ function updateScores() {
             statsConfig.prestigeRequirement &&
           globalThis.stats[guild][user].prestige < statsConfig.prestigeMaximum
           ) {
-            globalThis.stats[guild][user].score = statsConfig.prestigeRequirement;
+            globalThis.stats[guild][user].score =
+            statsConfig.prestigeRequirement;
           } else {
             globalThis.stats[guild][user].score = score;
           }
