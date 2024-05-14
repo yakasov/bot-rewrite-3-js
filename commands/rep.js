@@ -13,17 +13,23 @@ module.exports = {
         .setName("type")
         .setDescription("Whether to give or take reputation")
         .setRequired(true)
-        .addChoices({ name: "+", value: "+" }, { name: "-", value: "-" }))
+        .addChoices({ name: "+", value: "+" }, { name: "-", value: "-" })
+    )
     .addUserOption((opt) =>
       opt
         .setName("user")
         .setDescription("The user to give or take reputation from")
-        .setRequired(true)),
+        .setRequired(true)
+    ),
   async execute(interaction) {
     await interaction.deferReply({ ephemeral: true });
+    await interaction.client.application.fetch();
 
     const type = interaction.options.getString("type");
     const user = interaction.options.getUser("user");
+    const userMemberObject = await interaction.guild.members
+      .fetch()
+      .then((members) => members.filter((m) => m.id === user.id).first());
     const giver = interaction.member;
     const amount =
       (1 + globalThis.stats[interaction.guild.id][giver.id].prestige) *
@@ -65,7 +71,7 @@ module.exports = {
       `Reputation ${type === "+" ? "adding" : "removing"} successful!`
     );
     await interaction.followUp({
-      content: `${giver.displayName} has given ${amount} rep to ${user.displayName}!`,
+      content: `${giver.displayName} has given ${amount} rep to ${userMemberObject}!`,
       ephemeral: false,
     });
 
