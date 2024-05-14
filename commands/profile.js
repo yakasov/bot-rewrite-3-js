@@ -52,6 +52,15 @@ module.exports = {
       return null;
     }
 
+    const rankingBeforePenalties = Math.floor(
+      (allUserStats.voiceTime * statsConfig.voiceChatSRGain +
+        allUserStats.messages * statsConfig.messageSRGain) *
+        Math.max(1 + allUserStats.reputation * statsConfig.reputationGain, 1) *
+        1.2 ** allUserStats.prestige +
+        allUserStats.luckHandicap +
+        allUserStats.coolScore
+    );
+
     const outputMessage = `=== Profile for ${module.exports.getNickname(
       interaction,
       userStats[0]
@@ -63,13 +72,7 @@ module.exports = {
       allUserStats
     )}\n\n    Ranking: ${module.exports.getRanking(allUserStats)} (${
       allUserStats.score
-    }SR)\n    Ranking before penalties: ${Math.floor(
-      (allUserStats.voiceTime * statsConfig.voiceChatSRGain +
-        allUserStats.messages * statsConfig.messageSRGain) *
-        Math.max(1 + allUserStats.reputation * statsConfig.reputationGain, 1) *
-        1.2 ** allUserStats.prestige +
-        Math.max(0, allUserStats.luckHandicap)
-    )}SR\n    Reputation: ${
+    }SR)\n    Ranking before penalties: ${rankingBeforePenalties}SR\n    Reputation: ${
       allUserStats.reputation
     }\n\n    Nerd Emojis given: ${
       allUserStats.nerdsGiven
