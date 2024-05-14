@@ -3,7 +3,7 @@
 const { SlashCommandBuilder } = require("discord.js");
 
 module.exports = {
-  data: new SlashCommandBuilder()
+  "data": new SlashCommandBuilder()
     .setName("edit")
     .setDescription("Edit a user's statistics")
     .addUserOption((opt) =>
@@ -35,7 +35,9 @@ module.exports = {
       interaction.user.id === (await interaction.guild.fetchOwner()).user.id
     ) {
       try {
-        const newVal = /^-?\d+$/u.test(value) ? parseInt(value, 10) : value;
+        const newVal = (/^-?\d+$/u).test(value)
+          ? parseInt(value, 10)
+          : value;
         globalThis.stats[interaction.guild.id][user][attribute] = add
           ? globalThis.stats[interaction.guild.id][user][attribute] + newVal
           : newVal;
@@ -51,8 +53,8 @@ module.exports = {
     }
 
     return interaction.reply({
-      content: "You are not an admin user!",
-      ephemeral: true,
+      "content": "You are not an admin user!",
+      "ephemeral": true
     });
-  },
+  }
 };

@@ -10,7 +10,7 @@ module.exports = {
       ? "an"
       : "a";
   },
-  data: new SlashCommandBuilder()
+  "data": new SlashCommandBuilder()
     .setName("roll")
     .setDescription("Use tokens to gamble for rewards!")
     .addIntegerOption((opt) =>
@@ -26,7 +26,9 @@ module.exports = {
     let response = "";
 
     const rolls = [];
-    const changes = { reputation: 0, score: 0, tokens: 0 };
+    const changes = { "reputation": 0,
+      "score": 0,
+      "tokens": 0 };
 
     if (!tokens) {
       return interaction.editReply(
@@ -44,7 +46,7 @@ module.exports = {
       globalThis.stats[interaction.guild.id][interaction.user.id].luckTokens--;
       const roll1 = module.exports.rollDice();
       const roll2 = module.exports.rollDice();
-      const roll3 = (module.exports.rollDice() % 5) + 1;
+      const roll3 = module.exports.rollDice() % 5 + 1;
       const roll = (roll1 + roll2 - 2) / 2 + 0.2 * roll3;
       const result = module.exports.getLuckAction(roll);
       rolls.push(roll);
@@ -94,13 +96,17 @@ ${module.exports.getTokenString(
 
       if (changes.reputation) {
         response += `You have ${
-          changes.reputation > 0 ? "gained" : "lost"
+          changes.reputation > 0
+            ? "gained"
+            : "lost"
         } ${Math.abs(changes.reputation)} reputation!\n`;
       }
 
       if (changes.score) {
         response += `You have ${
-          changes.score > 0 ? "gained" : "lost"
+          changes.score > 0
+            ? "gained"
+            : "lost"
         } ${Math.abs(changes.score)} score!\n`;
       }
 
@@ -120,11 +126,13 @@ ${module.exports.getTokenString(
   },
   getTokenString(tokens) {
     if (tokens) {
-      return `You have ${tokens} token${tokens === 1 ? "" : "s"} left.`;
+      return `You have ${tokens} token${tokens === 1
+        ? ""
+        : "s"} left.`;
     }
     return "You have no more tokens!";
   },
   rollDice() {
     return Math.floor(Math.random() * 100) + 1;
-  },
+  }
 };

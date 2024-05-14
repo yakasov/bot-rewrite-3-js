@@ -4,7 +4,7 @@ const { SlashCommandBuilder } = require("discord.js");
 const { mainGuildId, bdayRoleId } = require("../resources/config.json");
 
 module.exports = {
-  data: new SlashCommandBuilder()
+  "data": new SlashCommandBuilder()
     .setName("birthday")
     .setDescription("Birthday functions for the birthday person!")
     .addStringOption((opt) =>
@@ -15,9 +15,12 @@ module.exports = {
         )
         .setRequired(true)
         .addChoices(
-          { name: "Bot name", value: "bot" },
-          { name: "Server name", value: "server" },
-          { name: "Owner name", value: "owner" }
+          { "name": "Bot name",
+            "value": "bot" },
+          { "name": "Server name",
+            "value": "server" },
+          { "name": "Owner name",
+            "value": "owner" }
         ))
     .addStringOption((opt) =>
       opt
@@ -35,8 +38,8 @@ module.exports = {
 
     if (interaction.guild.id !== mainGuildId) {
       return interaction.reply({
-        content: "Incorrect guild!",
-        ephemeral: true,
+        "content": "Incorrect guild!",
+        "ephemeral": true
       });
     }
 
@@ -51,8 +54,8 @@ module.exports = {
       interaction.user !== interaction.client.application.owner
     ) {
       return interaction.reply({
-        content: "It is not your birthday!",
-        ephemeral: true,
+        "content": "It is not your birthday!",
+        "ephemeral": true
       });
     }
 
@@ -78,23 +81,23 @@ module.exports = {
         break;
       case "owner":
         return interaction.reply({
-          content:
+          "content":
               "Due to Discord limitations, this is not possible :(\n\nPlease message me instead!",
-          ephemeral: true,
+          "ephemeral": true
         });
       default:
         return interaction.reply({
-          content: "Not implemented yet...",
-          ephemeral: true,
+          "content": "Not implemented yet...",
+          "ephemeral": true
         });
       }
 
       return interaction.reply({
-        content: `Set ${option} name successfully!`,
-        ephemeral: true,
+        "content": `Set ${option} name successfully!`,
+        "ephemeral": true
       });
     } catch (e) {
       return interaction.reply(e.message);
     }
-  },
+  }
 };

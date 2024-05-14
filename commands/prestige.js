@@ -4,12 +4,12 @@ const {
   ActionRowBuilder,
   ButtonBuilder,
   ButtonStyle,
-  SlashCommandBuilder,
+  SlashCommandBuilder
 } = require("discord.js");
 const { statsConfig } = require("../resources/config.json");
 
 module.exports = {
-  data: new SlashCommandBuilder()
+  "data": new SlashCommandBuilder()
     .setName("prestige")
     .setDescription("Prestige to the next prestige level.")
     .addUserOption((opt) =>
@@ -23,7 +23,9 @@ module.exports = {
     const elevated =
       interaction.user === interaction.client.application.owner ||
       interaction.user.id === (await interaction.guild.fetchOwner()).user.id;
-    const idToUse = elevated && user ? user.id : interaction.user.id;
+    const idToUse = elevated && user
+      ? user.id
+      : interaction.user.id;
 
     const guildStats = globalThis.stats[interaction.guild.id];
     if (!guildStats) {
@@ -58,21 +60,21 @@ module.exports = {
       .addComponents(confirm, cancel);
 
     const response = await interaction.reply({
-      components: [row],
-      content: `Prestiging will reset your SR back to 0, 
+      "components": [row],
+      "content": `Prestiging will reset your SR back to 0, 
 and your rank will be adjusted accordingly.\n
 In return, you will gain a prestige mark and your 
 SR gain will be boosted. Additionally, 
 your +/-reps and reactions will have more weight.\n
-Are you sure you want to prestige?`,
+Are you sure you want to prestige?`
     });
 
     const collectorFilter = (i) => elevated || i.user.id === idToUse;
 
     try {
       const confirmation = await response.awaitMessageComponent({
-        filter: collectorFilter,
-        time: 60_000,
+        "filter": collectorFilter,
+        "time": 60_000
       });
 
       if (confirmation.customId === "y") {
@@ -82,27 +84,27 @@ Are you sure you want to prestige?`,
           );
 
         return confirmation.update({
-          components: [],
-          content: `${
+          "components": [],
+          "content": `${
             interaction.guild.members.cache
               .filter((m) => m.id === idToUse)
               .first().displayName
-          } has prestiged to prestige ${guildStats[idToUse].prestige + 1}!`,
+          } has prestiged to prestige ${guildStats[idToUse].prestige + 1}!`
         });
       }
 
       return confirmation.update({
-        components: [],
-        content: "Prestige cancelled",
+        "components": [],
+        "content": "Prestige cancelled"
       });
     } catch (e) {
       return interaction.editReply({
-        components: [],
-        content: "Confirmation not received within 1 minute, cancelling",
+        "components": [],
+        "content": "Confirmation not received within 1 minute, cancelling"
       });
     }
   },
-  updateStats: (userStats) => {
+  "updateStats": (userStats) => {
     userStats.prestige++;
     userStats.bestRanking = "";
     userStats.bestScore = 0;
@@ -115,7 +117,9 @@ Are you sure you want to prestige?`,
 
     // Add nerdHandicap to offset nerdScore
     userStats.nerdHandicap =
-      userStats.nerdScore ** (userStats.prestige === 1 ? 1.55 : 0) * 0.8;
+      userStats.nerdScore ** (userStats.prestige === 1
+        ? 1.55
+        : 0) * 0.8;
 
     // Do the same with coolHandicap
     userStats.coolHandicap = userStats.coolScore ** 1.55 * 0.8;
@@ -127,5 +131,5 @@ Are you sure you want to prestige?`,
     userStats.voiceTime = 0;
 
     return userStats;
-  },
+  }
 };

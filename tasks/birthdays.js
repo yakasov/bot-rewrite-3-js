@@ -5,7 +5,7 @@ const birthdays = require("../resources/birthdays.json");
 const {
   mainGuildId,
   bdayChannelId,
-  bdayRoleId,
+  bdayRoleId
 } = require("../resources/config.json");
 
 exports.run = async (client, force = false) => {
