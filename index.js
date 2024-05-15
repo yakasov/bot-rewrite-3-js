@@ -221,7 +221,8 @@ function checkMessageResponse(msg) {
           .then((c) => getNickname([...c.values()].pop()));
       }
 
-      const following = msg.content.split(k)
+      const following = msg.content.toLowerCase()
+        .split(k)
         .slice(1)
         .join(k);
       res = res.replace(
