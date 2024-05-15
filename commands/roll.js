@@ -38,7 +38,7 @@ module.exports = {
 
     if (tokens < rollCount) {
       return interaction.editReply(
-        "You don't enough tokens!\n\nWait, or get more with /sell!"
+        "You don't have enough tokens!\n\nWait, or get more with /sell!"
       );
     }
 
