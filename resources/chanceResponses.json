@@ -170,6 +170,66 @@
     "type": "message"
   },
   {
+    "string": "Bro read this online",
+    "chance": 0.02,
+    "type": "message"
+  },
+  {
+    "string": "Bro saw this on TikTok",
+    "chance": 0.02,
+    "type": "message"
+  },
+  {
+    "string": "Add a GUI",
+    "chance": 0.02,
+    "type": "message"
+  },
+  {
+    "string": "Chat does this have DNS?",
+    "chance": 0.02,
+    "type": "message"
+  },
+  {
+    "string": "Trust me guys",
+    "chance": 0.02,
+    "type": "message"
+  },
+  {
+    "string": "Bro saw this in a video",
+    "chance": 0.02,
+    "type": "message"
+  },
+  {
+    "string": "2-1 is a dangerous scoreline",
+    "chance": 0.02,
+    "type": "message"
+  },
+  {
+    "string": "Mind games, learn about them",
+    "chance": 0.02,
+    "type": "message"
+  },
+  {
+    "string": "You fiddle children and you're a massive nerd",
+    "chance": 0.02,
+    "type": "message"
+  },
+  {
+    "string": "DM discretion",
+    "chance": 0.02,
+    "type": "message"
+  },
+  {
+    "string": "No bot response today, just found human shit on the bathroom floor",
+    "chance": 0.02,
+    "type": "message"
+  },
+  {
+    "string": "Bros not giving his microwave proper working conditions",
+    "chance": 0.02,
+    "type": "message"
+  },
+  {
     "string": "L boozoo",
     "chance": 0.4,
     "type": "message"
