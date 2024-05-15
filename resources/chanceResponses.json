@@ -178,23 +178,5 @@
     "string": "🤓",
     "chance": 1,
     "type": "react"
-  },
-  {
-    "string": "GnogChamp",
-    "chance": 25,
-    "type": "react_custom",
-    "user": "269143269336809483"
-  },
-  {
-    "string": "BenShock",
-    "chance": 25,
-    "type": "react_custom",
-    "user": "1221477230648234034"
-  },
-  {
-    "string": "soyDJak",
-    "chance": 25,
-    "type": "react_custom",
-    "user": "1221477247077056555"
   }
 ]
