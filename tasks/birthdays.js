@@ -11,7 +11,7 @@ const {
 exports.run = async (client, force = false) => {
   const today = moment();
 
-  if (today.diff(globalThis.currentDate, "days") > 0 || force) {
+  if (!today.isSame(globalThis.currentDate, "day") || force) {
     globalThis.currentDate = moment();
     const guild = await client.guilds.fetch(mainGuildId);
     const bdayChannel = await guild.channels.fetch(bdayChannelId);
