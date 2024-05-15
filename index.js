@@ -13,6 +13,7 @@ const npFile = require("./commands/np.js");
 const { generateRollTable } = require("./util/rollTableGenerator.js");
 const { token, statsConfig } = require("./resources/config.json");
 const responses = require("./resources/responses.json");
+const chanceReactions = require("./resources/chanceReactions.json");
 const chanceResponses = require("./resources/chanceResponses.json");
 const loadedStats = require("./resources/stats.json");
 const ranks = require("./resources/ranks.json");
@@ -265,15 +266,15 @@ function checkMessageReactions(msg) {
 
   if (initialRoll < 25) {
     Object.values(rollTable)
-      .some((v) => {
-        if (roll < v.chance) {
-          switch (v.type) {
+      .some((response) => {
+        if (roll < response.chance) {
+          switch (response.type) {
           case "message":
-            msg.reply(v.string);
+            msg.reply(response.string);
             break;
 
           case "react":
-            msg.react(v.string);
+            msg.react(response.string);
             break;
 
           default:
@@ -286,6 +287,14 @@ function checkMessageReactions(msg) {
         return false;
       });
   }
+
+  // Custom reactions are additional to normal reactions
+  Object.values(chanceReactions)
+    .forEach((reaction) => {
+      if (roll < 25 && reaction.user === msg.user.id) {
+        msg.react(reaction.string);
+      }
+    });
 }
 
 function initialiseStats(guildId, userId) {
