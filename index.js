@@ -265,7 +265,7 @@ function checkMessageReactions(msg) {
   const roll = Math.random() * 100;
   const initialRoll = Math.random() * 100;
 
-  if (initialRoll < 15) {
+  if (initialRoll < 8) {
     Object.values(rollTable)
       .some((response) => {
         if (roll < response.chance) {
