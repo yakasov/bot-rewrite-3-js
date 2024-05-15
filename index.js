@@ -291,7 +291,7 @@ function checkMessageReactions(msg) {
   // Custom reactions are additional to normal reactions
   Object.values(chanceReactions)
     .forEach((reaction) => {
-      if (roll < 25 && reaction.user === msg.user.id) {
+      if (roll < 25 && reaction.user === msg.author.id) {
         msg.react(reaction.string);
       }
     });
