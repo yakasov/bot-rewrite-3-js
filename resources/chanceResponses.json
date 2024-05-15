@@ -230,6 +230,11 @@
     "type": "message"
   },
   {
+    "string": "Bros not subscribed to r/nojork",
+    "chance": 0.02,
+    "type": "message"
+  },
+  {
     "string": "L boozoo",
     "chance": 0.4,
     "type": "message"

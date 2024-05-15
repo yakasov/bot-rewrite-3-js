@@ -293,7 +293,11 @@ function checkMessageReactions(msg) {
   Object.values(chanceReactions)
     .forEach((reaction) => {
       if (roll < 25 && reaction.user === msg.author.id) {
-        msg.react(reaction.string);
+        const reactionEmoji = 
+          msg.guild.emojis.cache.find(e => e.name === reaction.string);
+        if (reactionEmoji) {
+          msg.react(reactionEmoji);
+        }
       }
     });
 }
