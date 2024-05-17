@@ -89,7 +89,7 @@ Are you sure you want to prestige?`
             interaction.guild.members.cache
               .filter((m) => m.id === idToUse)
               .first().displayName
-          } has prestiged to prestige ${guildStats[idToUse].prestige + 1}!`
+          } has prestiged to prestige ${guildStats[idToUse].prestige}!`
         });
       }
 
