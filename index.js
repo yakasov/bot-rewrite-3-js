@@ -175,7 +175,7 @@ function checkVoiceChannels() {
   });
 }
 
-function checkMessageResponse(msg) {
+async function checkMessageResponse(msg) {
   // Swap Twitter/X URLs for proper embedding ones
   if (
     [
@@ -190,7 +190,7 @@ function checkMessageResponse(msg) {
         .replace("https://twitter.com/", "https://fxtwitter.com/")}`
     );
 
-    msg.delete()
+    await msg.delete()
       .catch(console.error);
     return;
   }
@@ -266,9 +266,11 @@ function checkMessageResponse(msg) {
   }
 }
 
-function checkMessageReactions(msg) {
-  if (!msg) {
-    // Fix for message being removed eg by Twitter fix
+async function checkMessageReactions(msg) {
+  // Fix for deleted message - return if message fetch fails
+  try {
+    await msg.channel.messages.fetch(msg.id);
+  } catch {
     return;
   }
 
@@ -561,7 +563,7 @@ function updateScores() {
             statsConfig.prestigeRequirement &&
           globalThis.stats[guild][user].prestige < statsConfig.prestigeMaximum
           ) {
-            globalThis.stats[guild][user].score = 
+            globalThis.stats[guild][user].score =
             statsConfig.prestigeRequirement;
           } else {
             globalThis.stats[guild][user].score = score;
@@ -669,7 +671,7 @@ client.on(Events.MessageCreate, async (msg) => {
 
   await checkMessageResponse(msg);
   if (globalThis.stats[msg.guild.id].allowResponses ?? true) {
-    checkMessageReactions(msg);
+    await checkMessageReactions(msg);
   }
 
   addToStats({
