@@ -116,13 +116,10 @@ Are you sure you want to prestige?`
     userStats.previousVoiceTime += userStats.voiceTime;
 
     // Add nerdHandicap to offset nerdScore
-    userStats.nerdHandicap =
-      userStats.nerdScore ** (userStats.prestige === 1
-        ? 1.55
-        : 0) * 0.8;
+    userStats.nerdHandicap = userStats.nerdScore * 0.8;
 
     // Do the same with coolHandicap
-    userStats.coolHandicap = userStats.coolScore ** 1.55 * 0.8;
+    userStats.coolHandicap = userStats.coolScore * 0.8;
 
     // Cap max saved handicap at 10K
     userStats.luckHandicap = Math.min(userStats.luckHandicap, 10000);
