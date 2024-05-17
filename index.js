@@ -209,7 +209,9 @@ function checkMessageResponse(msg) {
     if (res.includes("{FOLLOWING}")) {
       let lastMsg = "";
       if (msg.content.toLowerCase()
-        .trim() === k) {
+        .trim() === k || msg.content.toLowerCase()
+        .trim()
+        .endsWith(k)) {
         lastMsg = await msg.channel.messages
           .fetch({
             limit: 2,
@@ -265,7 +267,7 @@ function checkMessageReactions(msg) {
   const roll = Math.random() * 100;
   const initialRoll = Math.random() * 100;
 
-  if (initialRoll < 8) {
+  if (initialRoll < 4) {
     Object.values(rollTable)
       .some((response) => {
         if (roll < response.chance) {
