@@ -19,6 +19,8 @@
   "minecraftServerPort": 25565,
   "minecraftServerOwnerId": 204448971009007600,
 
+  "botResponseChance": 2,
+  "_botResponseChance": "The chance for the bot to respond any message. (See chanceResponses.json)",
   "statsConfig": {
     "messageSRGain": 5,
     "_messageSRGain": "The amount of SR to gain per message sent.",
