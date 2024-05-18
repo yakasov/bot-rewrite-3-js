@@ -8,10 +8,11 @@ function generateRollTable() {
   let tempRollTable = [];
   const rollTable = [];
 
-  chanceResponses.forEach((response) => {
-    totalChance += response.chance;
-    tempRollTable.push(response);
-  });
+  Object.values(chanceResponses)
+    .forEach((response) => {
+      totalChance += response.chance;
+      tempRollTable.push(response);
+    });
 
   const multiplier = 100 / totalChance;
 
