@@ -1,7 +1,7 @@
 {
   "10000chance": {
     "string": "The chance for you to get this is 1 in 10,000, so well done, nerd",
-    "chance": 0.01,
+    "chance": 0.005,
     "type": "message"
   },
   "hype1": {
@@ -234,12 +234,12 @@
     "chance": 0.02,
     "type": "message"
   },
-  "dan14": {
+  "lboozoo": {
     "string": "L boozoo",
     "chance": 0.4,
     "type": "message"
   },
-  "dan15": {
+  "nerd": {
     "string": "🤓",
     "chance": 1,
     "type": "react"
