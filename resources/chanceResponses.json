@@ -1,247 +1,247 @@
-[
-  {
+{
+  "10000chance": {
     "string": "The chance for you to get this is 1 in 10,000, so well done, nerd",
     "chance": 0.01,
     "type": "message"
   },
-  {
+  "hype1": {
     "string": "BRO IS FREQUENTLY WRONG ‼🙏🗣️🗣️💯💯💯",
     "chance": 0.02,
     "type": "message"
   },
-  {
+  "hype2": {
     "string": "WHAT IS HE EVEN TALKING ABOUT 🤯🤯💯💯🔥🔥",
     "chance": 0.02,
     "type": "message"
   },
-  {
+  "hype3": {
     "string": "ONTO NOTHING AGAIN ‼",
     "chance": 0.02,
     "type": "message"
   },
-  {
+  "hype4": {
     "string": "FREEZING COLD TAKE 🔥🔥💯💯",
     "chance": 0.02,
     "type": "message"
   },
-  {
+  "hype5": {
     "string": "HARVARD DEFINITELY CALLING 🔥🔥🔥💯💯💯‼ AN AMBULANCE 💪💪🆙🆙",
     "chance": 0.02,
     "type": "message"
   },
-  {
+  "hype6": {
     "string": "BRO DOESN'T UNDERSTAND ANYTHING ‼‼‼💯💯🔥🔥🔥🗣️🗣️🗣️",
     "chance": 0.02,
     "type": "message"
   },
-  {
+  "hype7": {
     "string": "I READ ALLAT NOW I REGRET IT 🗣️💯💯💯💯🔥🔥🔥🔥🔥💪💪",
     "chance": 0.02,
     "type": "message"
   },
-  {
+  "hype8": {
     "string": "BRO TURNED OFF THE STOVE HE AINT COOKIN 🔥🔥🔥🔥🗣️🗣️‼‼",
     "chance": 0.02,
     "type": "message"
   },
-  {
+  "hype9": {
     "string": "BRO OUT OF RECIPES AGAIN 🔥🔥‼‼🗣️🗣️🆙🆙",
     "chance": 0.02,
     "type": "message"
   },
-  {
+  "hype10": {
     "string": "AND THE CROWD GOES ANYWHERE BUT HERE 🔥💯🔥💯",
     "chance": 0.02,
     "type": "message"
   },
-  {
+  "hype11": {
     "string": "AND THE CROWD WANTS TO GO HOME 🔥🔥🔥🔥🔥",
     "chance": 0.02,
     "type": "message"
   },
-  {
+  "hype12": {
     "string": "OUT OF ALL LANGUAGES 🇦🇨 🇦🇩 🇦🇪 🇦🇫 🇦🇬 🇦🇮 🇦🇱 🇩🇿 🇦🇲 🇦🇴 🇦🇶 🇦🇷 🇦🇸 🇦🇹 🇦🇺 🇦🇼 🇦🇽 🇦🇿 BRO CHOSE TO SPEAK NONSENSE 🗣️🗣️🗣️🔥🔥🔥‼‼",
     "chance": 0.02,
     "type": "message"
   },
-  {
+  "hype13": {
     "string": "AND THE CROWD AINT HERE 🔥🔥",
     "chance": 0.02,
     "type": "message"
   },
-  {
+  "hype14": {
     "string": "AND THE CROWD CHEERS 🔥🔥🔥 FOR A REFUND ‼💪💪",
     "chance": 0.02,
     "type": "message"
   },
-  {
+  "hype15": {
     "string": "HUH?? 💪💪🤯🤯🔥🔥",
     "chance": 0.02,
     "type": "message"
   },
-  {
+  "hype16": {
     "string": "WHAT DO YOU MEAN 🔥🔥",
     "chance": 0.02,
     "type": "message"
   },
-  {
+  "hype17": {
     "string": "WHAT??? 💯💯🔥",
     "chance": 0.02,
     "type": "message"
   },
-  {
+  "hype18": {
     "string": "BRO ONTO NOTHING ‼‼🔥🔥🔥",
     "chance": 0.02,
     "type": "message"
   },
-  {
+  "hype19": {
     "string": "WHAT IS HE TALKING ABT 💯💯💯💯🔥🔥🔥🔥🤞🤞🤞🤞",
     "chance": 0.02,
     "type": "message"
   },
-  {
+  "hype20": {
     "string": "REPEAT THAT ‼💯💯💯🔥🗣️🗣️",
     "chance": 0.02,
     "type": "message"
   },
-  {
+  "hype21": {
     "string": "THIS WATER 🔥🔥🔥",
     "chance": 0.02,
     "type": "message"
   },
-  {
+  "hype22": {
     "string": "LET'S PRETEND HE'S RIGHT ‼‼💯💯💯🔥🔥🔥🔥🔥🔥",
     "chance": 0.02,
     "type": "message"
   },
-  {
+  "hype23": {
     "string": "STARTED FROM THE BOTTOM STILL THERE 💯💯🗣️🗣️🔥🔥",
     "chance": 0.02,
     "type": "message"
   },
-  {
+  "hype24": {
     "string": "LET HIM COOK ‼‼ I AINT EATING THOUGH 🔥🔥🗣️🗣️💪💪💪💪",
     "chance": 0.02,
     "type": "message"
   },
-  {
+  "hype25": {
     "string": "YO THIS FLAME WITHOUT THE F 🔥🔥🔥🔥🔥🔥",
     "chance": 0.02,
     "type": "message"
   },
-  {
+  "hype26": {
     "string": "YO THIS GRASS WITHOUT THE GR 🔥🔥🔥🔥",
     "chance": 0.02,
     "type": "message"
   },
-  {
+  "hype27": {
     "string": "YO THIS FIRE 🔥🔥🔥 PUT IT OUT 🆙🆙🤯🤯🤯💯",
     "chance": 0.02,
     "type": "message"
   },
-  {
+  "hype28": {
     "string": "WHY DOES BRO KEEP TRYNA COOK 🗣️🗣️🗣️💯💯🔥🙏🙏🙏",
     "chance": 0.02,
     "type": "message"
   },
-  {
+  "hype29": {
     "string": "BRO'S COOKING 🆙🆙🆙💯💯 NVM HE ORDERED TAKEOUT 🗣️🗣️🗣️💪💪",
     "chance": 0.02,
     "type": "message"
   },
-  {
+  "hype30": {
     "string": "AND THE CROWD GOES MILD 💯💯🔥🔥🔥🔥🔥🗣️🗣️🔥",
     "chance": 0.02,
     "type": "message"
   },
-  {
+  "hype31": {
     "string": "THE CROWD IS UNSURE ⁉⁉⁉🔥🔥🔥🔥🔥🔥",
     "chance": 0.02,
     "type": "message"
   },
-  {
+  "hype32": {
     "string": "HE STARTED AT THE BOTTOM AND HE KEPT DIGGING 💯💯🔥🔥🔥🔥🔥🗣️🗣️🗣️",
     "chance": 0.02,
     "type": "message"
   },
-  {
+  "hype33": {
     "string": "i put a £50 note in your shower last week and it's still there bro",
     "chance": 0.02,
     "type": "message"
   },
-  {
+  "dan1": {
     "string": "Bro read this online",
     "chance": 0.02,
     "type": "message"
   },
-  {
+  "dan2": {
     "string": "Bro saw this on TikTok",
     "chance": 0.02,
     "type": "message"
   },
-  {
+  "dan3": {
     "string": "Add a GUI",
     "chance": 0.02,
     "type": "message"
   },
-  {
+  "dan4": {
     "string": "Chat does this have DNS?",
     "chance": 0.02,
     "type": "message"
   },
-  {
+  "dan5": {
     "string": "Trust me guys",
     "chance": 0.02,
     "type": "message"
   },
-  {
+  "dan6": {
     "string": "Bro saw this in a video",
     "chance": 0.02,
     "type": "message"
   },
-  {
+  "dan7": {
     "string": "2-1 is a dangerous scoreline",
     "chance": 0.02,
     "type": "message"
   },
-  {
+  "dan8": {
     "string": "Mind games, learn about them",
     "chance": 0.02,
     "type": "message"
   },
-  {
+  "dan9": {
     "string": "You fiddle children and you're a massive nerd",
     "chance": 0.02,
     "type": "message"
   },
-  {
+  "dan10": {
     "string": "DM discretion",
     "chance": 0.02,
     "type": "message"
   },
-  {
+  "dan11": {
     "string": "No bot response today, just found human shit on the bathroom floor",
     "chance": 0.02,
     "type": "message"
   },
-  {
+  "dan12": {
     "string": "Bros not giving his microwave proper working conditions",
     "chance": 0.02,
     "type": "message"
   },
-  {
+  "dan13": {
     "string": "Bros not subscribed to r/nojork",
     "chance": 0.02,
     "type": "message"
   },
-  {
+  "dan14": {
     "string": "L boozoo",
     "chance": 0.4,
     "type": "message"
   },
-  {
+  "dan15": {
     "string": "🤓",
     "chance": 1,
     "type": "react"
   }
-]
+}
