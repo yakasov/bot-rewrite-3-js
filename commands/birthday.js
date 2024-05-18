@@ -20,7 +20,9 @@ module.exports = {
           { "name": "Server name",
             "value": "server" },
           { "name": "Owner name",
-            "value": "owner" }
+            "value": "owner" },
+          { "name": "Spam channel name",
+            "value": "channel" }
         ))
     .addStringOption((opt) =>
       opt
@@ -35,6 +37,7 @@ module.exports = {
     const option = interaction.options.getString("type");
     const value = interaction.options.getString("value");
     const botChannel = "1087133384758792272";
+    const spamChannel = "485003783399669762";
 
     if (interaction.guild.id !== mainGuildId) {
       return interaction.reply({
@@ -76,15 +79,27 @@ module.exports = {
               .first()
               .setName(`chat-with-${value}`));
         break;
+
       case "server":
         await interaction.guild.setName(value);
         break;
+
       case "owner":
         return interaction.reply({
           "content": `Due to Discord limitations, this is not possible :(
 \nPlease message me instead!`,
           "ephemeral": true
         });
+
+      case "channel":
+        await interaction.guild.channels.fetch()
+          .then((channels) =>
+            channels
+              .filter((c) => c.id === spamChannel)
+              .first()
+              .setName(value));
+        break;
+
       default:
         return interaction.reply({
           "content": "Not implemented yet...",
