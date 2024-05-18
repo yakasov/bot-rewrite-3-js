@@ -278,7 +278,7 @@ async function checkMessageReactions(msg) {
   const roll = Math.random() * 100;
   const initialRoll = Math.random() * 100;
 
-  if (initialRoll < 4) {
+  if (initialRoll < (statsConfig.botResponseChance ?? 0)) {
     Object.values(rollTable)
       .some((response) => {
         if (roll < response.chance) {
