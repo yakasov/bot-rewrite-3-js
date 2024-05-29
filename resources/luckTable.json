@@ -54,12 +54,12 @@
     }
   },
   {
-    "description": "You have lost 2500 score!",
+    "description": "You have lost 2000 score!",
     "min": 45,
     "max": 60,
     "action": {
       "type": "score",
-      "amount": -2500
+      "amount": -2000
     }
   },
   {
