@@ -667,9 +667,6 @@ client.on(Events.MessageCreate, async (msg) => {
   if (msg.author.bot || !msg.guild) {
     return;
   }
-  if (msg.author.id === "269143269336809483") {
-    console.log(`${getNickname(msg)} in ${msg.guild}: ${msg.content}`);
-  }
 
   await checkMessageResponse(msg);
   if (globalThis.stats[msg.guild.id].allowResponses ?? true) {
