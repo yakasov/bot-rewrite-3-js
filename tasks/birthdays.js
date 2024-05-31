@@ -23,12 +23,16 @@ exports.run = async (client, force = false) => {
     const guildMembers = guild.members.cache;
 
     // Check for members not in server anymore
-    Object.keys(birthdays)
-      .forEach((id) => {
-        if (!guildMembers.some((gm) => gm.id === id)) {
-          console.log(`${id} is not present in the server!`);
-        }
-      });
+    if (globalThis.firstRun.birthdays) {
+      Object.keys(birthdays)
+        .forEach((id) => {
+          if (!guildMembers.some((gm) => gm.id === id)) {
+            console.log(`${id} is not present in the server!`);
+          }
+        });
+
+      globalThis.firstRun.birthdays = false;
+    }
 
     // Remove role if not their birthday anymore
     roleMembers.forEach((m) => {

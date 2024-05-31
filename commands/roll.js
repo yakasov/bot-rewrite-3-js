@@ -17,12 +17,19 @@ module.exports = {
       opt
         .setName("amount")
         .setDescription("The amount of rolls to perform")
-        .setMinValue(1)),
+        .setMinValue(1))
+    .addBooleanOption((opt) =>
+      opt
+        .setName("max")
+        .setDescription("Whether to use all tokens. Overrides amount")),
   async execute(interaction) {
     await interaction.deferReply();
-    const rollCount = interaction.options.getInteger("amount") ?? 1;
+    const useMax = interaction.options.getBoolean("max") ?? false;
     const tokens =
       globalThis.stats[interaction.guild.id][interaction.user.id].luckTokens;
+    const rollCount = useMax
+      ? tokens
+      : interaction.options.getInteger("amount") ?? 1;
     let response = "";
 
     const rolls = [];

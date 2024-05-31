@@ -25,6 +25,8 @@ globalThis.stats = loadedStats;
 globalThis.rollTable = generateRollTable(chanceResponses);
 globalThis.insights = insights;
 globalThis.currentDate = moment();
+globalThis.firstRun = { "birthdays": true,
+  "minecraft": true };
 
 const client = new Client({
   "allowedMentions": {
@@ -559,7 +561,7 @@ function updateScores() {
           );
 
           if (
-            globalThis.stats[guild][user].score >
+            score >
             statsConfig.prestigeRequirement &&
           globalThis.stats[guild][user].prestige < statsConfig.prestigeMaximum
           ) {
@@ -571,10 +573,7 @@ function updateScores() {
 
           if (
             globalThis.stats[guild][user].score >
-            globalThis.stats[guild][user].bestScore ||
-          // Fix for bestScore being stuck at 50K after prestige
-          globalThis.stats[guild][user].bestScore ===
-            statsConfig.prestigeRequirement
+            globalThis.stats[guild][user].bestScore
           ) {
             globalThis.stats[guild][user].bestScore =
             globalThis.stats[guild][user].score;
@@ -664,9 +663,6 @@ client.once(Events.ClientReady, (c) => {
 client.on(Events.MessageCreate, async (msg) => {
   if (msg.author.bot || !msg.guild) {
     return;
-  }
-  if (msg.author.id === "269143269336809483") {
-    console.log(`${getNickname(msg)} in ${msg.guild}: ${msg.content}`);
   }
 
   await checkMessageResponse(msg);
