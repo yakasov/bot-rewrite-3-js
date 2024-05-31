@@ -25,6 +25,8 @@ globalThis.stats = loadedStats;
 globalThis.rollTable = generateRollTable(chanceResponses);
 globalThis.insights = insights;
 globalThis.currentDate = moment();
+globalThis.firstRun = { "birthdays": true,
+  "minecraft": true };
 
 const client = new Client({
   "allowedMentions": {

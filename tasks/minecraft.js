@@ -1,7 +1,7 @@
 "use strict";
 
 const { ActivityType } = require("discord.js");
-const { queryFull } = require("minecraft-server-util");
+const { queryFull, status } = require("minecraft-server-util");
 const {
   minecraftServerIp,
   minecraftServerPort
@@ -9,7 +9,36 @@ const {
 
 exports.run = (client, splash) => {
   if (!(minecraftServerIp && minecraftServerPort)) {
+    if (globalThis.firstRun.minecraft) {
+      console.log("No IP and/or Port for Minecraft server query!");
+      globalThis.firstRun.minecraft = false;
+    }
+
     return;
+  }
+
+  if (globalThis.firstRun.minecraft) {
+    console.log(
+      `Using ${
+        minecraftServerIp
+      }:${
+        minecraftServerPort
+      } for Minecraft query...\n`
+    );
+
+    status(minecraftServerIp, minecraftServerPort)
+      .then((res) => {
+        if (res) {
+          console.log(
+            `\nFound Minecraft server! Latency: ${res.roundTripLatency}`
+          );
+        }
+      })
+      .catch((e) => {
+        console.log(`\n${e}`);
+      });
+
+    globalThis.firstRun.minecraft = false;
   }
 
   queryFull(minecraftServerIp, minecraftServerPort)
