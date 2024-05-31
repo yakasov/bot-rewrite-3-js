@@ -561,7 +561,7 @@ function updateScores() {
           );
 
           if (
-            globalThis.stats[guild][user].score >
+            score >
             statsConfig.prestigeRequirement &&
           globalThis.stats[guild][user].prestige < statsConfig.prestigeMaximum
           ) {
@@ -573,10 +573,7 @@ function updateScores() {
 
           if (
             globalThis.stats[guild][user].score >
-            globalThis.stats[guild][user].bestScore ||
-          // Fix for bestScore being stuck at 50K after prestige
-          globalThis.stats[guild][user].bestScore ===
-            statsConfig.prestigeRequirement
+            globalThis.stats[guild][user].bestScore
           ) {
             globalThis.stats[guild][user].bestScore =
             globalThis.stats[guild][user].score;
