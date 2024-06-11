@@ -3,6 +3,7 @@
 const { SlashCommandBuilder } = require("discord.js");
 const { Configuration, OpenAIApi } = require("openai");
 const fs = require("fs");
+const { formatMsgs } = require("../util/common.js");
 const {
   openaiToken,
   elevatedPermsAiChannels
@@ -74,7 +75,7 @@ module.exports = {
       } catch (err) {
         fs.writeFile(
           `./logs/ai4-${interaction.user.id}-${timestamp}-${attempts}.txt`,
-          module.exports.formatMsgs(err, module.exports.conversation),
+          formatMsgs(err, module.exports.conversation),
           "utf8",
           () => {
             // No callback
@@ -105,11 +106,4 @@ your conversation shouldn't be affected!`
       );
     }
   },
-  "formatMsgs": (e, ms) => {
-    let s = `${e}\n\n`;
-    ms.forEach((m) => {
-      s += `Role: ${m.role}\nContent: ${m.content}\n\n`;
-    });
-    return s;
-  }
 };

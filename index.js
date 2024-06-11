@@ -11,7 +11,7 @@ const moment = require("moment-timezone");
 const fs = require("fs");
 const npFile = require("./commands/np.js");
 const { generateRollTable } = require("./util/rollTableGenerator.js");
-const { getNicknameMsg } = require("./util/common.js");
+const { getNicknameMsg, getTimeInSeconds } = require("./util/common.js");
 const { token, statsConfig } = require("./resources/config.json");
 const responses = require("./resources/responses.json");
 const chanceReactions = require("./resources/chanceReactions.json");
@@ -374,11 +374,6 @@ function initialiseStats(guildId, userId) {
 }
 
 function addToStats(a) {
-  function f() {
-    // Returns UNIX time in seconds.
-    return Math.floor(Date.now() / 1000);
-  }
-
   const { type, userId, guildId, messageId, giver } = a;
   const giverId = giver
     ? giver.id
@@ -412,35 +407,35 @@ function addToStats(a) {
 
   case "message":
     if (
-      f() - globalThis.stats[guildId][userId].lastGainTime <
+      getTimeInSeconds() - globalThis.stats[guildId][userId].lastGainTime <
         statsConfig.messageSRGainCooldown
     ) {
       return;
     }
-    globalThis.stats[guildId][userId].lastGainTime = f();
+    globalThis.stats[guildId][userId].lastGainTime = getTimeInSeconds();
     globalThis.stats[guildId][userId].messages += 1;
     break;
 
   case "joinedVoiceChannel":
-    globalThis.stats[guildId][userId].joinTime = f();
+    globalThis.stats[guildId][userId].joinTime = getTimeInSeconds();
     break;
 
   case "inVoiceChannel":
     if (botUptime < 10) {
-      globalThis.stats[guildId][userId].joinTime = f();
+      globalThis.stats[guildId][userId].joinTime = getTimeInSeconds();
     }
     globalThis.stats[guildId][userId].voiceTime += Math.floor(
-      f() -
+      getTimeInSeconds() -
           (globalThis.stats[guildId][userId].joinTime === 0
-            ? f()
+            ? getTimeInSeconds()
             : globalThis.stats[guildId][userId].joinTime)
     );
-    globalThis.stats[guildId][userId].joinTime = f();
+    globalThis.stats[guildId][userId].joinTime = getTimeInSeconds();
     break;
 
   case "leftVoiceChannel":
     globalThis.stats[guildId][userId].voiceTime += Math.floor(
-      f() - globalThis.stats[guildId][userId].joinTime
+      getTimeInSeconds() - globalThis.stats[guildId][userId].joinTime
     );
     break;
 

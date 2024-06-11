@@ -109,5 +109,4 @@ module.exports = {
       });
     }
   },
-  "f": () => Math.floor(Date.now() / 1000)
 };
