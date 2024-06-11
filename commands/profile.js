@@ -1,6 +1,7 @@
 "use strict";
 
 const { SlashCommandBuilder } = require("discord.js");
+const { getNicknameInteraction } = require("../util/common.js");
 const { statsConfig } = require("../resources/config.json");
 const ranks = require("../resources/ranks.json");
 
@@ -74,7 +75,7 @@ module.exports = {
         allUserStats.coolScore
     );
 
-    const outputMessage = `=== Profile for ${module.exports.getNickname(
+    const outputMessage = `=== Profile for ${getNicknameInteraction(
       interaction,
       userStats[0]
     )}, #${userStats[2] + 1} on server ===\n    Messages: ${
@@ -114,7 +115,7 @@ module.exports = {
     }`;
 
     await interaction.followUp(
-      `Showing profile for ${module.exports.getNickname(
+      `Showing profile for ${getNicknameInteraction(
         interaction,
         userStats[0]
       )}...`
@@ -143,12 +144,6 @@ module.exports = {
     return `${parseInt(unitArray[0], 10) - 1}d ${
       unitArray[1]
     }h ${unitArray[2]}m ${unitArray[3]}s`;
-  },
-  "getNickname": (interaction, id) => {
-    const member = interaction.guild.members.cache
-      .filter((m) => m.id === id)
-      .first();
-    return `${member.displayName}`;
   },
   "getPrestige": (memberStats) =>
     `${memberStats.prestige} \u001b[${

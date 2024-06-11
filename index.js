@@ -11,6 +11,7 @@ const moment = require("moment-timezone");
 const fs = require("fs");
 const npFile = require("./commands/np.js");
 const { generateRollTable } = require("./util/rollTableGenerator.js");
+const { getNicknameMsg } = require("./util/common.js");
 const { token, statsConfig } = require("./resources/config.json");
 const responses = require("./resources/responses.json");
 const chanceReactions = require("./resources/chanceReactions.json");
@@ -126,12 +127,6 @@ function getNewSplash() {
   splash = npFile.run([client]);
 }
 
-function getNickname(msg) {
-  return msg.guild.members.cache.filter((m) => m.id === msg.author.id)
-    .first()
-    .displayName;
-}
-
 function saveStats() {
   try {
     const task = require("./tasks/saveStats.js");
@@ -198,7 +193,7 @@ async function checkMessageResponse(msg) {
       msg.content.includes(l))
   ) {
     msg.channel.send(
-      `${getNickname(msg)} sent:\n${msg.content
+      `${getNicknameMsg(msg)} sent:\n${msg.content
         .replace("https://x.com/", "https://fixupx.com/")
         .replace("https://twitter.com/", "https://fxtwitter.com/")}`
     );
@@ -222,7 +217,7 @@ async function checkMessageResponse(msg) {
   async function f(k, v) {
     let res = v;
     if (res.includes("{AUTHOR}")) {
-      res = res.replace("{AUTHOR}", getNickname(msg));
+      res = res.replace("{AUTHOR}", getNicknameMsg(msg));
     }
 
     if (res.includes("{FOLLOWING}")) {
@@ -235,7 +230,7 @@ async function checkMessageResponse(msg) {
           .fetch({
             "limit": 2
           })
-          .then((c) => getNickname([...c.values()].pop()));
+          .then((c) => getNicknameMsg([...c.values()].pop()));
       }
 
       const following = msg.content.toLowerCase()
@@ -245,7 +240,7 @@ async function checkMessageResponse(msg) {
       res = res.replace(
         "{FOLLOWING}",
         lastMsg || !following.trim()
-          ? lastMsg ?? getNickname(msg)
+          ? lastMsg ?? getNicknameMsg(msg)
           : following.trim()
       );
     }

@@ -2,6 +2,7 @@
 
 const { SlashCommandBuilder } = require("discord.js");
 const { generateTable } = require("../util/tableGenerator.js");
+const { getNicknameInteraction } = require("../util/common.js");
 const { statsConfig } = require("../resources/config.json");
 const stats = require("../resources/stats.json");
 const ranks = require("../resources/ranks.json");
@@ -64,22 +65,22 @@ module.exports = {
     const topReputation = [...reputations].sort(([, f], [, s]) => s - f)[0];
     const bottomReputation = [...reputations].sort(([, f], [, s]) => f - s)[0];
 
-    let outputMessage = `Top nerder: ${module.exports.getNickname(
+    let outputMessage = `Top nerder: ${getNicknameInteraction(
       interaction,
       topNerder[0]
     )} (${
       topNerder[1]
-    } emojis given)\nMost nerded: ${module.exports.getNickname(
+    } emojis given)\nMost nerded: ${getNicknameInteraction(
       interaction,
       topNerded[0]
     )} (${
       topNerded[1]
-    } emojis received)\nHighest reputation: ${module.exports.getNickname(
+    } emojis received)\nHighest reputation: ${getNicknameInteraction(
       interaction,
       topReputation[0]
     )} (${
       topReputation[1]
-    } reputation)\nLowest reputation: ${module.exports.getNickname(
+    } reputation)\nLowest reputation: ${getNicknameInteraction(
       interaction,
       bottomReputation[0]
     )} (${bottomReputation[1]} reputation)\n\n`;
@@ -91,7 +92,7 @@ module.exports = {
       .forEach((a, i) => {
         data.push({
           "#": i + 1,
-          "Name": module.exports.getNickname(interaction, a[0]),
+          "Name": getNicknameInteraction(interaction, a[0]),
           "Msgs": guildStats[a[0]].messages + guildStats[a[0]].previousMessages,
           "Time": module.exports.formatTime(
             guildStats[a[0]].voiceTime + guildStats[a[0]].previousVoiceTime
@@ -121,7 +122,7 @@ module.exports = {
       ])
       .find(([k]) => k === interaction.user.id);
     if (userRanking) {
-      outputMessage += `\nYour ranking (${module.exports.getNickname(
+      outputMessage += `\nYour ranking (${getNicknameInteraction(
         interaction,
         userRanking[0]
       )}): #${userRanking[2] + 1} (${module.exports.getRanking(
@@ -173,12 +174,6 @@ module.exports = {
     `\u001b[${red
       ? "31"
       : "33"}m${"★".repeat(prestige)}\u001b[0m`,
-  "getNickname": (interaction, id) => {
-    const member = interaction.guild.members.cache
-      .filter((m) => m.id === id)
-      .first();
-    return `${member.displayName}`;
-  },
   "getRanking": (memberStats) => {
     let rankString = "MISSINGNO";
     Object.entries(ranks)
