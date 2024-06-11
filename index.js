@@ -24,7 +24,8 @@ globalThis.fetch = fetch;
 globalThis.stats = loadedStats;
 globalThis.rollTable = generateRollTable(chanceResponses);
 globalThis.insights = insights;
-globalThis.currentDate = moment();
+globalThis.currentDate = moment()
+  .tz("Europe/London");;
 globalThis.firstRun = { "birthdays": true,
   "minecraft": true };
 
