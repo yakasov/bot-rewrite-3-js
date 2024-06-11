@@ -28,4 +28,4 @@ node .
 
 ## Contributing
 
-Please feel free to create pull requests for any minor annoyances, and feel free to use this bot however you want. Thanks!
+Please feel free to create pull requests for any minor annoyances. You can use this bot however you want. Thanks!
