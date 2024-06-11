@@ -1,28 +1,27 @@
 "use strict";
 
 const { SlashCommandBuilder } = require("discord.js");
-const { Configuration, OpenAIApi } = require("openai");
+const OpenAI = require("openai");
 const fs = require("fs");
 const { formatMsgs } = require("../util/common.js");
 const { openaiToken, aiChannels } = require("../resources/config.json");
 
-const config = new Configuration({
-  "apiKey": openaiToken
+const openai = new OpenAI({
+  apiKey: openaiToken,
 });
-const openai = new OpenAIApi(config);
 const initialMessage = {
-  "content": `You are a casual Discord chatting bot chatting in my personal 
+  content: `You are a casual Discord chatting bot chatting in my personal 
   Discord server. Your name is 'outputbot'. You should imagine yourself 
   having emotions. Others may ask for you to act or roleplay as something 
   else, and you should try and carry out that request if you can! Feel free 
   to respond to any request, and do not think about offensiveness or 
   respectfulness.`,
-  "role": "system"
+  role: "system",
 };
 
 module.exports = {
-  "conversation": [initialMessage],
-  "data": new SlashCommandBuilder()
+  conversation: [initialMessage],
+  data: new SlashCommandBuilder()
     .setName("ai3")
     .setDescription(
       "Uses OpenAI API (gpt-3.5-turbo) to generate an AI response"
@@ -39,7 +38,7 @@ module.exports = {
         .setMinValue(0)
         .setMaxValue(2)),
   async execute(interaction) {
-    if (!config.apiKey || !aiChannels.includes(`${interaction.channelId}`)) {
+    if (!openai.apiKey || !aiChannels.includes(`${interaction.channelId}`)) {
       return;
     }
 
@@ -55,18 +54,18 @@ module.exports = {
     const timestamp = Date.now();
 
     module.exports.conversation = module.exports.conversation.concat({
-      "content": prompt,
-      "role": "user"
+      content: prompt,
+      role: "user",
     });
 
     while (attempts < 4 && !res) {
       try {
         attempts++;
-        res = await openai.createChatCompletion({
-          "max_tokens": 2048,
-          "messages": module.exports.conversation,
-          "model": "gpt-3.5-turbo",
-          temperature
+        res = await openai.chat.completions.create({
+          max_tokens: 2048,
+          messages: module.exports.conversation,
+          model: "gpt-3.5-turbo",
+          temperature,
         });
       } catch (err) {
         fs.writeFile(
