@@ -71,6 +71,15 @@ Message.prototype.delete = function () {
   }
 };
 
+const superReact = Message.prototype.react;
+Message.prototype.react = function () {
+  try {
+    return superReact.call(this);
+  } catch (e) {
+    return console.log(e.message);
+  }
+};
+
 client.commands = new Collection();
 const commandsPath = path.join("./commands");
 const commandFiles = fs
