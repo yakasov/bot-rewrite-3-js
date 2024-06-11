@@ -2,10 +2,9 @@
 
 const { SlashCommandBuilder } = require("discord.js");
 const { generateTable } = require("../util/tableGenerator.js");
-const { getNicknameInteraction } = require("../util/common.js");
+const { formatTime, getNicknameInteraction, getPrestige, getRanking } = require("../util/common.js");
 const { statsConfig } = require("../resources/config.json");
 const stats = require("../resources/stats.json");
-const ranks = require("../resources/ranks.json");
 
 module.exports = {
   "data": new SlashCommandBuilder()
@@ -94,14 +93,14 @@ module.exports = {
           "#": i + 1,
           "Name": getNicknameInteraction(interaction, a[0]),
           "Msgs": guildStats[a[0]].messages + guildStats[a[0]].previousMessages,
-          "Time": module.exports.formatTime(
+          "Time": formatTime(
             guildStats[a[0]].voiceTime + guildStats[a[0]].previousVoiceTime
           ),
           "Rep": module.exports.formatReputation(
             module.exports.addLeadingZero(guildStats[a[0]].reputation)
           ),
-          "Rank": `${module.exports.getRanking(guildStats[a[0]])} (${a[1]}SR)`,
-          "★": module.exports.getPrestige(
+          "Rank": `${getRanking(guildStats[a[0]])} (${a[1]}SR)`,
+          "★": getPrestige(
             guildStats[a[0]].prestige,
             guildStats[a[0]].score > statsConfig.prestigeRequirement
           )
@@ -125,7 +124,7 @@ module.exports = {
       outputMessage += `\nYour ranking (${getNicknameInteraction(
         interaction,
         userRanking[0]
-      )}): #${userRanking[2] + 1} (${module.exports.getRanking(
+      )}): #${userRanking[2] + 1} (${getRanking(
         guildStats[userRanking[0]]
       )}, ${guildStats[userRanking[0]].score}SR)`;
     }
@@ -141,24 +140,6 @@ module.exports = {
     }
     return num;
   },
-  "formatTime": (seconds) => {
-
-    /*
-     * Note: this will only work up to 30d 23h 59m 59s
-     * this is because toISOString() returns 1970-01-01T03:12:49.000Z (eg)
-     * if anybody hits this, gold star - 11/02/24
-     */
-    const date = new Date(null);
-    date.setSeconds(seconds);
-    const unitArray = date.toISOString()
-      .substr(8, 11)
-      .split(/:|T/u);
-    return `${parseInt(unitArray[0], 10) - 1 > 9
-      ? ""
-      : " "}${
-      parseInt(unitArray[0], 10) - 1
-    }d ${unitArray[1]}h ${unitArray[2]}m ${unitArray[3]}s`;
-  },
   "formatReputation": (rep) =>
     `${module.exports.getColorCode(rep)}${rep}\u001b[0m`,
   "getColorCode": (rep) => {
@@ -170,21 +151,4 @@ module.exports = {
     }
     return "\u001b[1;00m";
   },
-  "getPrestige": (prestige, red) =>
-    `\u001b[${red
-      ? "31"
-      : "33"}m${"★".repeat(prestige)}\u001b[0m`,
-  "getRanking": (memberStats) => {
-    let rankString = "MISSINGNO";
-    Object.entries(ranks)
-      .forEach(([
-        k,
-        v
-      ]) => {
-        if (v[0] <= memberStats.score) {
-          rankString = `${v[1]}${k}\u001b[0m`;
-        }
-      });
-    return rankString;
-  }
 };

@@ -1,9 +1,8 @@
 "use strict";
 
 const { SlashCommandBuilder } = require("discord.js");
-const { getNicknameInteraction } = require("../util/common.js");
+const { formatTime, getNicknameInteraction, getPrestige, getRanking } = require("../util/common.js");
 const { statsConfig } = require("../resources/config.json");
-const ranks = require("../resources/ranks.json");
 
 module.exports = {
   "data": new SlashCommandBuilder()
@@ -80,11 +79,11 @@ module.exports = {
       userStats[0]
     )}, #${userStats[2] + 1} on server ===\n    Messages: ${
       allUserStats.messages + allUserStats.previousMessages
-    }\n    Voice Time: ${module.exports.formatTime(
+    }\n    Voice Time: ${formatTime(
       allUserStats.voiceTime + allUserStats.previousVoiceTime
-    )}\n    Prestige: ${module.exports.getPrestige(
+    )}\n    Prestige: ${getPrestige(
       allUserStats
-    )}\n\n    Ranking: ${module.exports.getRanking(allUserStats)} (${
+    )}\n\n    Ranking: ${getRanking(allUserStats)} (${
       allUserStats.score
     }SR)\n    Ranking before penalties: ${
       rankingBeforePenalties
@@ -129,39 +128,4 @@ module.exports = {
     });
     return null;
   },
-  "formatTime": (seconds) => {
-
-    /*
-     * Note: this will only work up to 30d 23h 59m 59s
-     * this is because toISOString() returns 1970-01-01T03:12:49.000Z (eg)
-     * if anybody hits this, gold star - 11/02/24
-     */
-    const date = new Date(null);
-    date.setSeconds(seconds);
-    const unitArray = date.toISOString()
-      .substr(8, 11)
-      .split(/:|T/u);
-    return `${parseInt(unitArray[0], 10) - 1}d ${
-      unitArray[1]
-    }h ${unitArray[2]}m ${unitArray[3]}s`;
-  },
-  "getPrestige": (memberStats) =>
-    `${memberStats.prestige} \u001b[${
-      memberStats.score > statsConfig.prestigeRequirement
-        ? "31"
-        : "33"
-    }m${"★".repeat(memberStats.prestige)}\u001b[0m`,
-  "getRanking": (memberStats) => {
-    let rankString = "MISSINGNO";
-    Object.entries(ranks)
-      .forEach(([
-        k,
-        v
-      ]) => {
-        if (v[0] <= memberStats.score) {
-          rankString = `${v[1]}${k}\u001b[0m`;
-        }
-      });
-    return rankString;
-  }
 };
