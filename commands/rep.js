@@ -1,6 +1,7 @@
 "use strict";
 
 const { SlashCommandBuilder } = require("discord.js");
+const { getTimeInSeconds } = require("../util/common.js");
 const { statsConfig } = require("../resources/config.json");
 const wait = require("node:timers/promises").setTimeout;
 
@@ -45,14 +46,14 @@ module.exports = {
 
     // Do not run the command if the cooldown is not over
     if (
-      module.exports.f() -
+      getTimeInSeconds() -
         globalThis.stats[interaction.guild.id][giver.id].reputationTime <
       statsConfig.reputationGainCooldown
     ) {
       return interaction.followUp(
         `You need to wait ${
           statsConfig.reputationGainCooldown -
-          (module.exports.f() -
+          (getTimeInSeconds() -
             globalThis.stats[interaction.guild.id][giver.id].reputationTime)
         } more seconds first!`
       );
@@ -60,7 +61,7 @@ module.exports = {
 
     globalThis.stats[interaction.guild.id][user.id].reputation += amount;
     globalThis.stats[interaction.guild.id][giver.id].reputationTime =
-      module.exports.f();
+      getTimeInSeconds();
 
     if (globalThis.stats[interaction.guild.id][user.id].reputation >= 100) {
       globalThis.stats[interaction.guild.id][user.id].reputation = -99;
@@ -88,5 +89,4 @@ module.exports = {
       "ephemeral": true
     });
   },
-  "f": () => Math.floor(Date.now() / 1000)
 };
