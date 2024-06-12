@@ -3,7 +3,6 @@
 const { SlashCommandBuilder } = require("discord.js");
 const { generateTable } = require("../util/tableGenerator.js");
 const { formatTime, getNicknameInteraction, getPrestige, getRanking } = require("../util/common.js");
-const { statsConfig } = require("../resources/config.json");
 const stats = require("../resources/stats.json");
 
 module.exports = {
@@ -101,8 +100,10 @@ module.exports = {
           ),
           "Rank": `${getRanking(guildStats[a[0]])} (${a[1]}SR)`,
           "★": getPrestige(
-            guildStats[a[0]].prestige,
-            guildStats[a[0]].score > statsConfig.prestigeRequirement
+            {
+              "prestige": guildStats[a[0]].prestige,
+              "score": guildStats[a[0]].score
+            }
           )
         });
       });
