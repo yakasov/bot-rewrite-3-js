@@ -88,7 +88,8 @@ module.exports = {
     }
 
     if (res) {
-      res = res.data.choices[0].message;
+      console.log(res);
+      res = res.choices[0].message;
       module.exports.conversation = module.exports.conversation.concat(res);
       const resArray = res.content.match(/[\s\S]{1,2000}(?!\S)/gu);
       resArray.forEach(async (r) => {
