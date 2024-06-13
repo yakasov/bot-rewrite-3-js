@@ -525,6 +525,13 @@ function updateScores() {
             "type": "init",
             "userId": user
           });
+
+          if (globalThis.stats[guild][user].reputation > 99) {
+            globalThis.stats[guild][user].reputation = -99;
+          } else if (globalThis.stats[guild][user].reputation < -99) {
+            globalThis.stats[guild][user].reputation = 99;
+          } 
+
           const nerdPower =
           globalThis.stats[guild][user].prestige > 0
             ? 2.8
