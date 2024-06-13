@@ -39,7 +39,7 @@ module.exports = {
 
     if (!tokens) {
       return interaction.editReply(
-        "You don't have any tokens!\n\n\nWait, or get more with /sell!"
+        "You don't have any tokens!\n\nWait, or get more with /sell!"
       );
     }
 
