@@ -12,7 +12,7 @@ const fs = require("fs");
 const npFile = require("./commands/np.js");
 const { generateRollTable } = require("./util/rollTableGenerator.js");
 const { getNicknameMsg, getTimeInSeconds } = require("./util/common.js");
-const { token, statsConfig } = require("./resources/config.json");
+const { token, statsConfig, botResponseChance } = require("./resources/config.json");
 const responses = require("./resources/responses.json");
 const chanceReactions = require("./resources/chanceReactions.json");
 const chanceResponses = require("./resources/chanceResponses.json");
@@ -285,7 +285,7 @@ async function checkMessageReactions(msg) {
   const roll = Math.random() * 100;
   const initialRoll = Math.random() * 100;
 
-  if (initialRoll < (statsConfig.botResponseChance ?? 0)) {
+  if (initialRoll < (botResponseChance ?? 0)) {
     Object.values(globalThis.rollTable)
       .some((response) => {
         if (roll < response.chance) {
