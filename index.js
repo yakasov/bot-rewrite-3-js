@@ -305,7 +305,7 @@ globalThis.client.on(Events.MessageCreate, async (msg) => {
   });
 });
 
-globalThis.client.on(Events.InteractionCreate, async (interaction) => {
+async function handleInteractionCreate(interaction) {
   if (!interaction.isChatInputCommand()) {
     return;
   }
@@ -335,7 +335,7 @@ globalThis.client.on(Events.InteractionCreate, async (interaction) => {
       });
     }
   }
-});
+};
 
 function handleVoiceStateUpdate(oldState, newState) {
   if (newState.member.bot) {
@@ -380,6 +380,7 @@ function handleReaction(reaction, user, action) {
   }
 }
 
+globalThis.client.on(Events.InteractionCreate, handleInteractionCreate);
 globalThis.client.on(Events.VoiceStateUpdate, handleVoiceStateUpdate);
 globalThis.client.on(Events.MessageReactionAdd, (reaction, user) =>
   handleReaction(reaction, user, "add"));
