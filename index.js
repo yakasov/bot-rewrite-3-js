@@ -335,7 +335,7 @@ async function handleInteractionCreate(interaction) {
       });
     }
   }
-};
+}
 
 function handleVoiceStateUpdate(oldState, newState) {
   if (newState.member.bot) {
@@ -361,6 +361,7 @@ function handleReaction(reaction, user, action) {
   if (user.id === reaction.message.author.id) {
     return;
   }
+
   if (reaction.emoji.name === "🤓" || reaction.emoji.name === "😎") {
     let type = "";
     if (action === "add") {
