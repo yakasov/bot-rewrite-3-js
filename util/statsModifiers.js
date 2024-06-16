@@ -9,3 +9,13 @@
  * Essentially, if guildId === mainGuildId, use 'statsModifiers.func'
  * instead of 'stats.func'.
  */
+
+module.exports = {
+  updateNerdCoolScores: (guildId, userId) => {},
+
+  updateScoreValue: (guildId, userId) => {},
+
+  updateScores: () => {},
+
+  updateStatsOnPrestige: (userStats) => {}
+};
