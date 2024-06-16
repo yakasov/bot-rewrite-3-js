@@ -1,8 +1,8 @@
 "use strict";
 
-const { getTimeInSeconds } = require("common.js");
+const { getTimeInSeconds } = require("./common.js");
 const { statsConfig } = require("../resources/config.json");
-const { ranks } = require("../resources/ranks.json");
+const ranks = require("../resources/ranks.json");
 
 module.exports = {
   addToStats: (a) => {
@@ -143,7 +143,7 @@ module.exports = {
 
   addTokens: () => {
     try {
-      const task = require("./tasks/addTokens.js");
+      const task = require("../tasks/addTokens.js");
       return task.run();
     } catch (e) {
       return console.error(e);
@@ -152,16 +152,15 @@ module.exports = {
 
   backupStats: () => {
     try {
-      const task = require("./tasks/backupstats.js");
+      const task = require("../tasks/backupstats.js");
       return task.run();
     } catch (e) {
       return console.error(e);
     }
   },
 
-  checkVoiceChannels: (client) => {
-    // This function should ALSO really be a separate task!!!
-    const guilds = client.guilds.cache;
+  checkVoiceChannels: () => {
+    const guilds = globalThis.client.guilds.cache;
     guilds.forEach((guild) => {
       const channels = guild.channels.cache.filter(
         // Voice channel is type 2
@@ -238,23 +237,22 @@ module.exports = {
     return null;
   },
 
-  prestige: (client, guildId, userId) => {
+  prestige: (guildId, userId) => {
     globalThis.stats[guildId][userId] = module.exports.updateStatsOnPrestige(
       globalThis.stats[guildId][userId]
     );
 
     module.exports.sendMessage([
-      client,
       guildId,
       userId,
       "Prestige",
-      `prestige ${globalThis.stats[guildId][userId].prestige}`,
+      `Prestige ${globalThis.stats[guildId][userId].prestige}!`,
     ]);
   },
 
   saveInsights: () => {
     try {
-      const task = require("./tasks/saveInsights.js");
+      const task = require("../tasks/saveInsights.js");
       return task.run();
     } catch (e) {
       return console.error(e);
@@ -263,7 +261,7 @@ module.exports = {
 
   saveStats: () => {
     try {
-      const task = require("./tasks/saveStats.js");
+      const task = require("../tasks/saveStats.js");
       return task.run();
     } catch (e) {
       return console.error(e);
@@ -271,8 +269,8 @@ module.exports = {
   },
 
   sendMessage: async (messageArgs) => {
-    const [client, guildId, userId, title, accolade] = messageArgs;
-    const guildObject = await client.guilds.fetch(guildId);
+    const [guildId, userId, title, accolade] = messageArgs;
+    const guildObject = await globalThis.client.guilds.fetch(guildId);
     const userObject = guildObject.members.cache
       .filter((m) => m.id === userId)
       .first();
@@ -285,7 +283,17 @@ module.exports = {
     const channel = await guildObject.channels.fetch(
       globalThis.stats[guildId].rankUpChannel
     );
-    if (channel) {
+
+    /*
+     * Channel can be fetched with an undefined snowflake
+     * if this happens, a list of channels is returned instead.
+     * Because we don't want this, we double check that rankUpChannel
+     * is *actually* set, even though we already 'fetched' it.
+     * 
+     * Prestiging / ranking up can still happen silently without
+     * a rankUpChannel being explicitly set.
+     */
+    if (channel && globalThis.stats[guildId].rankUpChannel) {
       channel.send(
         `## ${title}!\n\`\`\`ansi\n${userObject.displayName} has reached ${accolade}!\`\`\``
       );
@@ -338,7 +346,7 @@ module.exports = {
     }
   },
 
-  updateScores: (client) => {
+  updateScores: () => {
     Object.entries(globalThis.stats)
       .forEach(([guildId, guildStats]) => {
         Object.keys(guildStats)
@@ -363,7 +371,7 @@ module.exports = {
               globalThis.stats[guildId][userId].score >=
             statsConfig.prestigeRequirement
             ) {
-              module.exports.prestige(client, guildId, userId);
+              module.exports.prestige(guildId, userId);
             } else if (
               globalThis.stats[guildId][userId].score >
             globalThis.stats[guildId][userId].bestScore
@@ -380,7 +388,6 @@ module.exports = {
               globalThis.botUptime > 120
               ) {
                 module.exports.sendMessage([
-                  client,
                   guildId,
                   userId,
                   "Rank Up!",

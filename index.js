@@ -37,8 +37,7 @@ globalThis.currentDate = moment()
   .tz("Europe/London");
 globalThis.firstRun = { birthdays: true, minecraft: true };
 globalThis.botUptime = 0;
-
-const client = new Client({
+globalThis.client = new Client({
   allowedMentions: {
     parse: ["users", "roles"],
     repliedUser: true,
@@ -85,7 +84,7 @@ Message.prototype.react = function () {
   }
 };
 
-client.commands = new Collection();
+globalThis.client.commands = new Collection();
 const commandsPath = path.join("./commands");
 const commandFiles = fs
   .readdirSync(commandsPath)
@@ -95,7 +94,7 @@ for (const file of commandFiles) {
   const command = require(`./${filePath}`);
 
   if ("data" in command && "execute" in command) {
-    client.commands.set(command.data.name, command);
+    globalThis.client.commands.set(command.data.name, command);
   } else {
     console.log(
       `[WARNING] The command at ${filePath} is 
@@ -111,7 +110,7 @@ function getTime(seconds = 0, minutes = 0, hours = 0) {
 function checkBirthdays(force = false) {
   try {
     const task = require("./tasks/birthdays.js");
-    task.run(client, force);
+    task.run(globalThis.client, force);
     return null;
   } catch (e) {
     return console.error(e);
@@ -121,14 +120,14 @@ function checkBirthdays(force = false) {
 function checkMinecraftServer() {
   try {
     const minecraftServer = require("./tasks/minecraft.js");
-    return minecraftServer.run(client, splash);
+    return minecraftServer.run(globalThis.client, splash);
   } catch (e) {
     return console.error(e);
   }
 }
 
 function getNewSplash() {
-  splash = npFile.run([client]);
+  splash = npFile.run([globalThis.client]);
 }
 
 async function checkMessageResponse(msg) {
@@ -268,7 +267,7 @@ async function checkMessageReactions(msg) {
     });
 }
 
-client.once(Events.ClientReady, (c) => {
+globalThis.client.once(Events.ClientReady, (c) => {
   console.log(
     "Connected and ready to go!\n" +
       `Current date is ${globalThis.currentDate}, ` +
@@ -289,20 +288,16 @@ client.once(Events.ClientReady, (c) => {
   setInterval(checkBirthdays, getTime(0, 15)); // 15 minutes
   setInterval(checkMinecraftServer, getTime(5)); // 5 seconds
   setInterval(getNewSplash, getTime(0, 0, 1)); // 1 hour
-  setInterval(() => {
-    checkVoiceChannels(client);
-  }, getTime(15)); // 15 seconds
+  setInterval(checkVoiceChannels, getTime(15)); // 15 seconds
   setInterval(saveStats, getTime(0, 3)); // 3 minutes
   setInterval(backupStats, getTime(0, 15)); // 15 minutes
   setInterval(addTokens, getTime(0, 1)); // 1 minute
-  setInterval(() => {
-    updateScores(client);
-  }, getTime(30)); // 30 seconds
+  setInterval(updateScores, getTime(30)); // 30 seconds
   setInterval(saveInsights, getTime(0, 5)); // 5 minutes
   /* eslint-enable line-comment-position */
 });
 
-client.on(Events.MessageCreate, async (msg) => {
+globalThis.client.on(Events.MessageCreate, async (msg) => {
   if (msg.author.bot || !msg.guild) {
     return;
   }
@@ -319,7 +314,7 @@ client.on(Events.MessageCreate, async (msg) => {
   });
 });
 
-client.on(Events.InteractionCreate, async (interaction) => {
+globalThis.client.on(Events.InteractionCreate, async (interaction) => {
   if (!interaction.isChatInputCommand()) {
     return;
   }
@@ -351,7 +346,7 @@ client.on(Events.InteractionCreate, async (interaction) => {
   }
 });
 
-client.on(Events.VoiceStateUpdate, (oldState, newState) => {
+globalThis.client.on(Events.VoiceStateUpdate, (oldState, newState) => {
   if (newState.member.bot) {
     return;
   }
@@ -371,7 +366,7 @@ client.on(Events.VoiceStateUpdate, (oldState, newState) => {
   }
 });
 
-client.on(Events.MessageReactionAdd, (reaction, user) => {
+globalThis.client.on(Events.MessageReactionAdd, (reaction, user) => {
   if (user.id === reaction.message.author.id) {
     return;
   }
@@ -387,7 +382,7 @@ client.on(Events.MessageReactionAdd, (reaction, user) => {
   }
 });
 
-client.on(Events.MessageReactionRemove, (reaction, user) => {
+globalThis.client.on(Events.MessageReactionRemove, (reaction, user) => {
   if (user.id === reaction.message.author.id) {
     return;
   }
@@ -404,4 +399,4 @@ client.on(Events.MessageReactionRemove, (reaction, user) => {
   }
 });
 
-client.login(token);
+globalThis.client.login(token);
