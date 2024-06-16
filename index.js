@@ -108,22 +108,13 @@ function getTime(seconds = 0, minutes = 0, hours = 0) {
 }
 
 function checkBirthdays(force = false) {
-  try {
-    const task = require("./tasks/birthdays.js");
-    task.run(globalThis.client, force);
-    return null;
-  } catch (e) {
-    return console.error(e);
-  }
+  require("./tasks/birthdays.js")
+    .run(globalThis.client, force);
 }
 
 function checkMinecraftServer() {
-  try {
-    const minecraftServer = require("./tasks/minecraft.js");
-    return minecraftServer.run(globalThis.client, splash);
-  } catch (e) {
-    return console.error(e);
-  }
+  require("./tasks/minecraft.js")
+    .run(globalThis.client, splash);
 }
 
 function getNewSplash() {
@@ -346,7 +337,7 @@ globalThis.client.on(Events.InteractionCreate, async (interaction) => {
   }
 });
 
-globalThis.client.on(Events.VoiceStateUpdate, (oldState, newState) => {
+function handleVoiceStateUpdate(oldState, newState) {
   if (newState.member.bot) {
     return;
   }
@@ -364,39 +355,35 @@ globalThis.client.on(Events.VoiceStateUpdate, (oldState, newState) => {
       userId: newState.member.id,
     });
   }
-});
+}
 
-globalThis.client.on(Events.MessageReactionAdd, (reaction, user) => {
+function handleReaction(reaction, user, action) {
   if (user.id === reaction.message.author.id) {
     return;
   }
-
   if (reaction.emoji.name === "🤓" || reaction.emoji.name === "😎") {
+    let type = "";
+    if (action === "add") {
+      type = reaction.emoji.name === "🤓" ? "nerdEmojiAdded" : "coolEmojiAdded";
+    } else {
+      type =
+        reaction.emoji.name === "🤓" ? "nerdEmojiRemoved" : "coolEmojiRemoved";
+    }
+
     addToStats({
       giver: user,
       guildId: reaction.message.guildId,
       messageId: reaction.message.id,
-      type: reaction.emoji.name === "🤓" ? "nerdEmojiAdded" : "coolEmojiAdded",
+      type,
       userId: reaction.message.author.id,
     });
   }
-});
+}
 
-globalThis.client.on(Events.MessageReactionRemove, (reaction, user) => {
-  if (user.id === reaction.message.author.id) {
-    return;
-  }
-
-  if (reaction.emoji.name === "🤓" || reaction.emoji.name === "😎") {
-    addToStats({
-      giver: user,
-      guildId: reaction.message.guildId,
-      messageId: reaction.message.id,
-      type:
-        reaction.emoji.name === "🤓" ? "nerdEmojiRemoved" : "coolEmojiRemoved",
-      userId: reaction.message.author.id,
-    });
-  }
-});
+globalThis.client.on(Events.VoiceStateUpdate, handleVoiceStateUpdate);
+globalThis.client.on(Events.MessageReactionAdd, (reaction, user) =>
+  handleReaction(reaction, user, "add"));
+globalThis.client.on(Events.MessageReactionRemove, (reaction, user) =>
+  handleReaction(reaction, user, "remove"));
 
 globalThis.client.login(token);
