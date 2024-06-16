@@ -39,28 +39,25 @@ module.exports = {
       };
 
       Object.entries(globalThis.stats)
+        .filter(([k, ]) => k === mainGuildId)
         .forEach(([guildId, guildStats]) => {
-          if (guildId === mainGuildId) {
-            Object.keys(guildStats)
-              .filter((k) => k.length === 18)
-              .forEach((userId) => {
-                const previousMessages =
+          Object.keys(guildStats)
+            .filter((k) => k.length === 18)
+            .forEach((userId) => {
+              const previousMessages =
                 globalThis.stats[guildId][userId].previousMessages +
                 globalThis.stats[guildId][userId].messages;
-                const previousVoiceTime =
+              const previousVoiceTime =
                 globalThis.stats[guildId][userId].previousVoiceTime +
                 globalThis.stats[guildId][userId].voiceTime;
 
-                globalThis.stats[guildId][userId] = baseObj;
-                globalThis.stats[guildId][userId].previousMessages =
+              globalThis.stats[guildId][userId] = baseObj;
+              globalThis.stats[guildId][userId].previousMessages =
                 previousMessages;
-                globalThis.stats[guildId][userId].previousVoiceTime =
+              globalThis.stats[guildId][userId].previousVoiceTime =
                 previousVoiceTime;
-              });
-          }
+            });
         });
     }
-
-    return false;
   },
 };
