@@ -159,7 +159,7 @@ module.exports = {
     }
   },
 
-  checkVoiceChannels: () => {
+  checkVoiceChannels: (client) => {
     // This function should ALSO really be a separate task!!!
     const guilds = client.guilds.cache;
     guilds.forEach((guild) => {
@@ -238,6 +238,20 @@ module.exports = {
     return null;
   },
 
+  prestige: (client, guildId, userId) => {
+    globalThis.stats[guildId][userId] = module.exports.updateStatsOnPrestige(
+      globalThis.stats[guildId][userId]
+    );
+
+    module.exports.sendMessage([
+      client,
+      guildId,
+      userId,
+      "Prestige",
+      `prestige ${globalThis.stats[guildId][userId].prestige}`,
+    ]);
+  },
+
   saveInsights: () => {
     try {
       const task = require("./tasks/saveInsights.js");
@@ -256,110 +270,157 @@ module.exports = {
     }
   },
 
-  updateScores: () => {
+  sendMessage: async (messageArgs) => {
+    const [client, guildId, userId, title, accolade] = messageArgs;
+    const guildObject = await client.guilds.fetch(guildId);
+    const userObject = guildObject.members.cache
+      .filter((m) => m.id === userId)
+      .first();
+
+    // Fix for .displayName on empty user object
+    if (!userObject) {
+      return;
+    }
+
+    const channel = await guildObject.channels.fetch(
+      globalThis.stats[guildId].rankUpChannel
+    );
+    if (channel) {
+      channel.send(
+        `## ${title}!\n\`\`\`ansi\n${userObject.displayName} has reached ${accolade}!\`\`\``
+      );
+    }
+  },
+
+  updateNerdCoolScores: (guildId, userId) => {
+    const nerdPower =
+      globalThis.stats[guildId][userId].prestige > 0 ? 2.8 : 1.8;
+    globalThis.stats[guildId][userId].nerdScore =
+      Object.values(globalThis.stats[guildId][userId].nerdEmojis)
+        .reduce(
+          (sum, a) => sum + Math.max(nerdPower ** a + 1, 0) - 1,
+          0
+        ) - globalThis.stats[guildId][userId].nerdHandicap;
+
+    globalThis.stats[guildId][userId].coolScore =
+      Object.values(globalThis.stats[guildId][userId].coolEmojis)
+        .reduce(
+          (sum, a) => sum + Math.max(2.8 ** a + 1, 0) - 1,
+          0
+        ) - globalThis.stats[guildId][userId].coolHandicap;
+  },
+
+  updateScoreValue: (guildId, userId) => {
+    const score = Math.floor(
+      (globalThis.stats[guildId][userId].voiceTime *
+        statsConfig.voiceChatSRGain +
+        globalThis.stats[guildId][userId].messages *
+          statsConfig.messageSRGain) *
+        Math.max(
+          1 +
+            globalThis.stats[guildId][userId].reputation *
+              statsConfig.reputationGain,
+          0.01
+        ) *
+        1.2 ** globalThis.stats[guildId][userId].prestige +
+        globalThis.stats[guildId][userId].luckHandicap +
+        globalThis.stats[guildId][userId].coolScore -
+        globalThis.stats[guildId][userId].nerdScore
+    );
+
+    if (
+      score > statsConfig.prestigeRequirement &&
+      globalThis.stats[guildId][userId].prestige < statsConfig.prestigeMaximum
+    ) {
+      globalThis.stats[guildId][userId].score = statsConfig.prestigeRequirement;
+    } else {
+      globalThis.stats[guildId][userId].score = score;
+    }
+  },
+
+  updateScores: (client) => {
     Object.entries(globalThis.stats)
-      .forEach(([guild, guildStats]) => {
+      .forEach(([guildId, guildStats]) => {
         Object.keys(guildStats)
           .filter((k) => k.length === 18)
-          .forEach(async (user) => {
+          .forEach((userId) => {
             module.exports.addToStats({
-              guildId: guild,
+              guildId,
               type: "init",
-              userId: user,
+              userId,
             });
 
-            if (globalThis.stats[guild][user].reputation > 99) {
-              globalThis.stats[guild][user].reputation = -99;
-            } else if (globalThis.stats[guild][user].reputation < -99) {
-              globalThis.stats[guild][user].reputation = 99;
+            if (globalThis.stats[guildId][userId].reputation > 99) {
+              globalThis.stats[guildId][userId].reputation = -99;
+            } else if (globalThis.stats[guildId][userId].reputation < -99) {
+              globalThis.stats[guildId][userId].reputation = 99;
             }
 
-            const nerdPower =
-            globalThis.stats[guild][user].prestige > 0 ? 2.8 : 1.8;
-            globalThis.stats[guild][user].nerdScore =
-            Object.values(globalThis.stats[guild][user].nerdEmojis)
-              .reduce(
-                (sum, a) => sum + Math.max(nerdPower ** a + 1, 0) - 1,
-                0
-              ) - globalThis.stats[guild][user].nerdHandicap;
-
-            globalThis.stats[guild][user].coolScore =
-            Object.values(globalThis.stats[guild][user].coolEmojis)
-              .reduce(
-                (sum, a) => sum + Math.max(2.8 ** a + 1, 0) - 1,
-                0
-              ) - globalThis.stats[guild][user].coolHandicap;
-
-            const score = Math.floor(
-              (globalThis.stats[guild][user].voiceTime *
-              statsConfig.voiceChatSRGain +
-              globalThis.stats[guild][user].messages *
-                statsConfig.messageSRGain) *
-              Math.max(
-                1 +
-                  globalThis.stats[guild][user].reputation *
-                    statsConfig.reputationGain,
-                0.01
-              ) *
-              1.2 ** globalThis.stats[guild][user].prestige +
-              globalThis.stats[guild][user].luckHandicap +
-              globalThis.stats[guild][user].coolScore -
-              globalThis.stats[guild][user].nerdScore
-            );
+            module.exports.updateNerdCoolScores(guildId, userId);
+            module.exports.updateScoreValue(guildId, userId);
 
             if (
-              score > statsConfig.prestigeRequirement &&
-            globalThis.stats[guild][user].prestige < statsConfig.prestigeMaximum
+              globalThis.stats[guildId][userId].score >=
+            statsConfig.prestigeRequirement
             ) {
-              globalThis.stats[guild][user].score =
-              statsConfig.prestigeRequirement;
-            } else {
-              globalThis.stats[guild][user].score = score;
-            }
-
-            if (
-              globalThis.stats[guild][user].score >
-            globalThis.stats[guild][user].bestScore
+              module.exports.prestige(client, guildId, userId);
+            } else if (
+              globalThis.stats[guildId][userId].score >
+            globalThis.stats[guildId][userId].bestScore
             ) {
-              globalThis.stats[guild][user].bestScore =
-              globalThis.stats[guild][user].score;
+              globalThis.stats[guildId][userId].bestScore =
+              globalThis.stats[guildId][userId].score;
 
               if (
-                globalThis.stats[guild][user].bestRanking !==
+                globalThis.stats[guildId][userId].bestRanking !==
                 module.exports.getRanking(
-                  globalThis.stats[guild][user].score
+                  globalThis.stats[guildId][userId].score
                 ) &&
-              globalThis.stats[guild].rankUpChannel &&
+              globalThis.stats[guildId].rankUpChannel &&
               globalThis.botUptime > 120
               ) {
-                const guildObject = await client.guilds.fetch(guild);
-                const userObject = guildObject.members.cache
-                  .filter((m) => m.id === user)
-                  .first();
-
-                // Fix for .displayName on empty user object
-                if (!userObject) {
-                  return;
-                }
-
-                const channel = await guildObject.channels.fetch(
-                  globalThis.stats[guild].rankUpChannel
-                );
-
-                if (channel) {
-                  channel.send(
-                    `## Rank Up!\n\`\`\`ansi\n${
-                      userObject.displayName
-                    } has reached rank ${module.exports.getRanking(
-                      globalThis.stats[guild][user].score
-                    )}!\`\`\``
-                  );
-                }
+                module.exports.sendMessage([
+                  client,
+                  guildId,
+                  userId,
+                  "Rank Up!",
+                  module.exports.getRanking(
+                    globalThis.stats[guildId][userId].score
+                  ),
+                ]);
               }
-              globalThis.stats[guild][user].bestRanking =
-              module.exports.getRanking(globalThis.stats[guild][user].score);
+              globalThis.stats[guildId][userId].bestRanking =
+              module.exports.getRanking(
+                globalThis.stats[guildId][userId].score
+              );
             }
           });
       });
+  },
+
+  updateStatsOnPrestige: (userStats) => {
+    userStats.prestige++;
+    userStats.bestRanking = "";
+    userStats.bestScore = 0;
+    // Potential fix for weird adjustment post-prestige
+    userStats.score = 0;
+
+    // Store message + voiceTime values then reset them
+    userStats.previousMessages += userStats.messages;
+    userStats.previousVoiceTime += userStats.voiceTime;
+
+    // Add nerdHandicap to offset nerdScore
+    userStats.nerdHandicap = Math.max(userStats.nerdScore, 0) * 0.8;
+
+    // Do the same with coolHandicap
+    userStats.coolHandicap = Math.max(userStats.coolScore, 0) * 0.8;
+
+    // Cap max saved handicap at 10K
+    userStats.luckHandicap = Math.min(userStats.luckHandicap, 10000);
+
+    userStats.messages = 0;
+    userStats.voiceTime = 0;
+
+    return userStats;
   },
 };

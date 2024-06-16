@@ -289,11 +289,15 @@ client.once(Events.ClientReady, (c) => {
   setInterval(checkBirthdays, getTime(0, 15)); // 15 minutes
   setInterval(checkMinecraftServer, getTime(5)); // 5 seconds
   setInterval(getNewSplash, getTime(0, 0, 1)); // 1 hour
-  setInterval(checkVoiceChannels, getTime(15)); // 15 seconds
+  setInterval(() => {
+    checkVoiceChannels(client);
+  }, getTime(15)); // 15 seconds
   setInterval(saveStats, getTime(0, 3)); // 3 minutes
   setInterval(backupStats, getTime(0, 15)); // 15 minutes
   setInterval(addTokens, getTime(0, 1)); // 1 minute
-  setInterval(updateScores, getTime(30)); // 30 seconds
+  setInterval(() => {
+    updateScores(client);
+  }, getTime(30)); // 30 seconds
   setInterval(saveInsights, getTime(0, 5)); // 5 minutes
   /* eslint-enable line-comment-position */
 });
