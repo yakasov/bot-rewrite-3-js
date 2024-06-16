@@ -13,28 +13,7 @@ const { statsConfig } = require("../resources/config.json");
  */
 
 module.exports = {
-  updateNerdCoolScores: (guildId, userId) => {
-    const nerdPower =
-      globalThis.stats[guildId][userId].prestige > 0
-        ? statsConfig.postPrestigeNerdModifier
-        : statsConfig.prePrestigeNerdModifier;
-    globalThis.stats[guildId][userId].nerdScore =
-      Object.values(globalThis.stats[guildId][userId].nerdEmojis)
-        .reduce(
-          (sum, a) => sum + Math.max(nerdPower ** a + 1, 0) - 1,
-          0
-        ) - globalThis.stats[guildId][userId].nerdHandicap;
-
-    globalThis.stats[guildId][userId].coolScore =
-      Object.values(globalThis.stats[guildId][userId].coolEmojis)
-        .reduce(
-          (sum, a) =>
-            sum + Math.max(statsConfig.postPrestigeNerdModifier ** a + 1, 0) - 1,
-          0
-        ) - globalThis.stats[guildId][userId].coolHandicap;
-  },
-
-  updateScoreValue: (guildId, userId) => {
+  overrideUpdateScoreValue: (guildId, userId) => {
     const score = Math.floor(
       (globalThis.stats[guildId][userId].voiceTime *
         statsConfig.voiceChatSRGain +

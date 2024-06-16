@@ -1,7 +1,8 @@
 "use strict";
 
 const { getTimeInSeconds, getRanking } = require("./common.js");
-const { statsConfig } = require("../resources/config.json");
+const { mainGuildId, statsConfig } = require("../resources/config.json");
+const { overrideUpdateScoreValue } = require("./statsModifiers.js");
 
 module.exports = {
   addToStats: (a) => {
@@ -353,7 +354,11 @@ module.exports = {
             }
 
             module.exports.updateNerdCoolScores(guildId, userId);
-            module.exports.updateScoreValue(guildId, userId);
+            if (guildId === mainGuildId) {
+              overrideUpdateScoreValue(guildId, userId);
+            } else {
+              module.exports.updateScoreValue(guildId, userId);
+            }
 
             if (
               globalThis.stats[guildId][userId].score >=
