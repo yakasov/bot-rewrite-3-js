@@ -15,7 +15,9 @@ const { statsConfig } = require("../resources/config.json");
 module.exports = {
   updateNerdCoolScores: (guildId, userId) => {
     const nerdPower =
-      globalThis.stats[guildId][userId].prestige > 0 ? 4 : 2.5;
+      globalThis.stats[guildId][userId].prestige > 0
+        ? statsConfig.postPrestigeNerdModifier
+        : statsConfig.prePrestigeNerdModifier;
     globalThis.stats[guildId][userId].nerdScore =
       Object.values(globalThis.stats[guildId][userId].nerdEmojis)
         .reduce(
@@ -26,7 +28,8 @@ module.exports = {
     globalThis.stats[guildId][userId].coolScore =
       Object.values(globalThis.stats[guildId][userId].coolEmojis)
         .reduce(
-          (sum, a) => sum + Math.max(4 ** a + 1, 0) - 1,
+          (sum, a) =>
+            sum + Math.max(statsConfig.postPrestigeNerdModifier ** a + 1, 0) - 1,
           0
         ) - globalThis.stats[guildId][userId].coolHandicap;
   },
