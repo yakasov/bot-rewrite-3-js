@@ -258,7 +258,7 @@ async function checkMessageReactions(msg) {
     });
 }
 
-globalThis.client.once(Events.ClientReady, (c) => {
+function handleClientReady(c) {
   console.log(
     "Connected and ready to go!\n" +
       `Current date is ${globalThis.currentDate}, ` +
@@ -286,9 +286,9 @@ globalThis.client.once(Events.ClientReady, (c) => {
   setInterval(updateScores, getTime(30)); // 30 seconds
   setInterval(saveInsights, getTime(0, 5)); // 5 minutes
   /* eslint-enable line-comment-position */
-});
+}
 
-globalThis.client.on(Events.MessageCreate, async (msg) => {
+async function handleMessageCreate(msg) {
   if (msg.author.bot || !msg.guild) {
     return;
   }
@@ -303,7 +303,7 @@ globalThis.client.on(Events.MessageCreate, async (msg) => {
     type: "message",
     userId: msg.author.id,
   });
-});
+}
 
 async function handleInteractionCreate(interaction) {
   if (!interaction.isChatInputCommand()) {
@@ -381,6 +381,8 @@ function handleReaction(reaction, user, action) {
   }
 }
 
+globalThis.client.once(Events.ClientReady, handleClientReady);
+globalThis.client.on(Events.MessageCreate, handleMessageCreate);
 globalThis.client.on(Events.InteractionCreate, handleInteractionCreate);
 globalThis.client.on(Events.VoiceStateUpdate, handleVoiceStateUpdate);
 globalThis.client.on(Events.MessageReactionAdd, (reaction, user) =>
