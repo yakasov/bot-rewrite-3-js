@@ -9,7 +9,8 @@ const {
 } = require("../resources/config.json");
 
 exports.run = async (client, force = false) => {
-  const today = moment();
+  const today = moment()
+    .tz("Europe/London");
 
   if (!today.isSame(globalThis.currentDate, "day") || force) {
     globalThis.currentDate = moment();
