@@ -4,7 +4,7 @@ const ranks = require("../resources/ranks.json");
 const { statsConfig } = require("../resources/config.json");
 
 module.exports = {
-  "formatMsgs": (e, ms) => {
+  formatMsgs: (e, ms) => {
     // Used for AI logging
     let s = `${e}\n\n`;
     ms.forEach((m) => {
@@ -12,8 +12,8 @@ module.exports = {
     });
     return s;
   },
-  "formatTime": (seconds) => {
-
+  
+  formatTime: (seconds) => {
     /*
      * Note: this will only work up to 30d 23h 59m 59s
      * this is because toISOString() returns 1970-01-01T03:12:49.000Z (eg)
@@ -28,39 +28,40 @@ module.exports = {
       unitArray[1]
     }h ${unitArray[2]}m ${unitArray[3]}s`;
   },
-  "getNicknameInteraction": (interaction, id) => {
+
+  getNicknameInteraction: (interaction, id) => {
     // Used for fetching nickname from interaction
     const member = interaction.guild.members.cache
       .filter((m) => m.id === id)
       .first();
     return `${member ? member.displayName : "???"}`;
   },
-  "getNicknameMsg": (msg) => {
+
+  getNicknameMsg: (msg) => {
     // Used for fetching nickname from message
-    const member = msg.guild.members.cache.filter((m) => m.id === msg.author.id)
+    const member = msg.guild.members.cache
+      .filter((m) => m.id === msg.author.id)
       .first();
     return `${member ? member.displayName : "???"}`;
   },
-  "getPrestige": (memberStats) =>
+
+  getPrestige: (memberStats) =>
     // Used for getting a member's prestige stars
     `${memberStats.prestige} \u001b[${
-      memberStats.score > statsConfig.prestigeRequirement
-        ? "31"
-        : "33"
+      memberStats.score > statsConfig.prestigeRequirement ? "31" : "33"
     }m${"★".repeat(memberStats.prestige)}\u001b[0m`,
-  "getRanking": (memberStats) => {
+
+  getRanking: (memberStats) => {
     // Used for getting a member's ranking
     let rankString = "MISSINGNO";
     Object.entries(ranks)
-      .forEach(([
-        k,
-        v
-      ]) => {
+      .forEach(([k, v]) => {
         if (v[0] <= memberStats.score) {
           rankString = `${v[1]}${k}\u001b[0m`;
         }
       });
     return rankString;
   },
-  "getTimeInSeconds": () => Math.floor(Date.now() / 1000),
+
+  getTimeInSeconds: () => Math.floor(Date.now() / 1000),
 };

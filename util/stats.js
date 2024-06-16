@@ -1,8 +1,7 @@
 "use strict";
 
-const { getTimeInSeconds } = require("./common.js");
+const { getTimeInSeconds, getRanking } = require("./common.js");
 const { statsConfig } = require("../resources/config.json");
-const ranks = require("../resources/ranks.json");
 
 module.exports = {
   addToStats: (a) => {
@@ -178,17 +177,6 @@ module.exports = {
     });
   },
 
-  getRanking: (score) => {
-    let rankString = "MISSINGNO";
-    Object.entries(ranks)
-      .forEach(([k, v]) => {
-        if (v[0] <= score) {
-          rankString = `${v[1]}${k}\u001b[0m`;
-        }
-      });
-    return rankString;
-  },
-
   initialiseStats: (guildId, userId) => {
     const baseObj = {
       bestRanking: "",
@@ -289,7 +277,7 @@ module.exports = {
      * if this happens, a list of channels is returned instead.
      * Because we don't want this, we double check that rankUpChannel
      * is *actually* set, even though we already 'fetched' it.
-     * 
+     *
      * Prestiging / ranking up can still happen silently without
      * a rankUpChannel being explicitly set.
      */
@@ -381,9 +369,7 @@ module.exports = {
 
               if (
                 globalThis.stats[guildId][userId].bestRanking !==
-                module.exports.getRanking(
-                  globalThis.stats[guildId][userId].score
-                ) &&
+                getRanking(globalThis.stats[guildId][userId].score) &&
               globalThis.stats[guildId].rankUpChannel &&
               globalThis.botUptime > 120
               ) {
@@ -391,13 +377,10 @@ module.exports = {
                   guildId,
                   userId,
                   "Rank Up!",
-                  module.exports.getRanking(
-                    globalThis.stats[guildId][userId].score
-                  ),
+                  getRanking(globalThis.stats[guildId][userId].score),
                 ]);
               }
-              globalThis.stats[guildId][userId].bestRanking =
-              module.exports.getRanking(
+              globalThis.stats[guildId][userId].bestRanking = getRanking(
                 globalThis.stats[guildId][userId].score
               );
             }
