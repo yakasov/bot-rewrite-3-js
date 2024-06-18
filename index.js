@@ -5,7 +5,8 @@ const {
   Events,
   GatewayIntentBits,
   Message,
-  Collection
+  Collection,
+  DiscordAPIError
 } = require("discord.js");
 const moment = require("moment-timezone");
 const fs = require("fs");
@@ -77,7 +78,12 @@ Message.prototype.react = function (s) {
   try {
     return superReact.call(this, s);
   } catch (e) {
-    return console.log(e.message);
+    if (e instanceof DiscordAPIError && e.code === 90001) {
+      console.log("Reaction blocked: ", e.message); 
+    } else {
+      console.log("General error: ", e.message); 
+    }
+    return null; 
   }
 };
 
