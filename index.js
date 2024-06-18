@@ -73,9 +73,9 @@ Message.prototype.delete = function () {
 };
 
 const superReact = Message.prototype.react;
-Message.prototype.react = function () {
+Message.prototype.react = function (s) {
   try {
-    return superReact.call(this);
+    return superReact.call(this, s);
   } catch (e) {
     return console.log(e.message);
   }
