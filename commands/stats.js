@@ -3,14 +3,13 @@
 const { SlashCommandBuilder } = require("discord.js");
 const { generateTable } = require("../util/tableGenerator.js");
 const { formatTime, getNicknameInteraction, getPrestige, getRanking } = require("../util/common.js");
-const stats = require("../resources/stats.json");
 
 module.exports = {
   "data": new SlashCommandBuilder()
     .setName("stats")
     .setDescription("Show server statistics"),
   execute(interaction) {
-    const guildStats = stats[interaction.guild.id];
+    const guildStats = globalThis.stats[interaction.guild.id];
     if (!guildStats) {
       return interaction.reply("This server has no statistics yet!");
     }
