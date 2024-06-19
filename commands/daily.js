@@ -20,7 +20,7 @@ module.exports = {
     }
 
     globalThis.stats[guildId][userId].lastDailyTime = getTimeInSeconds();
-    globalThis.stats[guildId][userId].luckTokens += 3;
+    globalThis.stats[guildId][userId].luckTokens += statsConfig.dailyTokens;
 
     return interaction.reply(
       `You have received ${statsConfig.dailyTokens} tokens!`
