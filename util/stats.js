@@ -167,6 +167,7 @@ module.exports = {
     coolScore: 0,
     coolsGiven: 0,
     joinTime: 0,
+    lastDailyTime: 0,
     lastGainTime: 0,
     luckHandicap: 0,
     luckTokens: 5,
