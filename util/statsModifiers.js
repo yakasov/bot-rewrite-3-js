@@ -13,7 +13,7 @@ const { statsConfig } = require("../resources/config.json");
  */
 
 module.exports = {
-  overrideUpdateScoreValue: (guildId, userId) => {
+  "overrideUpdateScoreValue": (guildId, userId) => {
     const score = Math.floor(
       (globalThis.stats[guildId][userId].voiceTime *
         statsConfig.voiceChatSRGain +
@@ -39,5 +39,5 @@ module.exports = {
     } else {
       globalThis.stats[guildId][userId].score = score;
     }
-  },
+  }
 };

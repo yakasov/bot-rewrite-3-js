@@ -7,7 +7,7 @@ const readline = require("readline");
 function readFilesRecursively(dir, fileList = []) {
   const files = fs.readdirSync(dir);
 
-  files.forEach(file => {
+  files.forEach((file) => {
     const filePath = path.join(dir, file);
     const stat = fs.statSync(filePath);
 
@@ -25,8 +25,8 @@ async function findFunctionDefinitions(filePath) {
   const functions = [];
   const fileStream = fs.createReadStream(filePath);
   const rl = readline.createInterface({
-    crlfDelay: Infinity,
-    input: fileStream,
+    "crlfDelay": Infinity,
+    "input": fileStream
   });
 
   const functionRegex = /"(?<funcName>\w+)":\s*\((?<args>.*?)\)\s*=>/u;
@@ -35,7 +35,8 @@ async function findFunctionDefinitions(filePath) {
     const match = line.match(functionRegex);
     if (match) {
       const functionName = match[1];
-      functions.push({ file: filePath, name: functionName });
+      functions.push({ "file": filePath,
+        "name": functionName });
     }
   }
 
@@ -49,7 +50,7 @@ async function findDuplicateFunctions(dir) {
   for (const file of allFiles) {
     if (file.endsWith(".js")) {
       const functions = await findFunctionDefinitions(file);
-      functions.forEach(fn => {
+      functions.forEach((fn) => {
         if (!functionOccurrences[fn.name]) {
           functionOccurrences[fn.name] = [];
         }
@@ -59,7 +60,10 @@ async function findDuplicateFunctions(dir) {
   }
 
   const duplicates = {};
-  for (const [name, files] of Object.entries(functionOccurrences)) {
+  for (const [
+    name,
+    files
+  ] of Object.entries(functionOccurrences)) {
     if (files.length > 1) {
       duplicates[name] = files;
     }
@@ -70,15 +74,18 @@ async function findDuplicateFunctions(dir) {
 
 const directoryPath = ".";
 findDuplicateFunctions(directoryPath)
-  .then(duplicates => {
+  .then((duplicates) => {
     console.log("Duplicate functions found:");
-    for (const [name, files] of Object.entries(duplicates)) {
+    for (const [
+      name,
+      files
+    ] of Object.entries(duplicates)) {
       console.log(`Function "${name}" is defined in:`);
-      files.forEach(file => {
+      files.forEach((file) => {
         console.log(`  - ${file}`);
       });
     }
   })
-  .catch(err => {
+  .catch((err) => {
     console.error(err);
   });

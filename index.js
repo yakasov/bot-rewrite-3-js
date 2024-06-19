@@ -5,7 +5,7 @@ const {
   Events,
   GatewayIntentBits,
   Message,
-  Collection,
+  Collection
 } = require("discord.js");
 const moment = require("moment-timezone");
 const fs = require("fs");
@@ -19,7 +19,7 @@ const {
   checkVoiceChannels,
   saveInsights,
   saveStats,
-  updateScores,
+  updateScores
 } = require("./util/stats.js");
 const { token, botResponseChance } = require("./resources/config.json");
 const responses = require("./resources/responses.json");
@@ -35,22 +35,26 @@ globalThis.rollTable = generateRollTable(chanceResponses);
 globalThis.insights = insights;
 globalThis.currentDate = moment()
   .tz("Europe/London");
-globalThis.firstRun = { birthdays: true, minecraft: true };
+globalThis.firstRun = { "birthdays": true,
+  "minecraft": true };
 globalThis.botUptime = 0;
 globalThis.client = new Client({
-  allowedMentions: {
-    parse: ["users", "roles"],
-    repliedUser: true,
+  "allowedMentions": {
+    "parse": [
+      "users",
+      "roles"
+    ],
+    "repliedUser": true
   },
-  intents: [
+  "intents": [
     GatewayIntentBits.Guilds,
     GatewayIntentBits.GuildMembers,
     GatewayIntentBits.GuildMessages,
     GatewayIntentBits.GuildMessageReactions,
     GatewayIntentBits.GuildPresences,
     GatewayIntentBits.GuildVoiceStates,
-    GatewayIntentBits.MessageContent,
-  ],
+    GatewayIntentBits.MessageContent
+  ]
 });
 let splash = "";
 
@@ -58,8 +62,8 @@ const superReply = Message.prototype.reply;
 Message.prototype.reply = function (s) {
   try {
     return superReply.call(this, {
-      content: s,
-      failIfNotExists: false,
+      "content": s,
+      "failIfNotExists": false
     });
   } catch (e) {
     return console.log(e.message);
@@ -124,7 +128,10 @@ function getNewSplash() {
 async function checkMessageResponse(msg) {
   // Swap Twitter/X URLs for proper embedding ones
   if (
-    ["https://x.com/", "https://twitter.com/"].find((l) =>
+    [
+      "https://x.com/",
+      "https://twitter.com/"
+    ].find((l) =>
       msg.content.includes(l))
   ) {
     msg.channel.send(
@@ -166,7 +173,7 @@ async function checkMessageResponse(msg) {
       ) {
         lastMsg = await msg.channel.messages
           .fetch({
-            limit: 2,
+            "limit": 2
           })
           .then((c) => getNicknameMsg([...c.values()].pop()));
       }
@@ -190,7 +197,7 @@ async function checkMessageResponse(msg) {
       );
       if (sticker.size) {
         return msg.channel.send({
-          stickers: sticker,
+          "stickers": sticker
         });
       }
       return null;
@@ -201,7 +208,10 @@ async function checkMessageResponse(msg) {
 
   const entries = Object.entries(responses);
   for (let i = 0; i < entries.length; i++) {
-    const [k, v] = entries[i];
+    const [
+      k,
+      v
+    ] = entries[i];
     if (` ${msg.content.toLowerCase()} `.includes(` ${k} `)) {
       /* eslint-disable-next-line consistent-return */
       return f(k, v);
@@ -299,9 +309,9 @@ async function handleMessageCreate(msg) {
   }
 
   addToStats({
-    guildId: msg.guild.id,
-    type: "message",
-    userId: msg.author.id,
+    "guildId": msg.guild.id,
+    "type": "message",
+    "userId": msg.author.id
   });
 }
 
@@ -325,13 +335,13 @@ async function handleInteractionCreate(interaction) {
     console.error(error);
     if (interaction.replied || interaction.deferred) {
       await interaction.followUp({
-        content: "There was an error while executing this command!",
-        ephemeral: true,
+        "content": "There was an error while executing this command!",
+        "ephemeral": true
       });
     } else {
       await interaction.reply({
-        content: "There was an error while executing this command!",
-        ephemeral: true,
+        "content": "There was an error while executing this command!",
+        "ephemeral": true
       });
     }
   }
@@ -344,15 +354,15 @@ function handleVoiceStateUpdate(oldState, newState) {
 
   if (oldState.channel && !newState.channel) {
     addToStats({
-      guildId: newState.guild.id,
-      type: "leftVoiceChannel",
-      userId: newState.member.id,
+      "guildId": newState.guild.id,
+      "type": "leftVoiceChannel",
+      "userId": newState.member.id
     });
   } else if (!oldState.channel && newState.channel) {
     addToStats({
-      guildId: newState.guild.id,
-      type: "joinedVoiceChannel",
-      userId: newState.member.id,
+      "guildId": newState.guild.id,
+      "type": "joinedVoiceChannel",
+      "userId": newState.member.id
     });
   }
 }
@@ -365,18 +375,22 @@ function handleReaction(reaction, user, action) {
   if (reaction.emoji.name === "🤓" || reaction.emoji.name === "😎") {
     let type = "";
     if (action === "add") {
-      type = reaction.emoji.name === "🤓" ? "nerdEmojiAdded" : "coolEmojiAdded";
+      type = reaction.emoji.name === "🤓"
+        ? "nerdEmojiAdded"
+        : "coolEmojiAdded";
     } else {
       type =
-        reaction.emoji.name === "🤓" ? "nerdEmojiRemoved" : "coolEmojiRemoved";
+        reaction.emoji.name === "🤓"
+          ? "nerdEmojiRemoved"
+          : "coolEmojiRemoved";
     }
 
     addToStats({
-      giver: user,
-      guildId: reaction.message.guildId,
-      messageId: reaction.message.id,
+      "giver": user,
+      "guildId": reaction.message.guildId,
+      "messageId": reaction.message.id,
       type,
-      userId: reaction.message.author.id,
+      "userId": reaction.message.author.id
     });
   }
 }

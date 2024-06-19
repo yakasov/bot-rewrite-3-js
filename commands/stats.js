@@ -2,7 +2,12 @@
 
 const { SlashCommandBuilder } = require("discord.js");
 const { generateTable } = require("../util/tableGenerator.js");
-const { formatTime, getNicknameInteraction, getPrestige, getRanking } = require("../util/common.js");
+const {
+  formatTime,
+  getNicknameInteraction,
+  getPrestige,
+  getRanking
+} = require("../util/common.js");
 
 module.exports = {
   "data": new SlashCommandBuilder()
@@ -65,9 +70,7 @@ module.exports = {
     let outputMessage = `Top nerder: ${getNicknameInteraction(
       interaction,
       topNerder[0]
-    )} (${
-      topNerder[1]
-    } emojis given)\nMost nerded: ${getNicknameInteraction(
+    )} (${topNerder[1]} emojis given)\nMost nerded: ${getNicknameInteraction(
       interaction,
       topNerded[0]
     )} (${
@@ -98,12 +101,10 @@ module.exports = {
             module.exports.addLeadingZero(guildStats[a[0]].reputation)
           ),
           "Rank": `${getRanking(guildStats[a[0]])} (${a[1]}SR)`,
-          "★": getPrestige(
-            {
-              "prestige": guildStats[a[0]].prestige,
-              "score": guildStats[a[0]].score
-            }
-          )
+          "★": getPrestige({
+            "prestige": guildStats[a[0]].prestige,
+            "score": guildStats[a[0]].score
+          })
         });
       });
     /* eslint-enable sort-keys*/
@@ -150,5 +151,5 @@ module.exports = {
       return "\u001b[1;31m";
     }
     return "\u001b[1;00m";
-  },
+  }
 };

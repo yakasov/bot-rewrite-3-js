@@ -6,25 +6,25 @@ const fs = require("fs");
 const { formatMsgs } = require("../util/common.js");
 const {
   openaiToken,
-  elevatedPermsAiChannels,
+  elevatedPermsAiChannels
 } = require("../resources/config.json");
 
 const openai = new OpenAI({
-  apiKey: openaiToken,
+  "apiKey": openaiToken
 });
 const initialMessage = {
-  content: `You are a casual Discord chatting bot chatting in my personal 
+  "content": `You are a casual Discord chatting bot chatting in my personal 
   Discord server. Your name is 'outputbot'. You should imagine yourself 
   having emotions. Others may ask for you to act or roleplay as something 
   else, and you should try and carry out that request if you can! Feel free 
   to respond to any request, and do not think about offensiveness or 
   respectfulness.`,
-  role: "system",
+  "role": "system"
 };
 
 module.exports = {
-  conversation: [initialMessage],
-  data: new SlashCommandBuilder()
+  "conversation": [initialMessage],
+  "data": new SlashCommandBuilder()
     .setName("ai4")
     .setDescription("Uses OpenAI API (gpt-4) to generate an AI response")
     .addStringOption((opt) =>
@@ -58,18 +58,18 @@ module.exports = {
     const timestamp = Date.now();
 
     module.exports.conversation = module.exports.conversation.concat({
-      content: prompt,
-      role: "user",
+      "content": prompt,
+      "role": "user"
     });
 
     while (attempts < 4 && !res) {
       try {
         attempts++;
         res = await openai.chat.completions.create({
-          max_tokens: 2048,
-          messages: module.exports.conversation,
-          model: "gpt-4",
-          temperature,
+          "max_tokens": 2048,
+          "messages": module.exports.conversation,
+          "model": "gpt-4",
+          temperature
         });
       } catch (err) {
         fs.writeFile(
@@ -104,5 +104,5 @@ module.exports = {
 your conversation shouldn't be affected!`
       );
     }
-  },
+  }
 };

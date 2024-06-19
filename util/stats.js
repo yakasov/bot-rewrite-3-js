@@ -5,15 +5,17 @@ const { mainGuildId, statsConfig } = require("../resources/config.json");
 const { overrideUpdateScoreValue } = require("./statsModifiers.js");
 
 module.exports = {
-  addToStats: (a) => {
+  "addToStats": (a) => {
     const { type, userId, guildId, messageId, giver } = a;
-    const giverId = giver ? giver.id : 0;
+    const giverId = giver
+      ? giver.id
+      : 0;
 
     if (!globalThis.stats[guildId]) {
       globalThis.stats[guildId] = {
-        allowResponses: true,
-        luckTokenTime: 0,
-        rankUpChannel: "",
+        "allowResponses": true,
+        "luckTokenTime": 0,
+        "rankUpChannel": ""
       };
     }
 
@@ -141,7 +143,7 @@ module.exports = {
     module.exports.saveStats();
   },
 
-  addTokens: () => {
+  "addTokens": () => {
     try {
       const task = require("../tasks/addTokens.js");
       return task.run();
@@ -150,7 +152,7 @@ module.exports = {
     }
   },
 
-  backupStats: () => {
+  "backupStats": () => {
     try {
       const task = require("../tasks/backupstats.js");
       return task.run();
@@ -159,33 +161,33 @@ module.exports = {
     }
   },
 
-  baseStats: {
-    bestRanking: "",
-    bestScore: 0,
-    coolEmojis: {},
-    coolHandicap: 0,
-    coolScore: 0,
-    coolsGiven: 0,
-    joinTime: 0,
-    lastDailyTime: 0,
-    lastGainTime: 0,
-    luckHandicap: 0,
-    luckTokens: 5,
-    messages: 0,
-    nerdEmojis: {},
-    nerdHandicap: 0,
-    nerdScore: 0,
-    nerdsGiven: 0,
-    prestige: 0,
-    previousMessages: 0,
-    previousVoiceTime: 0,
-    reputation: 0,
-    reputationTime: 0,
-    score: 0,
-    voiceTime: 0,
+  "baseStats": {
+    "bestRanking": "",
+    "bestScore": 0,
+    "coolEmojis": {},
+    "coolHandicap": 0,
+    "coolScore": 0,
+    "coolsGiven": 0,
+    "joinTime": 0,
+    "lastDailyTime": 0,
+    "lastGainTime": 0,
+    "luckHandicap": 0,
+    "luckTokens": 5,
+    "messages": 0,
+    "nerdEmojis": {},
+    "nerdHandicap": 0,
+    "nerdScore": 0,
+    "nerdsGiven": 0,
+    "prestige": 0,
+    "previousMessages": 0,
+    "previousVoiceTime": 0,
+    "reputation": 0,
+    "reputationTime": 0,
+    "score": 0,
+    "voiceTime": 0
   },
 
-  checkVoiceChannels: () => {
+  "checkVoiceChannels": () => {
     const guilds = globalThis.client.guilds.cache;
     guilds.forEach((guild) => {
       const channels = guild.channels.cache.filter(
@@ -195,23 +197,26 @@ module.exports = {
       channels.forEach((channel) => {
         channel.members.forEach((member) => {
           module.exports.addToStats({
-            guildId: member.guild.id,
-            type: "inVoiceChannel",
-            userId: member.user.id,
+            "guildId": member.guild.id,
+            "type": "inVoiceChannel",
+            "userId": member.user.id
           });
         });
       });
     });
   },
 
-  initialiseStats: (guildId, userId) => {
+  "initialiseStats": (guildId, userId) => {
     if (!globalThis.stats[guildId][userId]) {
       globalThis.stats[guildId][userId] = module.exports.baseStats;
       return null;
     }
 
     Object.entries(module.exports.baseStats)
-      .forEach(([k, v]) => {
+      .forEach(([
+        k,
+        v
+      ]) => {
         if (globalThis.stats[guildId][userId][k] === undefined) {
           globalThis.stats[guildId][userId][k] = v;
         }
@@ -227,7 +232,7 @@ module.exports = {
     return null;
   },
 
-  prestige: (guildId, userId) => {
+  "prestige": (guildId, userId) => {
     globalThis.stats[guildId][userId] = module.exports.updateStatsOnPrestige(
       globalThis.stats[guildId][userId]
     );
@@ -236,11 +241,11 @@ module.exports = {
       guildId,
       userId,
       "Prestige",
-      `Prestige ${globalThis.stats[guildId][userId].prestige}!`,
+      `Prestige ${globalThis.stats[guildId][userId].prestige}!`
     ]);
   },
 
-  saveInsights: () => {
+  "saveInsights": () => {
     try {
       const task = require("../tasks/saveInsights.js");
       return task.run();
@@ -249,7 +254,7 @@ module.exports = {
     }
   },
 
-  saveStats: () => {
+  "saveStats": () => {
     try {
       const task = require("../tasks/saveStats.js");
       return task.run();
@@ -258,8 +263,13 @@ module.exports = {
     }
   },
 
-  sendMessage: async (messageArgs) => {
-    const [guildId, userId, title, accolade] = messageArgs;
+  "sendMessage": async (messageArgs) => {
+    const [
+      guildId,
+      userId,
+      title,
+      accolade
+    ] = messageArgs;
     const guildObject = await globalThis.client.guilds.fetch(guildId);
     const userObject = guildObject.members.cache
       .filter((m) => m.id === userId)
@@ -285,14 +295,18 @@ module.exports = {
      */
     if (channel && globalThis.stats[guildId].rankUpChannel) {
       channel.send(
-        `## ${title}!\n\`\`\`ansi\n${userObject.displayName} has reached ${accolade}!\`\`\``
+        `## ${title}!\n\`\`\`ansi\n${
+          userObject.displayName
+        } has reached ${accolade}!\`\`\``
       );
     }
   },
 
-  updateNerdCoolScores: (guildId, userId) => {
+  "updateNerdCoolScores": (guildId, userId) => {
     const nerdPower =
-      globalThis.stats[guildId][userId].prestige > 0 ? 2.8 : 1.8;
+      globalThis.stats[guildId][userId].prestige > 0
+        ? 2.8
+        : 1.8;
     globalThis.stats[guildId][userId].nerdScore =
       Object.values(globalThis.stats[guildId][userId].nerdEmojis)
         .reduce(
@@ -308,7 +322,7 @@ module.exports = {
         ) - globalThis.stats[guildId][userId].coolHandicap;
   },
 
-  updateScoreValue: (guildId, userId) => {
+  "updateScoreValue": (guildId, userId) => {
     const score = Math.floor(
       (globalThis.stats[guildId][userId].voiceTime *
         statsConfig.voiceChatSRGain +
@@ -336,16 +350,19 @@ module.exports = {
     }
   },
 
-  updateScores: () => {
+  "updateScores": () => {
     Object.entries(globalThis.stats)
-      .forEach(([guildId, guildStats]) => {
+      .forEach(([
+        guildId,
+        guildStats
+      ]) => {
         Object.keys(guildStats)
           .filter((k) => k.length === 18)
           .forEach((userId) => {
             module.exports.addToStats({
               guildId,
-              type: "init",
-              userId,
+              "type": "init",
+              userId
             });
 
             if (globalThis.stats[guildId][userId].reputation > 99) {
@@ -383,7 +400,7 @@ module.exports = {
                   guildId,
                   userId,
                   "Rank Up!",
-                  getRanking(globalThis.stats[guildId][userId].score),
+                  getRanking(globalThis.stats[guildId][userId].score)
                 ]);
               }
               globalThis.stats[guildId][userId].bestRanking = getRanking(
@@ -394,7 +411,7 @@ module.exports = {
       });
   },
 
-  updateStatsOnPrestige: (userStats) => {
+  "updateStatsOnPrestige": (userStats) => {
     userStats.prestige++;
     userStats.bestRanking = "";
     userStats.bestScore = 0;
@@ -418,5 +435,5 @@ module.exports = {
     userStats.voiceTime = 0;
 
     return userStats;
-  },
+  }
 };

@@ -5,7 +5,7 @@ const moment = require("moment-timezone");
 const birthdays = require("../resources/birthdays.json");
 
 module.exports = {
-  data: new SlashCommandBuilder()
+  "data": new SlashCommandBuilder()
     .setName("nextbirthdays")
     .setDescription("See when the next three birthdays are."),
   execute(interaction) {
@@ -13,18 +13,24 @@ module.exports = {
     let orderedBirthdays = Object.entries(birthdays)
       .map(([, v]) => [
         `${v.date}/${year}`,
-        v.name,
+        v.name
       ]);
     orderedBirthdays = orderedBirthdays.concat(
-      orderedBirthdays.map(([date, name]) => [
+      orderedBirthdays.map(([
+        date,
+        name
+      ]) => [
         date.replace(year, year + 1),
-        name,
+        name
       ])
     );
     let future = 0;
     let output = "";
 
-    orderedBirthdays.forEach(([date, name]) => {
+    orderedBirthdays.forEach(([
+      date,
+      name
+    ]) => {
       if (
         module.exports.f(date)
           .isAfter(globalThis.currentDate, "day") &&
@@ -46,5 +52,5 @@ module.exports = {
 
     return interaction.reply(output);
   },
-  f: (date) => moment(date, "DD/MM/YYYY"),
+  "f": (date) => moment(date, "DD/MM/YYYY")
 };

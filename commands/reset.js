@@ -4,10 +4,10 @@ const { SlashCommandBuilder } = require("discord.js");
 const { baseStats } = require("../util/stats.js");
 
 module.exports = {
-  data: new SlashCommandBuilder()
+  "data": new SlashCommandBuilder()
     .setName("reset")
     .setDescription("???"),
-  execute: async (interaction) => {
+  "execute": async (interaction) => {
     await interaction.client.application.fetch();
     if (
       interaction.user === interaction.client.application.owner ||
@@ -15,8 +15,11 @@ module.exports = {
     ) {
 
       Object.entries(globalThis.stats)
-        .filter(([k, ]) => k === interaction.guild.id)
-        .forEach(([guildId, guildStats]) => {
+        .filter(([k]) => k === interaction.guild.id)
+        .forEach(([
+          guildId,
+          guildStats
+        ]) => {
           Object.keys(guildStats)
             .filter((k) => k.length === 18)
             .forEach((userId) => {
@@ -35,5 +38,5 @@ module.exports = {
             });
         });
     }
-  },
+  }
 };
