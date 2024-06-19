@@ -159,6 +159,31 @@ module.exports = {
     }
   },
 
+  baseStats: {
+    bestRanking: "",
+    bestScore: 0,
+    coolEmojis: {},
+    coolHandicap: 0,
+    coolScore: 0,
+    coolsGiven: 0,
+    joinTime: 0,
+    lastGainTime: 0,
+    luckHandicap: 0,
+    luckTokens: 5,
+    messages: 0,
+    nerdEmojis: {},
+    nerdHandicap: 0,
+    nerdScore: 0,
+    nerdsGiven: 0,
+    prestige: 0,
+    previousMessages: 0,
+    previousVoiceTime: 0,
+    reputation: 0,
+    reputationTime: 0,
+    score: 0,
+    voiceTime: 0,
+  },
+
   checkVoiceChannels: () => {
     const guilds = globalThis.client.guilds.cache;
     guilds.forEach((guild) => {
@@ -179,37 +204,12 @@ module.exports = {
   },
 
   initialiseStats: (guildId, userId) => {
-    const baseObj = {
-      bestRanking: "",
-      bestScore: 0,
-      coolEmojis: {},
-      coolHandicap: 0,
-      coolScore: 0,
-      coolsGiven: 0,
-      joinTime: 0,
-      lastGainTime: 0,
-      luckHandicap: 0,
-      luckTokens: 5,
-      messages: 0,
-      nerdEmojis: {},
-      nerdHandicap: 0,
-      nerdScore: 0,
-      nerdsGiven: 0,
-      prestige: 0,
-      previousMessages: 0,
-      previousVoiceTime: 0,
-      reputation: 0,
-      reputationTime: 0,
-      score: 0,
-      voiceTime: 0,
-    };
-
     if (!globalThis.stats[guildId][userId]) {
-      globalThis.stats[guildId][userId] = baseObj;
+      globalThis.stats[guildId][userId] = module.exports.baseStats;
       return null;
     }
 
-    Object.entries(baseObj)
+    Object.entries(module.exports.baseStats)
       .forEach(([k, v]) => {
         if (globalThis.stats[guildId][userId][k] === undefined) {
           globalThis.stats[guildId][userId][k] = v;
@@ -218,7 +218,7 @@ module.exports = {
 
     Object.keys(globalThis.stats[guildId][userId])
       .forEach((k) => {
-        if (baseObj[k] === undefined) {
+        if (module.exports.baseStats[k] === undefined) {
           delete globalThis.stats[guildId][userId][k];
         }
       });
