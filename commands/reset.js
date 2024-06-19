@@ -1,7 +1,6 @@
 "use strict";
 
 const { SlashCommandBuilder } = require("discord.js");
-const { mainGuildId } = require("../resources/config.json");
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -39,7 +38,7 @@ module.exports = {
       };
 
       Object.entries(globalThis.stats)
-        .filter(([k, ]) => k === mainGuildId)
+        .filter(([k, ]) => k === interaction.guild.id)
         .forEach(([guildId, guildStats]) => {
           Object.keys(guildStats)
             .filter((k) => k.length === 18)
