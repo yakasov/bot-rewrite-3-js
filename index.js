@@ -6,7 +6,6 @@ const {
   GatewayIntentBits,
   Message,
   Collection,
-  DiscordAPIError
 } = require("discord.js");
 const moment = require("moment-timezone");
 const fs = require("fs");
@@ -66,25 +65,16 @@ Message.prototype.reply = function (s) {
 
 const superDelete = Message.prototype.delete;
 Message.prototype.delete = function () {
-  try {
-    return superDelete.call(this);
-  } catch (e) {
-    return console.log(e.message);
-  }
+  superDelete.call(this)
+    .then()
+    .catch(console.error);
 };
 
 const superReact = Message.prototype.react;
 Message.prototype.react = function (s) {
-  try {
-    return superReact.call(this, s);
-  } catch (e) {
-    if (e instanceof DiscordAPIError && e.code === 90001) {
-      console.log("Reaction blocked: ", e.message); 
-    } else {
-      console.log("General error: ", e.message); 
-    }
-    return null; 
-  }
+  superReact.call(this, s)
+    .then()
+    .catch(console.error);
 };
 
 client.commands = new Collection();
@@ -536,7 +526,7 @@ function updateScores() {
             globalThis.stats[guild][user].reputation = -99;
           } else if (globalThis.stats[guild][user].reputation < -99) {
             globalThis.stats[guild][user].reputation = 99;
-          } 
+          }
 
           const nerdPower =
           globalThis.stats[guild][user].prestige > 0
