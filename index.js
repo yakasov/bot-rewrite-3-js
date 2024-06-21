@@ -65,16 +65,20 @@ Message.prototype.reply = function (s) {
 
 const superDelete = Message.prototype.delete;
 Message.prototype.delete = function () {
-  superDelete.call(this)
-    .then()
-    .catch(console.error);
+  try {
+    return superDelete.call(this);
+  } catch (e) {
+    return console.log(e.message);
+  }
 };
 
 const superReact = Message.prototype.react;
 Message.prototype.react = function (s) {
-  superReact.call(this, s)
-    .then()
-    .catch(console.error);
+  try {
+    return superReact.call(this, s);
+  } catch (e) {
+    return console.log(e.message);
+  }
 };
 
 client.commands = new Collection();
