@@ -6,26 +6,19 @@ module.exports = {
   "data": new SlashCommandBuilder()
     .setName("getpfp")
     .setDescription(
-      "Get profile picture of mentioned user. If no user, use author"
+      "Get a user's (or your) profile picture"
     )
     .addUserOption((opt) =>
       opt
         .setName("user")
         .setDescription("The user to get the profile picture of")),
   async execute(interaction) {
-    const user = interaction.options.getUser("user");
-
     try {
-      let avatar = null;
-      if (user) {
-        avatar = user.displayAvatarURL({ "dynamic": true,
-          "size": 1024 });
-      } else {
-        avatar = interaction.user.displayAvatarURL({
-          "dynamic": true,
-          "size": 1024
-        });
-      }
+      const user = interaction.options.getUser("user");
+      const avatar = (user || interaction.user).displayAvatarURL({
+        "dynamic": true,
+        "size": 4096
+      });
 
       const embed = new EmbedBuilder()
         .setImage(avatar)

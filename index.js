@@ -23,7 +23,6 @@ const {
 } = require("./util/stats.js");
 const { token, botResponseChance } = require("./resources/config.json");
 const responses = require("./resources/responses.json");
-const chanceReactions = require("./resources/chanceReactions.json");
 const chanceResponses = require("./resources/chanceResponses.json");
 const loadedStats = require("./resources/stats.json");
 const insights = require("./resources/insights.json");
@@ -80,9 +79,9 @@ Message.prototype.delete = function () {
 };
 
 const superReact = Message.prototype.react;
-Message.prototype.react = function () {
+Message.prototype.react = function (s) {
   try {
-    return superReact.call(this);
+    return superReact.call(this, s);
   } catch (e) {
     return console.log(e.message);
   }
@@ -234,38 +233,30 @@ async function checkMessageReactions(msg) {
     Object.values(globalThis.rollTable)
       .some((response) => {
         if (roll < response.chance) {
-          switch (response.type) {
-          case "message":
-            msg.reply(response.string);
-            break;
+          try {
+            switch (response.type) {
+            case "message":
+              msg.reply(response.string);
+              break;
 
-          case "react":
-            msg.react(response.string);
-            break;
+            case "react":
+              msg.react(response.string);
+              break;
 
-          default:
-            break;
+            default:
+              break;
+            }
+
+            return true;
+          } catch (e) {
+            console.log(e);
+            return false;
           }
-
-          return true;
         }
 
         return false;
       });
   }
-
-  // Custom reactions are additional to normal reactions
-  Object.values(chanceReactions)
-    .forEach((reaction) => {
-      if (roll < 25 && reaction.user === msg.author.id) {
-        const reactionEmoji = msg.guild.emojis.cache.find(
-          (e) => e.name === reaction.string
-        );
-        if (reactionEmoji) {
-          msg.react(reactionEmoji);
-        }
-      }
-    });
 }
 
 function handleClientReady(c) {
