@@ -6,7 +6,7 @@ module.exports = {
   "data": new SlashCommandBuilder()
     .setName("getpfp")
     .setDescription(
-      "Get profile picture of mentioned user. If no user, use author"
+      "Get a user's (or your) profile picture"
     )
     .addUserOption((opt) =>
       opt
@@ -14,23 +14,16 @@ module.exports = {
         .setDescription("The user to get the profile picture of")),
   async execute(interaction) {
     const user = interaction.options.getUser("user");
-
-    try {
-      let avatar = null;
-      if (user) {
-        avatar = user.displayAvatarURL({ "dynamic": true,
-          "size": 1024 });
-      } else {
-        avatar = interaction.user.displayAvatarURL({
+    const avatar = (user || interaction.user).displayAvatarURL({
           "dynamic": true,
-          "size": 1024
+          "size": 4096
         });
       }
 
       const embed = new EmbedBuilder()
         .setImage(avatar)
         .setAuthor({ "name": interaction.member.displayName });
-      await interaction.reply({ "embeds": [embed] });
+      await interaction.reply({ embeds: [embed] });
     } catch (e) {
       await interaction.reply(e.message);
     }
