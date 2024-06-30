@@ -5,7 +5,7 @@ const {
   Events,
   GatewayIntentBits,
   Message,
-  Collection,
+  Collection
 } = require("discord.js");
 const moment = require("moment-timezone");
 const fs = require("fs");
@@ -14,7 +14,6 @@ const { generateRollTable } = require("./util/rollTableGenerator.js");
 const { getNicknameMsg, getTimeInSeconds } = require("./util/common.js");
 const { token, statsConfig, botResponseChance } = require("./resources/config.json");
 const responses = require("./resources/responses.json");
-const chanceReactions = require("./resources/chanceReactions.json");
 const chanceResponses = require("./resources/chanceResponses.json");
 const loadedStats = require("./resources/stats.json");
 const ranks = require("./resources/ranks.json");
@@ -289,37 +288,30 @@ async function checkMessageReactions(msg) {
     Object.values(globalThis.rollTable)
       .some((response) => {
         if (roll < response.chance) {
-          switch (response.type) {
-          case "message":
-            msg.reply(response.string);
-            break;
+          try {
+            switch (response.type) {
+            case "message":
+              msg.reply(response.string);
+              break;
 
-          case "react":
-            msg.react(response.string);
-            break;
+            case "react":
+              msg.react(response.string);
+              break;
 
-          default:
-            break;
+            default:
+              break;
+            }
+
+            return true;
+          } catch (e) {
+            console.log(e);
+            return false;
           }
-
-          return true;
         }
 
         return false;
       });
   }
-
-  // Custom reactions are additional to normal reactions
-  Object.values(chanceReactions)
-    .forEach((reaction) => {
-      if (roll < 25 && reaction.user === msg.author.id) {
-        const reactionEmoji =
-          msg.guild.emojis.cache.find((e) => e.name === reaction.string);
-        if (reactionEmoji) {
-          msg.react(reactionEmoji);
-        }
-      }
-    });
 }
 
 function initialiseStats(guildId, userId) {

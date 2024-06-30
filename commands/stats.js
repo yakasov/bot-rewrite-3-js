@@ -151,5 +151,5 @@ module.exports = {
       return "\u001b[1;31m";
     }
     return "\u001b[1;00m";
-  },
+  }
 };
