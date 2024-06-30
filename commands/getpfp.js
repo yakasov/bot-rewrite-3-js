@@ -13,17 +13,17 @@ module.exports = {
         .setName("user")
         .setDescription("The user to get the profile picture of")),
   async execute(interaction) {
-    const user = interaction.options.getUser("user");
-    const avatar = (user || interaction.user).displayAvatarURL({
-          "dynamic": true,
-          "size": 4096
-        });
-      }
+    try {
+      const user = interaction.options.getUser("user");
+      const avatar = (user || interaction.user).displayAvatarURL({
+        "dynamic": true,
+        "size": 4096
+      });
 
       const embed = new EmbedBuilder()
         .setImage(avatar)
         .setAuthor({ "name": interaction.member.displayName });
-      await interaction.reply({ embeds: [embed] });
+      await interaction.reply({ "embeds": [embed] });
     } catch (e) {
       await interaction.reply(e.message);
     }

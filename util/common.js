@@ -33,13 +33,17 @@ module.exports = {
     const member = interaction.guild.members.cache
       .filter((m) => m.id === id)
       .first();
-    return `${member ? member.displayName : "???"}`;
+    return `${member
+      ? member.displayName
+      : "???"}`;
   },
   "getNicknameMsg": (msg) => {
     // Used for fetching nickname from message
     const member = msg.guild.members.cache.filter((m) => m.id === msg.author.id)
       .first();
-    return `${member ? member.displayName : "???"}`;
+    return `${member
+      ? member.displayName
+      : "???"}`;
   },
   "getPrestige": (memberStats) =>
     // Used for getting a member's prestige stars
@@ -62,5 +66,5 @@ module.exports = {
       });
     return rankString;
   },
-  "getTimeInSeconds": () => Math.floor(Date.now() / 1000),
+  "getTimeInSeconds": () => Math.floor(Date.now() / 1000)
 };

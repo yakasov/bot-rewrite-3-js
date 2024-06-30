@@ -108,5 +108,5 @@ module.exports = {
         "content": "Confirmation not received within 1 minute, cancelling"
       });
     }
-  },
+  }
 };
