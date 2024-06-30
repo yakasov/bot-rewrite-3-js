@@ -88,5 +88,5 @@ module.exports = {
       "content": "Your reputation cooldown has expired!",
       "ephemeral": true
     });
-  },
+  }
 };
