@@ -30,6 +30,6 @@ module.exports = {
     moment()
       .subtract(1, "days")
       .startOf("day")
-      .toString()
       .unix()
+      .toString()
 };
