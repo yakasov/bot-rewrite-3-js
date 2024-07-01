@@ -12,6 +12,7 @@ module.exports = {
     });
     return s;
   },
+
   "formatTime": (seconds) => {
 
     /*
@@ -28,23 +29,31 @@ module.exports = {
       unitArray[1]
     }h ${unitArray[2]}m ${unitArray[3]}s`;
   },
+
   "getNicknameInteraction": (interaction, id) => {
     // Used for fetching nickname from interaction
     const member = interaction.guild.members.cache
       .filter((m) => m.id === id)
       .first();
     return `${member
+     
       ? member.displayName
+     
       : "???"}`;
   },
+
   "getNicknameMsg": (msg) => {
     // Used for fetching nickname from message
-    const member = msg.guild.members.cache.filter((m) => m.id === msg.author.id)
+    const member = msg.guild.members.cache
+      .filter((m) => m.id === msg.author.id)
       .first();
     return `${member
+     
       ? member.displayName
+     
       : "???"}`;
   },
+
   "getPrestige": (memberStats) =>
     // Used for getting a member's prestige stars
     `${memberStats.prestige} \u001b[${
@@ -52,6 +61,7 @@ module.exports = {
         ? "31"
         : "33"
     }m${"★".repeat(memberStats.prestige)}\u001b[0m`,
+
   "getRanking": (memberStats) => {
     // Used for getting a member's ranking
     let rankString = "MISSINGNO";
@@ -66,5 +76,7 @@ module.exports = {
       });
     return rankString;
   },
+
   "getTimeInSeconds": () => Math.floor(Date.now() / 1000)
 };
+

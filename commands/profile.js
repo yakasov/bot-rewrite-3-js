@@ -1,7 +1,12 @@
 "use strict";
 
 const { SlashCommandBuilder } = require("discord.js");
-const { formatTime, getNicknameInteraction, getPrestige, getRanking } = require("../util/common.js");
+const {
+  formatTime,
+  getNicknameInteraction,
+  getPrestige,
+  getRanking
+} = require("../util/common.js");
 const { statsConfig } = require("../resources/config.json");
 
 module.exports = {

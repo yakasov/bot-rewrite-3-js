@@ -11,12 +11,20 @@ const moment = require("moment-timezone");
 const fs = require("fs");
 const npFile = require("./commands/np.js");
 const { generateRollTable } = require("./util/rollTableGenerator.js");
-const { getNicknameMsg, getTimeInSeconds } = require("./util/common.js");
-const { token, statsConfig, botResponseChance } = require("./resources/config.json");
+const { getNicknameMsg } = require("./util/common.js");
+const {
+  addToStats,
+  addTokens,
+  backupStats,
+  checkVoiceChannels,
+  saveInsights,
+  saveStats,
+  updateScores
+} = require("./util/stats.js");
+const { token, botResponseChance } = require("./resources/config.json");
 const responses = require("./resources/responses.json");
 const chanceResponses = require("./resources/chanceResponses.json");
 const loadedStats = require("./resources/stats.json");
-const ranks = require("./resources/ranks.json");
 const insights = require("./resources/insights.json");
 const fetch = require("node-fetch");
 const path = require("node:path");
@@ -28,8 +36,8 @@ globalThis.currentDate = moment()
   .tz("Europe/London");
 globalThis.firstRun = { "birthdays": true,
   "minecraft": true };
-
-const client = new Client({
+globalThis.botUptime = 0;
+globalThis.client = new Client({
   "allowedMentions": {
     "parse": [
       "users",
@@ -48,7 +56,6 @@ const client = new Client({
   ]
 });
 let splash = "";
-let botUptime = 0;
 
 const superReply = Message.prototype.reply;
 Message.prototype.reply = function (s) {
@@ -80,7 +87,7 @@ Message.prototype.react = function (s) {
   }
 };
 
-client.commands = new Collection();
+globalThis.client.commands = new Collection();
 const commandsPath = path.join("./commands");
 const commandFiles = fs
   .readdirSync(commandsPath)
@@ -90,7 +97,7 @@ for (const file of commandFiles) {
   const command = require(`./${filePath}`);
 
   if ("data" in command && "execute" in command) {
-    client.commands.set(command.data.name, command);
+    globalThis.client.commands.set(command.data.name, command);
   } else {
     console.log(
       `[WARNING] The command at ${filePath} is 
@@ -104,82 +111,17 @@ function getTime(seconds = 0, minutes = 0, hours = 0) {
 }
 
 function checkBirthdays(force = false) {
-  try {
-    const task = require("./tasks/birthdays.js");
-    task.run(client, force);
-    return null;
-  } catch (e) {
-    return console.error(e);
-  }
+  require("./tasks/birthdays.js")
+    .run(globalThis.client, force);
 }
 
 function checkMinecraftServer() {
-  try {
-    const minecraftServer = require("./tasks/minecraft.js");
-    return minecraftServer.run(client, splash);
-  } catch (e) {
-    return console.error(e);
-  }
+  require("./tasks/minecraft.js")
+    .run(globalThis.client, splash);
 }
 
 function getNewSplash() {
-  splash = npFile.run([client]);
-}
-
-function saveStats() {
-  try {
-    const task = require("./tasks/saveStats.js");
-    return task.run();
-  } catch (e) {
-    return console.error(e);
-  }
-}
-
-function backupStats() {
-  try {
-    const task = require("./tasks/backupstats.js");
-    return task.run();
-  } catch (e) {
-    return console.error(e);
-  }
-}
-
-function addTokens() {
-  try {
-    const task = require("./tasks/addTokens.js");
-    return task.run();
-  } catch (e) {
-    return console.error(e);
-  }
-}
-
-function saveInsights() {
-  try {
-    const task = require("./tasks/saveInsights.js");
-    return task.run();
-  } catch (e) {
-    return console.error(e);
-  }
-}
-
-function checkVoiceChannels() {
-  // This function should ALSO really be a separate task!!!
-  const guilds = client.guilds.cache;
-  guilds.forEach((guild) => {
-    const channels = guild.channels.cache.filter(
-      // Voice channel is type 2
-      (channel) => channel.type === 2
-    );
-    channels.forEach((channel) => {
-      channel.members.forEach((member) => {
-        addToStats({
-          "guildId": member.guild.id,
-          "type": "inVoiceChannel",
-          "userId": member.user.id
-        });
-      });
-    });
-  });
+  splash = npFile.run([globalThis.client]);
 }
 
 async function checkMessageResponse(msg) {
@@ -221,10 +163,13 @@ async function checkMessageResponse(msg) {
 
     if (res.includes("{FOLLOWING}")) {
       let lastMsg = "";
-      if (msg.content.toLowerCase()
-        .trim() === k || msg.content.toLowerCase()
-        .trim()
-        .endsWith(k)) {
+      if (
+        msg.content.toLowerCase()
+          .trim() === k ||
+        msg.content.toLowerCase()
+          .trim()
+          .endsWith(k)
+      ) {
         lastMsg = await msg.channel.messages
           .fetch({
             "limit": 2
@@ -314,322 +259,7 @@ async function checkMessageReactions(msg) {
   }
 }
 
-function initialiseStats(guildId, userId) {
-  const baseObj = {
-    "bestRanking": "",
-    "bestScore": 0,
-    "coolEmojis": {},
-    "coolHandicap": 0,
-    "coolScore": 0,
-    "coolsGiven": 0,
-    "joinTime": 0,
-    "lastGainTime": 0,
-    "luckHandicap": 0,
-    "luckTokens": 5,
-    "messages": 0,
-    "nerdEmojis": {},
-    "nerdHandicap": 0,
-    "nerdScore": 0,
-    "nerdsGiven": 0,
-    "prestige": 0,
-    "previousMessages": 0,
-    "previousVoiceTime": 0,
-    "reputation": 0,
-    "reputationTime": 0,
-    "score": 0,
-    "voiceTime": 0
-  };
-
-  if (!globalThis.stats[guildId][userId]) {
-    globalThis.stats[guildId][userId] = baseObj;
-    return null;
-  }
-
-  Object.entries(baseObj)
-    .forEach(([
-      k,
-      v
-    ]) => {
-      if (globalThis.stats[guildId][userId][k] === undefined) {
-        globalThis.stats[guildId][userId][k] = v;
-      }
-    });
-
-  Object.keys(globalThis.stats[guildId][userId])
-    .forEach((k) => {
-      if (baseObj[k] === undefined) {
-        delete globalThis.stats[guildId][userId][k];
-      }
-    });
-
-  return null;
-}
-
-function addToStats(a) {
-  const { type, userId, guildId, messageId, giver } = a;
-  const giverId = giver
-    ? giver.id
-    : 0;
-
-  if (!globalThis.stats[guildId]) {
-    globalThis.stats[guildId] = {
-      "allowResponses": true,
-      "luckTokenTime": 0,
-      "rankUpChannel": ""
-    };
-  }
-
-  if (!globalThis.stats[guildId].luckTokenTime) {
-    // Post-casino update patch
-    globalThis.stats[guildId].luckTokenTime = 0;
-  }
-
-  if (!globalThis.stats[guildId].allowResponses) {
-    // Post-responses allow patch
-    globalThis.stats[guildId].allowResponses = true;
-  }
-
-  initialiseStats(guildId, userId);
-  initialiseStats(guildId, giverId);
-
-  switch (type) {
-  case "init":
-    // Used for setting up initial stat values
-    return;
-
-  case "message":
-    if (
-      getTimeInSeconds() - globalThis.stats[guildId][userId].lastGainTime <
-        statsConfig.messageSRGainCooldown
-    ) {
-      return;
-    }
-    globalThis.stats[guildId][userId].lastGainTime = getTimeInSeconds();
-    globalThis.stats[guildId][userId].messages += 1;
-    break;
-
-  case "joinedVoiceChannel":
-    globalThis.stats[guildId][userId].joinTime = getTimeInSeconds();
-    break;
-
-  case "inVoiceChannel":
-    if (botUptime < 10) {
-      globalThis.stats[guildId][userId].joinTime = getTimeInSeconds();
-    }
-    globalThis.stats[guildId][userId].voiceTime += Math.floor(
-      getTimeInSeconds() -
-          (globalThis.stats[guildId][userId].joinTime === 0
-            ? getTimeInSeconds()
-            : globalThis.stats[guildId][userId].joinTime)
-    );
-    globalThis.stats[guildId][userId].joinTime = getTimeInSeconds();
-    break;
-
-  case "leftVoiceChannel":
-    globalThis.stats[guildId][userId].voiceTime += Math.floor(
-      getTimeInSeconds() - globalThis.stats[guildId][userId].joinTime
-    );
-    break;
-
-  case "nerdEmojiAdded":
-    if (!messageId) {
-      return;
-    }
-    if (!giver.bot) {
-      globalThis.stats[guildId][giverId].nerdsGiven++;
-    }
-
-    globalThis.stats[guildId][userId].nerdEmojis[messageId] =
-        (globalThis.stats[guildId][userId].nerdEmojis[messageId] ?? 0) +
-        1 +
-        Math.floor(globalThis.stats[guildId][giverId].prestige / 2);
-    break;
-
-  case "nerdEmojiRemoved":
-    if (!messageId) {
-      return;
-    }
-    if (!giver.bot) {
-      globalThis.stats[guildId][giverId].nerdsGiven = Math.max(
-        0,
-        (globalThis.stats[guildId][giverId].nerdsGiven ?? 0) - 1
-      );
-    }
-
-    globalThis.stats[guildId][userId].nerdEmojis[messageId] = Math.max(
-      0,
-      globalThis.stats[guildId][userId].nerdEmojis[messageId] -
-          (1 + Math.floor(globalThis.stats[guildId][giverId].prestige / 2))
-    );
-    break;
-
-  case "coolEmojiAdded":
-    if (!messageId) {
-      return;
-    }
-    if (!giver.bot) {
-      globalThis.stats[guildId][giverId].coolsGiven++;
-    }
-
-    globalThis.stats[guildId][userId].coolEmojis[messageId] =
-        (globalThis.stats[guildId][userId].coolEmojis[messageId] ?? 0) +
-        1 +
-        Math.floor(globalThis.stats[guildId][giverId].prestige / 2);
-    break;
-
-  case "coolEmojiRemoved":
-    if (!messageId) {
-      return;
-    }
-    if (!giver.bot) {
-      globalThis.stats[guildId][giverId].coolsGiven = Math.max(
-        0,
-        (globalThis.stats[guildId][giverId].coolsGiven ?? 0) - 1
-      );
-    }
-
-    globalThis.stats[guildId][userId].coolEmojis[messageId] = Math.max(
-      0,
-      globalThis.stats[guildId][userId].coolEmojis[messageId] -
-          (1 + Math.floor(globalThis.stats[guildId][giverId].prestige / 2))
-    );
-    break;
-
-  default:
-    break;
-  }
-
-  updateScores();
-  saveStats();
-}
-
-function updateScores() {
-  Object.entries(globalThis.stats)
-    .forEach(([
-      guild,
-      guildStats
-    ]) => {
-      Object.keys(guildStats)
-        .filter((k) => k.length === 18)
-        .forEach(async (user) => {
-          addToStats({
-            "guildId": guild,
-            "type": "init",
-            "userId": user
-          });
-
-          if (globalThis.stats[guild][user].reputation > 99) {
-            globalThis.stats[guild][user].reputation = -99;
-          } else if (globalThis.stats[guild][user].reputation < -99) {
-            globalThis.stats[guild][user].reputation = 99;
-          }
-
-          const nerdPower =
-          globalThis.stats[guild][user].prestige > 0
-            ? 2.8
-            : 1.8;
-          globalThis.stats[guild][user].nerdScore =
-          Object.values(globalThis.stats[guild][user].nerdEmojis)
-            .reduce(
-              (sum, a) => sum + Math.max(nerdPower ** a + 1, 0) - 1,
-              0
-            ) - globalThis.stats[guild][user].nerdHandicap;
-
-          globalThis.stats[guild][user].coolScore =
-          Object.values(globalThis.stats[guild][user].coolEmojis)
-            .reduce(
-              (sum, a) => sum + Math.max(2.8 ** a + 1, 0) - 1,
-              0
-            ) - globalThis.stats[guild][user].coolHandicap;
-
-          const score = Math.floor(
-            (globalThis.stats[guild][user].voiceTime *
-            statsConfig.voiceChatSRGain +
-            globalThis.stats[guild][user].messages *
-              statsConfig.messageSRGain) *
-            Math.max(
-              1 +
-                globalThis.stats[guild][user].reputation *
-                  statsConfig.reputationGain,
-              0.01
-            ) *
-            1.2 ** globalThis.stats[guild][user].prestige +
-            globalThis.stats[guild][user].luckHandicap +
-            globalThis.stats[guild][user].coolScore -
-            globalThis.stats[guild][user].nerdScore
-          );
-
-          if (
-            score >
-            statsConfig.prestigeRequirement &&
-          globalThis.stats[guild][user].prestige < statsConfig.prestigeMaximum
-          ) {
-            globalThis.stats[guild][user].score =
-            statsConfig.prestigeRequirement;
-          } else {
-            globalThis.stats[guild][user].score = score;
-          }
-
-          if (
-            globalThis.stats[guild][user].score >
-            globalThis.stats[guild][user].bestScore
-          ) {
-            globalThis.stats[guild][user].bestScore =
-            globalThis.stats[guild][user].score;
-
-            if (
-              globalThis.stats[guild][user].bestRanking !==
-              getRanking(globalThis.stats[guild][user].score) &&
-            globalThis.stats[guild].rankUpChannel &&
-            botUptime > 120
-            ) {
-              const guildObject = await client.guilds.fetch(guild);
-              const userObject = guildObject.members.cache
-                .filter((m) => m.id === user)
-                .first();
-
-              // Fix for .displayName on empty user object
-              if (!userObject) {
-                return;
-              }
-
-              const channel = await guildObject.channels.fetch(
-                globalThis.stats[guild].rankUpChannel
-              );
-
-              if (channel) {
-                channel.send(
-                  `## Rank Up!\n\`\`\`ansi\n${
-                    userObject.displayName
-                  } has reached rank ${getRanking(
-                    globalThis.stats[guild][user].score
-                  )}!\`\`\``
-                );
-              }
-            }
-            globalThis.stats[guild][user].bestRanking = getRanking(
-              globalThis.stats[guild][user].score
-            );
-          }
-        });
-    });
-}
-
-function getRanking(score) {
-  let rankString = "MISSINGNO";
-  Object.entries(ranks)
-    .forEach(([
-      k,
-      v
-    ]) => {
-      if (v[0] <= score) {
-        rankString = `${v[1]}${k}\u001b[0m`;
-      }
-    });
-  return rankString;
-}
-
-client.once(Events.ClientReady, (c) => {
+function handleClientReady(c) {
   console.log(
     "Connected and ready to go!\n" +
       `Current date is ${globalThis.currentDate}, ` +
@@ -645,7 +275,7 @@ client.once(Events.ClientReady, (c) => {
 
   /* eslint-disable line-comment-position */
   setInterval(() => {
-    botUptime += 10;
+    globalThis.botUptime += 10;
   }, getTime(10));
   setInterval(checkBirthdays, getTime(0, 15)); // 15 minutes
   setInterval(checkMinecraftServer, getTime(5)); // 5 seconds
@@ -657,9 +287,9 @@ client.once(Events.ClientReady, (c) => {
   setInterval(updateScores, getTime(30)); // 30 seconds
   setInterval(saveInsights, getTime(0, 5)); // 5 minutes
   /* eslint-enable line-comment-position */
-});
+}
 
-client.on(Events.MessageCreate, async (msg) => {
+async function handleMessageCreate(msg) {
   if (msg.author.bot || !msg.guild) {
     return;
   }
@@ -674,9 +304,9 @@ client.on(Events.MessageCreate, async (msg) => {
     "type": "message",
     "userId": msg.author.id
   });
-});
+}
 
-client.on(Events.InteractionCreate, async (interaction) => {
+async function handleInteractionCreate(interaction) {
   if (!interaction.isChatInputCommand()) {
     return;
   }
@@ -706,9 +336,9 @@ client.on(Events.InteractionCreate, async (interaction) => {
       });
     }
   }
-});
+}
 
-client.on(Events.VoiceStateUpdate, (oldState, newState) => {
+function handleVoiceStateUpdate(oldState, newState) {
   if (newState.member.bot) {
     return;
   }
@@ -726,43 +356,43 @@ client.on(Events.VoiceStateUpdate, (oldState, newState) => {
       "userId": newState.member.id
     });
   }
-});
+}
 
-client.on(Events.MessageReactionAdd, (reaction, user) => {
+function handleReaction(reaction, user, action) {
   if (user.id === reaction.message.author.id) {
     return;
   }
 
   if (reaction.emoji.name === "🤓" || reaction.emoji.name === "😎") {
-    addToStats({
-      "giver": user,
-      "guildId": reaction.message.guildId,
-      "messageId": reaction.message.id,
-      "type": reaction.emoji.name === "🤓"
+    let type = "";
+    if (action === "add") {
+      type = reaction.emoji.name === "🤓"
         ? "nerdEmojiAdded"
-        : "coolEmojiAdded",
-      "userId": reaction.message.author.id
-    });
-  }
-});
-
-client.on(Events.MessageReactionRemove, (reaction, user) => {
-  if (user.id === reaction.message.author.id) {
-    return;
-  }
-
-  if (reaction.emoji.name === "🤓" || reaction.emoji.name === "😎") {
-    addToStats({
-      "giver": user,
-      "guildId": reaction.message.guildId,
-      "messageId": reaction.message.id,
-      "type":
+        : "coolEmojiAdded";
+    } else {
+      type =
         reaction.emoji.name === "🤓"
           ? "nerdEmojiRemoved"
-          : "coolEmojiRemoved",
+          : "coolEmojiRemoved";
+    }
+
+    addToStats({
+      "giver": user,
+      "guildId": reaction.message.guildId,
+      "messageId": reaction.message.id,
+      type,
       "userId": reaction.message.author.id
     });
   }
-});
+}
 
-client.login(token);
+globalThis.client.once(Events.ClientReady, handleClientReady);
+globalThis.client.on(Events.MessageCreate, handleMessageCreate);
+globalThis.client.on(Events.InteractionCreate, handleInteractionCreate);
+globalThis.client.on(Events.VoiceStateUpdate, handleVoiceStateUpdate);
+globalThis.client.on(Events.MessageReactionAdd, (reaction, user) =>
+  handleReaction(reaction, user, "add"));
+globalThis.client.on(Events.MessageReactionRemove, (reaction, user) =>
+  handleReaction(reaction, user, "remove"));
+
+globalThis.client.login(token);
