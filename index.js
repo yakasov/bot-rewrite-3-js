@@ -249,7 +249,11 @@ async function checkMessageReactions(msg) {
 
             return true;
           } catch (e) {
-            console.log(e);
+            if (e.code === 90001) {
+              console.log("Reaction blocked: ", e.message);
+            } else {
+              console.log(e);
+            }
             return false;
           }
         }
@@ -296,7 +300,16 @@ async function handleMessageCreate(msg) {
 
   await checkMessageResponse(msg);
   if (globalThis.stats[msg.guild.id].allowResponses ?? true) {
-    await checkMessageReactions(msg);
+    // attempted solution to reaction blocked error
+    try {
+      await checkMessageReactions(msg);
+    } catch (e) {
+      if (e.code === 90001) {
+        console.log("Reaction blocked: ", e.message);
+      } else {
+        console.log(e);
+      }
+    }
   }
 
   addToStats({
