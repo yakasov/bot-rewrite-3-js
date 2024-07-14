@@ -1,5 +1,10 @@
 "use strict";
 
+const process = require("node:process");
+process.on("unhandledRejection", error => {
+  console.error("Unhandled error:", error);
+});
+
 const { initialSetup } = require("./util/setup.js");
 initialSetup();
 
@@ -76,15 +81,6 @@ const superDelete = Message.prototype.delete;
 Message.prototype.delete = function () {
   try {
     return superDelete.call(this);
-  } catch (e) {
-    return console.log(e.message);
-  }
-};
-
-const superReact = Message.prototype.react;
-Message.prototype.react = function (s) {
-  try {
-    return superReact.call(this, s);
   } catch (e) {
     return console.log(e.message);
   }
@@ -298,7 +294,7 @@ async function handleMessageCreate(msg) {
   }
 
   await checkMessageResponse(msg);
-  if (globalThis.stats[msg.guild.id].allowResponses ?? true) {
+  if (globalThis.stats[msg.guild.id] && (globalThis.stats[msg.guild.id].allowResponses ?? true)) {
     await checkMessageReactions(msg);
   }
 
