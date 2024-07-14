@@ -27,7 +27,7 @@ Please obtain the config.json.template from the GitHub page.`);
 
   basicJsonFiles.forEach((file) => {
     if (!fs.existsSync(file)) {
-      fs.writeFileSync(file, JSON.stringify({}, null, 4), err => {
+      fs.writeFileSync(file, JSON.stringify({}, null, 4), (err) => {
         if (err) {
           console.error(`Could not write to file ${file}!`);
         } else {

@@ -1,7 +1,7 @@
 "use strict";
 
 const process = require("node:process");
-process.on("unhandledRejection", error => {
+process.on("unhandledRejection", (error) => {
   console.error("Unhandled error:", error);
 });
 
@@ -294,7 +294,8 @@ async function handleMessageCreate(msg) {
   }
 
   await checkMessageResponse(msg);
-  if (globalThis.stats[msg.guild.id] && (globalThis.stats[msg.guild.id].allowResponses ?? true)) {
+  if (globalThis.stats[msg.guild.id] &&
+    (globalThis.stats[msg.guild.id].allowResponses ?? true)) {
     await checkMessageReactions(msg);
   }
 

@@ -36,9 +36,9 @@ module.exports = {
       .filter((m) => m.id === id)
       .first();
     return `${member
-     
+
       ? member.displayName
-     
+
       : "???"}`;
   },
 
@@ -48,9 +48,9 @@ module.exports = {
       .filter((m) => m.id === msg.author.id)
       .first();
     return `${member
-     
+
       ? member.displayName
-     
+
       : "???"}`;
   },
 
