@@ -1,5 +1,8 @@
 "use strict";
 
+const { initialSetup } = require("./util/setup.js");
+initialSetup();
+
 const {
   Client,
   Events,
