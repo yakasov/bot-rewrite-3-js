@@ -8,9 +8,9 @@ const {
 } = require("discord.js");
 const { getNicknameInteraction } = require("../util/common.js");
 
-const defaultState = { 
+const defaultState = {
   "cards": [],
-  "total": 0 
+  "total": 0
 };
 const dealer = structuredClone(defaultState);
 const player = structuredClone(defaultState);
@@ -28,7 +28,10 @@ function initialDraw() {
 }
 
 async function playGame(interaction, bet) {
-  let text = getText(interaction, bet);
+  let [
+    result,
+    text
+  ] = getText(interaction, bet);
 
   const hitButton = new ButtonBuilder()
     .setCustomId("hit")
@@ -55,10 +58,18 @@ async function playGame(interaction, bet) {
   const row = new ActionRowBuilder()
     .addComponents(hitButton, holdButton);
 
-  const response = await interaction.editReply({
-    "components": [firstTurnRow],
-    "content": text
-  });
+  let response = null;
+  if (result === "play") {
+    response = await interaction.editReply({
+      "components": [firstTurnRow],
+      "content": text
+    });
+  } else {
+    response = await interaction.editReply({
+      "components": [],
+      "content": text
+    });
+  }
 
   const collectorFilter = (i) => i.user.id === interaction.user.id;
   const collector = response.createMessageComponentCollector({
@@ -70,12 +81,22 @@ async function playGame(interaction, bet) {
     if (i.customId === "hit") {
       player.cards.push(getRandomCard());
       player.total = totalCards(player.cards);
-      text = getText(interaction, bet);
+      [
+        result,
+        text
+      ] = getText(interaction, bet);
 
-      await i.update({
-        "components": [row],
-        "content": text
-      });
+      if (result === "play") {
+        await i.update({
+          "components": [row],
+          "content": text
+        });
+      } else {
+        await i.update({
+          "components": [],
+          "content": text
+        });
+      }
     } else if (i.customId === "double") {
       player.cards.push(getRandomCard());
       player.total = totalCards(player.cards);
@@ -85,7 +106,7 @@ async function playGame(interaction, bet) {
         dealer.total = totalCards(dealer.cards);
       }
 
-      text = getText(interaction, bet * 2, true);
+      [, text] = getText(interaction, bet * 2, true);
 
       await i.update({
         "components": [],
@@ -98,7 +119,7 @@ async function playGame(interaction, bet) {
         dealer.total = totalCards(dealer.cards);
       }
 
-      text = getText(interaction, bet, true);
+      [, text] = getText(interaction, bet, true);
 
       await i.update({
         "components": [],
@@ -123,7 +144,9 @@ function getText(interaction, bet, playerEnded = false) {
     (playerEnded && dealer.total > player.total)
   ) {
     extraText = `You have ${
-      player.total > 21 ? "gone bust" : "lost"
+      player.total > 21
+        ? "gone bust"
+        : "lost"
     }, losing ${bet} tokens!`;
     status = "loss";
     globalThis.stats[interaction.guild.id][interaction.user.id].luckTokens -=
@@ -146,17 +169,20 @@ function getText(interaction, bet, playerEnded = false) {
     status = "draw";
   }
 
-  return `PLAYER: ${getNicknameInteraction(interaction)}\n\nDealer cards: ${
-    status === "play"
-      ? `${dealer.cards[0]}, ?`
-      : dealer.cards.join(", ")
-  } (${
-    status === "play"
-      ? "?"
-      : dealer.total
-  })\nYour cards: ${player.cards.join(", ")} (${player.total})\n
+  return [
+    status,
+    `PLAYER: ${getNicknameInteraction(interaction)}\n\nDealer cards: ${
+      status === "play"
+        ? `${dealer.cards[0]}, ?`
+        : dealer.cards.join(", ")
+    } (${
+      status === "play"
+        ? "?"
+        : dealer.total
+    })\nYour cards: ${player.cards.join(", ")} (${player.total})\n
 Current bet: ${bet} tokens\n\n=====================\n
-${extraText}`;
+${extraText}`
+  ];
 }
 
 function getRandomCard() {
