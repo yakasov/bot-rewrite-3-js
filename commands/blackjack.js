@@ -122,7 +122,9 @@ function getText(interaction, bet, playerEnded = false) {
     (dealer.cards.length === 2 && dealer.total === 21) ||
     (playerEnded && dealer.total > player.total)
   ) {
-    extraText = `You have gone bust, losing ${bet} tokens!`;
+    extraText = `You have ${
+      player.total > 21 ? "gone bust" : "lost"
+    }, losing ${bet} tokens!`;
     status = "loss";
     globalThis.stats[interaction.guild.id][interaction.user.id].luckTokens -=
       bet;
@@ -144,7 +146,7 @@ function getText(interaction, bet, playerEnded = false) {
     status = "draw";
   }
 
-  return `PLAYER: ${getNicknameInteraction(interaction)}\nDealer cards: ${
+  return `PLAYER: ${getNicknameInteraction(interaction)}\n\nDealer cards: ${
     status === "play"
       ? `${dealer.cards[0]}, ?`
       : dealer.cards.join(", ")
