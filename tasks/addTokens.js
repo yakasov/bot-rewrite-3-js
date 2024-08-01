@@ -17,6 +17,10 @@ exports.run = () => {
               globalThis.stats[guildId][userId].luckTokens <
             (statsConfig.tokenMax ?? 999)
             ) {
+              if (globalThis.stats[guildId][userId].luckTokens < 0) {
+                globalThis.stats[guildId][userId].luckTokens = 0;
+              }
+              
               globalThis.stats[guildId][userId].luckTokens =
               (globalThis.stats[guildId][userId].luckTokens ?? 0) +
               statsConfig.tokenRefreshAmount;
