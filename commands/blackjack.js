@@ -144,7 +144,7 @@ function getText(interaction, bet, playerEnded = false) {
     status = "draw";
   }
 
-  return `PLAYER: ${getNicknameInteraction(interaction)}\nDealer cards: ${
+  return `PLAYER: ${getNicknameInteraction(interaction)}\n\nDealer cards: ${
     status === "play"
       ? `${dealer.cards[0]}, ?`
       : dealer.cards.join(", ")

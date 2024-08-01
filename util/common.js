@@ -35,7 +35,6 @@ module.exports = {
     const member = interaction.guild.members.cache
       .filter((m) => m.id === (id ?? interaction.user.id))
       .first();
-    console.log(id ?? interaction.user.id);
     return `${member
       ? member.displayName
       : "???"}`;
