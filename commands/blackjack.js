@@ -4,37 +4,31 @@ const {
   ActionRowBuilder,
   ButtonBuilder,
   ButtonStyle,
-  SlashCommandBuilder,
+  SlashCommandBuilder
 } = require("discord.js");
+const { getNicknameInteraction } = require("../util/common.js");
 
-const defaultState = { cards: [], total: 0 };
+const defaultState = { 
+  "cards": [],
+  "total": 0 
+};
 const dealer = structuredClone(defaultState);
 const player = structuredClone(defaultState);
-let doubleDownAmount = 0;
 
 function initialDraw() {
+  dealer.cards = [];
+  player.cards = [];
+  dealer.total = 0;
+  player.total = 0;
+
   dealer.cards.push(getRandomCard(), getRandomCard());
   player.cards.push(getRandomCard(), getRandomCard());
   dealer.total = totalCards(dealer.cards);
   player.total = totalCards(player.cards);
 }
 
-async function processTurn(interaction, bet, playerEnded = false) {
-  if (playerEnded) {
-    while (dealer.total < player.total) {
-      dealer.cards.push(getRandomCard());
-      dealer.total = totalCards(dealer.cards);
-    }
-  }
-
-  const [result, text] = getText(interaction, bet, playerEnded);
-
-  if (result !== "play") {
-    return interaction.editReply({
-      components: [],
-      content: text,
-    });
-  }
+async function playGame(interaction, bet) {
+  let text = getText(interaction, bet);
 
   const hitButton = new ButtonBuilder()
     .setCustomId("hit")
@@ -51,68 +45,98 @@ async function processTurn(interaction, bet, playerEnded = false) {
     .setLabel("Hold")
     .setStyle(ButtonStyle.Danger);
 
-  const row = new ActionRowBuilder()
+  const firstTurnRow = new ActionRowBuilder()
     .addComponents(
       hitButton,
       doubleButton,
       holdButton
     );
 
+  const row = new ActionRowBuilder()
+    .addComponents(hitButton, holdButton);
+
   const response = await interaction.editReply({
-    components: [row],
-    content: text,
+    "components": [firstTurnRow],
+    "content": text
   });
 
   const collectorFilter = (i) => i.user.id === interaction.user.id;
+  const collector = response.createMessageComponentCollector({
+    "filter": collectorFilter,
+    "time": 60_000
+  });
 
-  try {
-    const confirmation = await response.awaitMessageComponent({
-      filter: collectorFilter,
-      time: 60_000,
-    });
-
-    if (confirmation.customId === "hit") {
+  collector.on("collect", async (i) => {
+    if (i.customId === "hit") {
       player.cards.push(getRandomCard());
       player.total = totalCards(player.cards);
-      return processTurn(interaction, bet, false);
-    } else if (confirmation.customId === "double") {
+      text = getText(interaction, bet);
+
+      await i.update({
+        "components": [row],
+        "content": text
+      });
+    } else if (i.customId === "double") {
       player.cards.push(getRandomCard());
       player.total = totalCards(player.cards);
-      doubleDownAmount = bet;
-      return processTurn(interaction, bet, true);
-    } else if (confirmation.customId === "hold") {
-      return processTurn(interaction, bet, true);
+
+      while (dealer.total <= player.total) {
+        dealer.cards.push(getRandomCard());
+        dealer.total = totalCards(dealer.cards);
+      }
+
+      text = getText(interaction, bet * 2, true);
+
+      await i.update({
+        "components": [],
+        "content": text
+      });
+      collector.stop();
+    } else if (i.customId === "hold") {
+      while (dealer.total <= player.total) {
+        dealer.cards.push(getRandomCard());
+        dealer.total = totalCards(dealer.cards);
+      }
+
+      text = getText(interaction, bet, true);
+
+      await i.update({
+        "components": [],
+        "content": text
+      });
+      collector.stop();
     }
-  } catch (e) {
-    return interaction.editReply({
-      components: [],
-      content: "No activity for 60 seconds, ending the game.",
-    });
-  }
 
-  // We shouldn't ever get here, but... just in case
+    return null;
+  });
+
   return null;
 }
 
-function getText(interaction, bet, playerEnded) {
+function getText(interaction, bet, playerEnded = false) {
   let extraText = "";
   let status = "play";
 
-  if (player.total > 21 || (dealer.cards.length === 2 && dealer.total === 21)) {
-    extraText = `You have gone bust, losing ${doubleDownAmount + bet} tokens!`;
+  if (
+    player.total > 21 ||
+    (dealer.cards.length === 2 && dealer.total === 21) ||
+    (playerEnded && dealer.total > player.total)
+  ) {
+    extraText = `You have gone bust, losing ${bet} tokens!`;
     status = "loss";
     globalThis.stats[interaction.guild.id][interaction.user.id].luckTokens -=
-      doubleDownAmount + bet;
+      bet;
   }
 
   if (
     (dealer.total > 21 && player.total <= 21) ||
-    (player.cards.length === 2 && player.total === 21)
+    (player.cards.length === 2 && player.total === 21) ||
+    (playerEnded && dealer.total < player.total)
   ) {
-    extraText = `You have won, gaining ${doubleDownAmount + bet * 2} tokens!`;
+    extraText = `You have won, gaining ${bet * 2} tokens!`;
     status = "win";
     globalThis.stats[interaction.guild.id][interaction.user.id].luckTokens +=
-      doubleDownAmount + bet * 2;
+      bet * 2;
   }
 
   if (player.total === dealer.total && playerEnded) {
@@ -120,23 +144,30 @@ function getText(interaction, bet, playerEnded) {
     status = "draw";
   }
 
-  return [
-    status,
-    `Dealer cards: ${
-      status === "play" ? `${dealer.cards[0]}, ?` : dealer.cards.join(", ")
-    }\nYour cards: ${player.cards.join(", ")}\n
-Current bet: ${bet} tokens\n\n
-${extraText}`,
-  ];
+  return `PLAYER: ${getNicknameInteraction(interaction)}\nDealer cards: ${
+    status === "play"
+      ? `${dealer.cards[0]}, ?`
+      : dealer.cards.join(", ")
+  } (${
+    status === "play"
+      ? "?"
+      : dealer.total
+  })\nYour cards: ${player.cards.join(", ")} (${player.total})\n
+Current bet: ${bet} tokens\n\n=====================\n
+${extraText}`;
 }
 
 function getRandomCard() {
+  /* eslint-disable-next-line array-element-newline */
   const cards = ["A", "2", "3", "4", "5", "6", "7", "8", "9", "J", "Q", "K"];
   return cards[Math.floor(Math.random() * cards.length)];
 }
 
 function totalCards(cards) {
-  let cardSums = [0, 0];
+  let cardSums = [
+    0,
+    0
+  ];
   cards.forEach((card) => {
     switch (card) {
     case "A":
@@ -152,12 +183,14 @@ function totalCards(cards) {
       cardSums = cardSums.map((s) => s + parseInt(card, 10));
     }
   });
-  cardSums = cardSums.filter((s) => s < 22);
-  return Math.max(...cardSums);
+  const filteredCardSums = cardSums.filter((s) => s < 22);
+  return filteredCardSums.length
+    ? Math.max(...filteredCardSums)
+    : Math.max(...cardSums);
 }
 
 module.exports = {
-  data: new SlashCommandBuilder()
+  "data": new SlashCommandBuilder()
     .setName("blackjack")
     .setDescription("Play blackjack for tokens!")
     .addIntegerOption((opt) =>
@@ -184,6 +217,6 @@ module.exports = {
     }
 
     initialDraw();
-    return processTurn(interaction, bet);
-  },
+    return playGame(interaction, bet);
+  }
 };

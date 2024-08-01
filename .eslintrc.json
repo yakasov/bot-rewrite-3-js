@@ -33,6 +33,7 @@
     "newline-per-chained-call": ["warn", { "ignoreChainWithDepth": 1 }],
     "no-await-in-loop": "off",
     "no-console": "off",
+    "no-extra-parens": "off",
     "no-inline-comments": "off",
     "no-magic-numbers": "off",
     "no-mixed-operators": [
