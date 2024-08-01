@@ -30,15 +30,14 @@ module.exports = {
     }h ${unitArray[2]}m ${unitArray[3]}s`;
   },
 
-  "getNicknameInteraction": (interaction, id) => {
+  "getNicknameInteraction": (interaction, id = null) => {
     // Used for fetching nickname from interaction
     const member = interaction.guild.members.cache
-      .filter((m) => m.id === id)
+      .filter((m) => m.id === (id ?? interaction.user.id))
       .first();
+    console.log(id ?? interaction.user.id);
     return `${member
-
       ? member.displayName
-
       : "???"}`;
   },
 
@@ -48,9 +47,7 @@ module.exports = {
       .filter((m) => m.id === msg.author.id)
       .first();
     return `${member
-
       ? member.displayName
-
       : "???"}`;
   },
 
@@ -79,4 +76,3 @@ module.exports = {
 
   "getTimeInSeconds": () => Math.floor(Date.now() / 1000)
 };
-

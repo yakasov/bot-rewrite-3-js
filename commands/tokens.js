@@ -29,6 +29,6 @@ module.exports = {
         ? ""
         : "s"} left.`;
     }
-    return "You have no more tokens!\n\nWait, or get more with /sell!";
+    return "You have no more tokens!";
   }
 };
