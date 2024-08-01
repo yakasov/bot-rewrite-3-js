@@ -180,7 +180,7 @@ function getText(interaction, bet, playerEnded = false) {
         ? "?"
         : dealer.total
     })\nYour cards: ${player.cards.join(", ")} (${player.total})\n
-Current bet: ${bet} tokens\n\n=====================\n
+Current bet: ${bet} tokens\n=====================
 ${extraText}`
   ];
 }
