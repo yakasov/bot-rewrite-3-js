@@ -280,6 +280,14 @@ module.exports = {
       return;
     }
 
+    /*
+     * (Temporary) fix for multiple prestige messages where one breaks
+     * I'm not sure why this happens just yet
+     */
+    if (accolade === "MISSINGNO") {
+      return;
+    }
+
     const channel = await guildObject.channels.fetch(
       globalThis.stats[guildId].rankUpChannel
     );
