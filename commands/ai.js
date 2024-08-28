@@ -22,14 +22,14 @@ const initialMessage = {
 module.exports = {
   "conversation": [initialMessage],
   "data": new SlashCommandBuilder()
-    .setName("ai3")
+    .setName("ai")
     .setDescription(
-      "Uses OpenAI API (gpt-3.5-turbo) to generate an AI response"
+      "Uses OpenAI API (gpt-4o-mini) to generate an AI response"
     )
     .addStringOption((opt) =>
       opt
         .setName("prompt")
-        .setDescription("The prompt to give AI3")
+        .setDescription("The prompt to give ChatGPT")
         .setRequired(true))
     .addNumberOption((opt) =>
       opt
@@ -62,9 +62,9 @@ module.exports = {
       try {
         attempts++;
         res = await openai.chat.completions.create({
-          "max_tokens": 2048,
+          "max_tokens": 4096,
           "messages": module.exports.conversation,
-          "model": "gpt-3.5-turbo",
+          "model": "gpt-4o-mini",
           temperature
         });
       } catch (err) {
@@ -96,8 +96,7 @@ module.exports = {
       });
     } else {
       await interaction.followUp(
-        `Failed after 3 attempts, please try again - 
-your conversation shouldn't be affected!`
+        "Failed after 3 attempts, please try again - your conversation shouldn't be affected!"
       );
     }
   }
