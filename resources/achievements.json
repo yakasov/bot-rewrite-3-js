@@ -1,0 +1,57 @@
+{
+  "jork": {
+    "name": "Jork Your Peanits",
+    "secret": true,
+    "unlock": "Peanits Jorker"
+  },
+  "jorkPro": {
+    "name": "True Goonmaxxer",
+    "unlock": "Gooner"
+  },
+  "level25": {
+    "name": "A Quarter"
+  },
+  "level50": {
+    "name": "Ben's Age",
+    "unlock": "OAP"
+  },
+  "level100": {
+    "name": "Gulag Enthusiast",
+    "unlock": "_"
+  },
+  "level250": {
+    "name": "Terminally Online",
+    "secret": true,
+    "unlock": "_"
+  },
+  "messages500": {
+    "name": "Amateur Glazer",
+    "unlock": "_"
+  },
+  "messages1000": {
+    "name": "Megabytes Lost"
+  },
+  "messages2500": {
+    "name": "Professional Yapper",
+    "secret": true,
+    "unlock": "_"
+  },
+  "mrbeast": {
+    "name": "Summon the Beast",
+    "secret": true
+  },
+  "voiceTime1hr": {
+    "name": "@CHUG JUG CHUGGERS!!!"
+  },
+  "voiceTime8hrs": {
+    "name": "Wagie",
+    "unlock": "_"
+  },
+  "voiceTime24hrs": {
+    "name": "One Day Wasted"
+  },
+  "voiceTime100hrs": {
+    "name": "Go Outside",
+    "secret": true
+  }
+}
