@@ -34,7 +34,7 @@ module.exports = {
         .first());
     const giver = interaction.member;
     const amount =
-      (1 + globalThis.stats[interaction.guild.id][giver.id].prestige) *
+      (1 + Math.floor(globalThis.stats[interaction.guild.id][giver.id].level / 20)) *
       (type === "+"
         ? 1
         : -1);

@@ -5,7 +5,8 @@ const {
   formatTime,
   getNicknameInteraction,
   getPrestige,
-  getRanking
+  getRanking,
+  getLevelName
 } = require("../util/common.js");
 const { statsConfig } = require("../resources/config.json");
 
@@ -46,7 +47,7 @@ module.exports = {
         v
       ]) => [
         k,
-        v.score
+        v.totalExperience
       ])
       .sort(([, f], [, s]) => s - f)
       .map(([
@@ -70,15 +71,6 @@ module.exports = {
       return null;
     }
 
-    const rankingBeforePenalties = Math.floor(
-      (allUserStats.voiceTime * statsConfig.voiceChatSRGain +
-        allUserStats.messages * statsConfig.messageSRGain) *
-        Math.max(1 + allUserStats.reputation * statsConfig.reputationGain, 1) *
-        1.2 ** allUserStats.prestige +
-        allUserStats.luckHandicap +
-        allUserStats.coolScore
-    );
-
     const outputMessage = `=== Profile for ${getNicknameInteraction(
       interaction,
       userStats[0]
@@ -88,11 +80,9 @@ module.exports = {
       allUserStats.voiceTime + allUserStats.previousVoiceTime
     )}\n    Prestige: ${getPrestige(
       allUserStats
-    )}\n\n    Ranking: ${getRanking(allUserStats)} (${
-      allUserStats.score
-    }SR)\n    Ranking before penalties: ${
-      rankingBeforePenalties
-    }SR\n    Reputation: ${
+    )}\n\n    Ranking: ${getLevelName(allUserStats)} (${
+      allUserStats.totalExperience
+    } XP)\n    Reputation: ${
       allUserStats.reputation
     }\n\n    Nerd Emojis given: ${
       allUserStats.nerdsGiven

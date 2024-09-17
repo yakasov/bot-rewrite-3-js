@@ -1,8 +1,7 @@
 "use strict";
 
-const { getTimeInSeconds, getRanking } = require("./common.js");
+const { getTimeInSeconds, getRequiredExperience } = require("./common.js");
 const { mainGuildId, statsConfig } = require("../resources/config.json");
-const { overrideUpdateScoreValue } = require("./statsModifiers.js");
 
 module.exports = {
   "addToStats": (a) => {
@@ -82,7 +81,7 @@ module.exports = {
       globalThis.stats[guildId][userId].nerdEmojis[messageId] =
           (globalThis.stats[guildId][userId].nerdEmojis[messageId] ?? 0) +
           1 +
-          Math.floor(globalThis.stats[guildId][giverId].prestige / 2);
+          Math.floor(globalThis.stats[guildId][giverId].level / 25);
       break;
 
     case "nerdEmojiRemoved":
@@ -99,7 +98,7 @@ module.exports = {
       globalThis.stats[guildId][userId].nerdEmojis[messageId] = Math.max(
         0,
         globalThis.stats[guildId][userId].nerdEmojis[messageId] -
-            (1 + Math.floor(globalThis.stats[guildId][giverId].prestige / 2))
+            (1 + Math.floor(globalThis.stats[guildId][giverId].level / 25))
       );
       break;
 
@@ -114,7 +113,7 @@ module.exports = {
       globalThis.stats[guildId][userId].coolEmojis[messageId] =
           (globalThis.stats[guildId][userId].coolEmojis[messageId] ?? 0) +
           1 +
-          Math.floor(globalThis.stats[guildId][giverId].prestige / 2);
+          Math.floor(globalThis.stats[guildId][giverId].level / 25);
       break;
 
     case "coolEmojiRemoved":
@@ -131,7 +130,7 @@ module.exports = {
       globalThis.stats[guildId][userId].coolEmojis[messageId] = Math.max(
         0,
         globalThis.stats[guildId][userId].coolEmojis[messageId] -
-            (1 + Math.floor(globalThis.stats[guildId][giverId].prestige / 2))
+            (1 + Math.floor(globalThis.stats[guildId][giverId].level / 25))
       );
       break;
 
@@ -162,8 +161,6 @@ module.exports = {
   },
 
   "baseStats": {
-    "bestRanking": "",
-    "bestScore": 0,
     "coolEmojis": {},
     "coolHandicap": 0,
     "coolScore": 0,
@@ -171,6 +168,8 @@ module.exports = {
     "joinTime": 0,
     "lastDailyTime": 0,
     "lastGainTime": 0,
+    "level": 0,
+    "levelExperience": 0,
     "luckHandicap": 0,
     "luckTokens": 5,
     "messages": 0,
@@ -178,12 +177,11 @@ module.exports = {
     "nerdHandicap": 0,
     "nerdScore": 0,
     "nerdsGiven": 0,
-    "prestige": 0,
     "previousMessages": 0,
     "previousVoiceTime": 0,
     "reputation": 0,
     "reputationTime": 0,
-    "score": 0,
+    "totalExperience": 0,
     "voiceTime": 0
   },
 
@@ -232,17 +230,19 @@ module.exports = {
     return null;
   },
 
-  "prestige": (guildId, userId) => {
-    globalThis.stats[guildId][userId] = module.exports.updateStatsOnPrestige(
+  "levelUp": (guildId, userId) => {
+    globalThis.stats[guildId][userId] = module.exports.updateStatsOnLevelUp(
       globalThis.stats[guildId][userId]
     );
 
-    module.exports.sendMessage([
-      guildId,
-      userId,
-      "Prestige",
-      `Prestige ${globalThis.stats[guildId][userId].prestige}!`
-    ]);
+    if (globalThis.stats[guildId][userId].level % 10 === 0) {
+      module.exports.sendMessage([
+        guildId,
+        userId,
+        "Level Up",
+        `level ${globalThis.stats[guildId][userId].level}!`
+      ]);
+    }
   },
 
   "saveInsights": () => {
@@ -305,14 +305,14 @@ module.exports = {
       channel.send(
         `## ${title}!\n\`\`\`ansi\n${
           userObject.displayName
-        } has reached ${accolade}!\`\`\``
+        } has reached ${accolade}\`\`\``
       );
     }
   },
 
   "updateNerdCoolScores": (guildId, userId) => {
     const nerdPower =
-      globalThis.stats[guildId][userId].prestige > 0
+      globalThis.stats[guildId][userId].level < 15
         ? 2.8
         : 1.8;
     globalThis.stats[guildId][userId].nerdScore =
@@ -331,7 +331,7 @@ module.exports = {
   },
 
   "updateScoreValue": (guildId, userId) => {
-    const score = Math.floor(
+    const exp = Math.floor(
       (globalThis.stats[guildId][userId].voiceTime *
         statsConfig.voiceChatSRGain +
         globalThis.stats[guildId][userId].messages *
@@ -342,20 +342,12 @@ module.exports = {
               statsConfig.reputationGain,
           0.01
         ) *
-        1.2 ** globalThis.stats[guildId][userId].prestige +
         globalThis.stats[guildId][userId].luckHandicap +
         globalThis.stats[guildId][userId].coolScore -
         globalThis.stats[guildId][userId].nerdScore
     );
 
-    if (
-      score > statsConfig.prestigeRequirement &&
-      globalThis.stats[guildId][userId].prestige < statsConfig.prestigeMaximum
-    ) {
-      globalThis.stats[guildId][userId].score = statsConfig.prestigeRequirement;
-    } else {
-      globalThis.stats[guildId][userId].score = score;
-    }
+    globalThis.stats[guildId][userId].levelExperience = exp;
   },
 
   "updateScores": () => {
@@ -380,51 +372,21 @@ module.exports = {
             }
 
             module.exports.updateNerdCoolScores(guildId, userId);
-            if (guildId === mainGuildId) {
-              overrideUpdateScoreValue(guildId, userId);
-            } else {
-              module.exports.updateScoreValue(guildId, userId);
-            }
+            module.exports.updateScoreValue(guildId, userId);
 
             if (
-              globalThis.stats[guildId][userId].score >=
-            statsConfig.prestigeRequirement
+              globalThis.stats[guildId][userId].levelExperience >=
+              getRequiredExperience(globalThis.stats[guildId][userId].level)
             ) {
-              module.exports.prestige(guildId, userId);
-            } else if (
-              globalThis.stats[guildId][userId].score >
-            globalThis.stats[guildId][userId].bestScore
-            ) {
-              globalThis.stats[guildId][userId].bestScore =
-              globalThis.stats[guildId][userId].score;
-
-              if (
-                globalThis.stats[guildId][userId].bestRanking !==
-                getRanking(globalThis.stats[guildId][userId].score) &&
-              globalThis.stats[guildId].rankUpChannel &&
-              globalThis.botUptime > 120
-              ) {
-                module.exports.sendMessage([
-                  guildId,
-                  userId,
-                  "Rank Up!",
-                  getRanking(globalThis.stats[guildId][userId].score)
-                ]);
-              }
-              globalThis.stats[guildId][userId].bestRanking = getRanking(
-                globalThis.stats[guildId][userId].score
-              );
-            }
+              module.exports.levelUp(guildId, userId);
+            } 
           });
       });
   },
 
-  "updateStatsOnPrestige": (userStats) => {
-    userStats.prestige++;
-    userStats.bestRanking = "";
-    userStats.bestScore = 0;
-    // Potential fix for weird adjustment post-prestige
-    userStats.score = 0;
+  "updateStatsOnLevelUp": (userStats) => {
+    userStats.level++;
+    userStats.levelExperience = 0;
 
     // Store message + voiceTime values then reset them
     userStats.previousMessages += userStats.messages;

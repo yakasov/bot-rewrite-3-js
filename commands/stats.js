@@ -5,8 +5,8 @@ const { generateTable } = require("../util/tableGenerator.js");
 const {
   formatTime,
   getNicknameInteraction,
-  getPrestige,
-  getRanking
+  getRequiredExperience,
+  getLevelName
 } = require("../util/common.js");
 
 module.exports = {
@@ -52,7 +52,7 @@ module.exports = {
         v
       ]) => [
         k,
-        v.score
+        v.totalExperience
       ])
       .sort(([, f], [, s]) => s - f);
 
@@ -100,11 +100,11 @@ module.exports = {
           "Rep": module.exports.formatReputation(
             module.exports.addLeadingZero(guildStats[a[0]].reputation)
           ),
-          "Rank": `${getRanking(guildStats[a[0]])} (${a[1]}SR)`,
-          "★": getPrestige({
-            "prestige": guildStats[a[0]].prestige,
-            "score": guildStats[a[0]].score
-          })
+          "Level": `${guildStats[a[0]].level} (${
+            guildStats[a[0]].levelExperience
+          }/${
+            getRequiredExperience(guildStats[a[0]].level)
+          })`
         });
       });
     /* eslint-enable sort-keys*/
@@ -125,9 +125,9 @@ module.exports = {
       outputMessage += `\nYour ranking (${getNicknameInteraction(
         interaction,
         userRanking[0]
-      )}): #${userRanking[2] + 1} (${getRanking(
+      )}): #${userRanking[2] + 1} (${getLevelName(
         guildStats[userRanking[0]]
-      )}, ${guildStats[userRanking[0]].score}SR)`;
+      )}, ${guildStats[userRanking[0]].totalExperience} XP)`;
     }
 
     return interaction.reply(`\`\`\`ansi\n${outputMessage}\n\`\`\``);

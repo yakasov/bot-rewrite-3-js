@@ -30,12 +30,19 @@ module.exports = {
     }h ${unitArray[2]}m ${unitArray[3]}s`;
   },
 
+  "getLevelName": (level) => {
+    const nameLevel = Math.floor(level / 10) + 1;
+    return `${ranks[nameLevel]}`;
+  },
+
   "getNicknameInteraction": (interaction, id = null, sanitize = false) => {
     // Used for fetching nickname from interaction
     const member = interaction.guild.members.cache
       .filter((m) => m.id === (id ?? interaction.user.id))
       .first();
-    let name = member ? member.displayName : "???";
+    let name = member
+      ? member.displayName
+      : "???";
     if (sanitize) {
       name = name.replace(/[^\x00-\x7F]/gu, "");
     }
@@ -52,28 +59,7 @@ module.exports = {
       : "???"}`;
   },
 
-  "getPrestige": (memberStats) =>
-    // Used for getting a member's prestige stars
-    `${memberStats.prestige} \u001b[${
-      memberStats.score > statsConfig.prestigeRequirement
-        ? "31"
-        : "33"
-    }m${"★".repeat(memberStats.prestige)}\u001b[0m`,
-
-  "getRanking": (memberStats) => {
-    // Used for getting a member's ranking
-    let rankString = "MISSINGNO";
-    Object.entries(ranks)
-      .forEach(([
-        k,
-        v
-      ]) => {
-        if (v[0] <= memberStats.score) {
-          rankString = `${v[1]}${k}\u001b[0m`;
-        }
-      });
-    return rankString;
-  },
+  "getRequiredExperience": (level) => level * 100,
 
   "getTimeInSeconds": () => Math.floor(Date.now() / 1000)
 };
