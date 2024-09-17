@@ -30,14 +30,16 @@ module.exports = {
     }h ${unitArray[2]}m ${unitArray[3]}s`;
   },
 
-  "getNicknameInteraction": (interaction, id = null) => {
+  "getNicknameInteraction": (interaction, id = null, sanitize = false) => {
     // Used for fetching nickname from interaction
     const member = interaction.guild.members.cache
       .filter((m) => m.id === (id ?? interaction.user.id))
       .first();
-    return `${member
-      ? member.displayName
-      : "???"}`;
+    let name = member ? member.displayName : "???";
+    if (sanitize) {
+      name = name.replace(/[^\x00-\x7F]/gu, "");
+    }
+    return name;
   },
 
   "getNicknameMsg": (msg) => {

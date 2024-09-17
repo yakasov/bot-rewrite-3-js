@@ -8,7 +8,7 @@ const { getTimeInSeconds } = require("../util/common.js");
 module.exports = {
   "data": new SlashCommandBuilder()
     .setName("daily")
-    .setDescription("???"),
+    .setDescription("Redeem your daily tokens"),
   execute(interaction) {
     const guildId = interaction.guild.id;
     const userId = interaction.user.id;
