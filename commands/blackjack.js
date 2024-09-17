@@ -234,7 +234,7 @@ module.exports = {
     const tokens =
       globalThis.stats[interaction.guild.id][interaction.user.id].luckTokens;
 
-    if (!tokens) {
+    if (tokens <= 0) {
       return interaction.editReply("You don't have any tokens!");
     }
 
