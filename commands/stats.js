@@ -92,7 +92,7 @@ module.exports = {
       .forEach((a, i) => {
         data.push({
           "#": i + 1,
-          "Name": getNicknameInteraction(interaction, a[0]),
+          "Name": getNicknameInteraction(interaction, a[0], true),
           "Msgs": guildStats[a[0]].messages + guildStats[a[0]].previousMessages,
           "Time": formatTime(
             guildStats[a[0]].voiceTime + guildStats[a[0]].previousVoiceTime

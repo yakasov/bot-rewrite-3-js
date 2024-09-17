@@ -6,7 +6,7 @@ const { baseStats } = require("../util/stats.js");
 module.exports = {
   "data": new SlashCommandBuilder()
     .setName("reset")
-    .setDescription("???"),
+    .setDescription("Reset all guild stats. Owner only"),
   "execute": async (interaction) => {
     await interaction.client.application.fetch();
     if (
