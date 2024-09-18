@@ -36,7 +36,7 @@ module.exports = {
           .join("\n")
       }\n\n===== Secret Achievements =====\n${
         secretAchievements
-          .map((a) => `• \u001b[32;000m ${a}`)
+          .map((a) => `• \u001b[32;000m ${a}\u001b[0m`)
           .join("\n")
       }\`\`\``
     );

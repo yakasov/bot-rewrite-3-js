@@ -93,6 +93,11 @@ module.exports = {
         data.push({
           "#": i + 1,
           "Name": getNicknameInteraction(interaction, a[0], true),
+          "Level": `${guildStats[a[0]].level} (${
+            guildStats[a[0]].levelExperience
+          }/${
+            getRequiredExperience(guildStats[a[0]].level)
+          } XP)`,
           "Msgs": guildStats[a[0]].messages,
           "Time": formatTime(
             guildStats[a[0]].voiceTime
@@ -100,11 +105,6 @@ module.exports = {
           "Rep": module.exports.formatReputation(
             module.exports.addLeadingZero(guildStats[a[0]].reputation)
           ),
-          "Level": `${guildStats[a[0]].level} (${
-            guildStats[a[0]].levelExperience
-          }/${
-            getRequiredExperience(guildStats[a[0]].level)
-          })`
         });
       });
     /* eslint-enable sort-keys*/
@@ -126,7 +126,7 @@ module.exports = {
         interaction,
         userRanking[0]
       )}): #${userRanking[2] + 1} (${getLevelName(
-        guildStats[userRanking[0]]
+        guildStats[userRanking[0]].level
       )}, ${guildStats[userRanking[0]].totalExperience} XP)`;
     }
 

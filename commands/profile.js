@@ -3,8 +3,9 @@
 const { SlashCommandBuilder } = require("discord.js");
 const {
   formatTime,
+  getLevelName,
   getNicknameInteraction,
-  getLevelName
+  getRequiredExperience
 } = require("../util/common.js");
 const { statsConfig } = require("../resources/config.json");
 
@@ -76,7 +77,9 @@ module.exports = {
       allUserStats.messages
     }\n    Voice Time: ${formatTime(
       allUserStats.voiceTime
-    )}\n\n    Ranking: ${getLevelName(allUserStats)} (${
+    )}\n\n    Level: ${allUserStats.level} (${allUserStats.levelExperience}/${
+      getRequiredExperience(allUserStats.level)
+    })\n    Ranking: ${getLevelName(allUserStats.level)} (${
       allUserStats.totalExperience
     } XP)\n    Reputation: ${
       allUserStats.reputation

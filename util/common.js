@@ -32,7 +32,7 @@ module.exports = {
 
   "getLevelName": (level) => {
     const nameLevel = Math.floor(level / 10) + 1;
-    return `${ranks[nameLevel]}`;
+    return `${ranks[nameLevel]}\u001b[0m`;
   },
 
   "getNicknameInteraction": (interaction, id = null, sanitize = false) => {
@@ -60,6 +60,8 @@ module.exports = {
   },
 
   "getRequiredExperience": (level) => level * 100,
+
+  "getRequiredExperienceCumulative": (level) => (level * ((level + 1) * 100) / 2),
 
   "getTimeInSeconds": () => Math.floor(Date.now() / 1000)
 };

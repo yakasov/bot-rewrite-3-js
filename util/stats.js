@@ -1,6 +1,6 @@
 "use strict";
 
-const { getTimeInSeconds, getRequiredExperience } = require("./common.js");
+const { getTimeInSeconds, getRequiredExperience, getRequiredExperienceCumulative } = require("./common.js");
 const { mainGuildId, statsConfig } = require("../resources/config.json");
 
 module.exports = {
@@ -347,9 +347,9 @@ module.exports = {
         globalThis.stats[guildId][userId].nerdScore
     );
 
-    console.log(userId, exp);
-
-    globalThis.stats[guildId][userId].levelExperience = Math.max(exp, 0);
+    globalThis.stats[guildId][userId].levelExperience = 
+      Math.max(exp - getRequiredExperienceCumulative(globalThis.stats[guildId][userId].level - 1), 0);
+    globalThis.stats[guildId][userId].totalExperience = Math.max(exp, 0);
   },
 
   "updateScores": () => {
