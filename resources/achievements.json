@@ -6,6 +6,7 @@
   },
   "jorkPro": {
     "name": "True Goonmaxxer",
+    "secret": true,
     "unlock": "Gooner"
   },
   "level25": {

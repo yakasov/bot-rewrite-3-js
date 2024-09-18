@@ -378,7 +378,7 @@ module.exports = {
     // Do the same with coolHandicap
     userStats.coolHandicap = Math.max(userStats.coolScore, 0) * 0.8;
 
-    // Cap max saved handicap at 10K
+    // Cap max saved handicap at max XP / 3
     userStats.luckHandicap = Math.min(
       userStats.luckHandicap,
       Math.floor(getRequiredExperience(userStats.level) / 3)
