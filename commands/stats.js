@@ -93,9 +93,9 @@ module.exports = {
         data.push({
           "#": i + 1,
           "Name": getNicknameInteraction(interaction, a[0], true),
-          "Msgs": guildStats[a[0]].messages + guildStats[a[0]].previousMessages,
+          "Msgs": guildStats[a[0]].messages,
           "Time": formatTime(
-            guildStats[a[0]].voiceTime + guildStats[a[0]].previousVoiceTime
+            guildStats[a[0]].voiceTime
           ),
           "Rep": module.exports.formatReputation(
             module.exports.addLeadingZero(guildStats[a[0]].reputation)

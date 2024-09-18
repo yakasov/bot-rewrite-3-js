@@ -1,27 +1,27 @@
 "use strict";
 
-const { actualAchievements } = require("../resources/achievements.json");
+const actualAchievements = require("../resources/achievements.json");
 
 exports.run = (msg) => {
   const guildId = msg.guild.id;
-  const userId = msg.user.id;
-  const content = msg.content;
+  const userId = msg.author.id;
+  const { content } = msg;
 
   const stats = globalThis.stats[guildId][userId];
-  const achievements = stats.achievements;
-  const achievementsTracking = stats.achievementsTracking;
-  const unlockedNames = stats.unlockedNames;
+  const { achievements } = stats;
+  const { achievementTracking } = stats;
+  const { unlockedNames } = stats;
 
-  if (!achievements.includes("jork") && content.contains("jork")) {
+  if (!achievements.includes("jork") && content.includes("jork")) {
     achievements.push("jork");
-    achievementsTracking.jork = 1;
+    achievementTracking.jork = 0;
     unlockedNames.push(actualAchievements.jork.unlock);
   }
 
-  if (!achievements.includes("jorkPro") && content.contains("jork")) {
-    achievementsTracking.jork++;
+  if (!achievements.includes("jorkPro") && content.includes("jork")) {
+    achievementTracking.jork++;
 
-    if (achievementsTracking.jork === 100) {
+    if (achievementTracking.jork === 100) {
       achievements.push("jorkPro");
       unlockedNames.push(actualAchievements.jorkPro.unlock);
     }
@@ -48,7 +48,7 @@ exports.run = (msg) => {
 
   if (
     !achievements.includes("messages500") &&
-    stats.messages + stats.previousMessages === 500
+    stats.messages === 500
   ) {
     achievements.push("messages500");
     unlockedNames.push(actualAchievements.messages500.name);
@@ -56,14 +56,14 @@ exports.run = (msg) => {
 
   if (
     !achievements.includes("messages1000") &&
-    stats.messages + stats.previousMessages === 1000
+    stats.messages  === 1000
   ) {
     achievements.push("messages1000");
   }
 
   if (
     !achievements.includes("messages2500") &&
-    stats.messages + stats.previousMessages === 2500
+    stats.messages === 2500
   ) {
     achievements.push("messages2500");
     unlockedNames.push(actualAchievements.messages2500.name);
@@ -71,21 +71,25 @@ exports.run = (msg) => {
 
   if (
     !achievements.includes("mrbeast") &&
-    ["beast", "breast", "mr beast"].some((s) => content.includes(s))
+    [
+      "beast",
+      "breast",
+      "mr beast"
+    ].some((s) => content.includes(s))
   ) {
     achievements.push("mrbeast");
   }
 
   if (
     !achievements.includes("voiceTime1hr") &&
-    stats.voiceTime + stats.previousVoiceTime >= 3600
+    stats.voiceTime >= 3600
   ) {
     achievements.push("voiceTime1hr");
   }
 
   if (
     !achievements.includes("voiceTime8hr") &&
-    stats.voiceTime + stats.previousVoiceTime >= 3600 * 8
+    stats.voiceTime >= 3600 * 8
   ) {
     achievements.push("voiceTime8hr");
     unlockedNames.push(actualAchievements.voiceTime8hrs.name);
@@ -93,14 +97,14 @@ exports.run = (msg) => {
 
   if (
     !achievements.includes("voiceTime24hrs") &&
-    stats.voiceTime + stats.previousVoiceTime >= 3600 * 24
+    stats.voiceTime >= 3600 * 24
   ) {
     achievements.push("voiceTime24hrs");
   }
 
   if (
     !achievements.includes("voiceTime100hrs") &&
-    stats.voiceTime + stats.previousVoiceTime >= 3600 * 100
+    stats.voiceTime >= 3600 * 100
   ) {
     achievements.push("voiceTime100hrs");
   }

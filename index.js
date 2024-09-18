@@ -18,7 +18,12 @@ const {
 const moment = require("moment-timezone");
 const fs = require("fs");
 const npFile = require("./commands/np.js");
-const { generateRollTable } = require("./util/rollTableGenerator.js");
+const { token, botResponseChance } = require("./resources/config.json");
+const responses = require("./resources/responses.json");
+const chanceResponses = require("./resources/chanceResponses.json");
+const loadedStats = require("./resources/stats.json");
+const insights = require("./resources/insights.json");
+const checkAchievements = require("./util/achievements.js");
 const { getNicknameMsg } = require("./util/common.js");
 const {
   addToStats,
@@ -29,11 +34,7 @@ const {
   saveStats,
   updateScores
 } = require("./util/stats.js");
-const { token, botResponseChance } = require("./resources/config.json");
-const responses = require("./resources/responses.json");
-const chanceResponses = require("./resources/chanceResponses.json");
-const loadedStats = require("./resources/stats.json");
-const insights = require("./resources/insights.json");
+const { generateRollTable } = require("./util/rollTableGenerator.js");
 const fetch = require("node-fetch");
 const path = require("node:path");
 globalThis.fetch = fetch;
@@ -304,6 +305,8 @@ async function handleMessageCreate(msg) {
     "type": "message",
     "userId": msg.author.id
   });
+
+  checkAchievements.run(msg);
 }
 
 async function handleInteractionCreate(interaction) {

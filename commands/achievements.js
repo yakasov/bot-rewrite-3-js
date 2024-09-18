@@ -1,18 +1,18 @@
 "use strict";
 
 const { SlashCommandBuilder } = require("discord.js");
-const { achievements } = require("../resources/achievements.json");
+const achievements = require("../resources/achievements.json");
 
 function strikethrough(text) {
   // I might use this for grey achievements?
   return text
     .split("")
-    .map((char) => char + "\u0336")
+    .map((char) => `${char}\u0336`)
     .join("");
 }
 
 module.exports = {
-  data: new SlashCommandBuilder()
+  "data": new SlashCommandBuilder()
     .setName("achievements")
     .setDescription("See your achievements"),
   async execute(interaction) {
@@ -25,22 +25,20 @@ module.exports = {
       .map(([, v]) => v.name);
     const allNormalAchievements = Object.entries(achievements)
       .filter((a) => !a[1].secret)
-      .map((e) => e[0]);
+      .map(([, v]) => v.name);
 
     await interaction.reply(
-      "```ansi===== Achievements =====\n" +
+      `\`\`\`ansi\n===== Achievements =====\n${
         allNormalAchievements
-          .map((a) => {
-            return `• \u001b[${unlocks.includes(a) ? 32 : 30};000m ${a}`;
-          })
-          .join("\n") +
-        "\n\n===== Secret Achievements =====\n" +
+          .map((a) => `• \u001b[${unlocks.includes(a)
+            ? 32
+            : 31};000m ${a}\u001b[0m`)
+          .join("\n")
+      }\n\n===== Secret Achievements =====\n${
         secretAchievements
-          .map((a) => {
-            return `• \u001b[32;000m ${a}`;
-          })
-          .join("\n") +
-        "```"
+          .map((a) => `• \u001b[32;000m ${a}`)
+          .join("\n")
+      }\`\`\``
     );
-  },
+  }
 };

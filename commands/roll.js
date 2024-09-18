@@ -10,7 +10,7 @@ module.exports = {
       ? "an"
       : "a";
   },
-  data: new SlashCommandBuilder()
+  "data": new SlashCommandBuilder()
     .setName("roll")
     .setDescription("Use tokens to gamble for rewards!")
     .addIntegerOption((opt) =>
@@ -34,10 +34,10 @@ module.exports = {
 
     const rolls = [];
     const changes = {
-      exp: 0,
-      exp_percent: 0,
-      reputation: 0,
-      tokens: 0,
+      "exp": 0,
+      "exp_percent": 0,
+      "reputation": 0,
+      "tokens": 0
     };
 
     if (!tokens) {
@@ -108,19 +108,25 @@ ${module.exports.getTokenString(
 
       if (changes.exp) {
         response += `You have ${
-          changes.exp > 0 ? "gained" : "lost"
+          changes.exp > 0
+            ? "gained"
+            : "lost"
         } ${Math.abs(changes.exp)} experience!\n`;
       }
 
       if (changes.exp_percent) {
         response += `You have ${
-          changes.exp_percent > 0 ? "gained" : "lost"
+          changes.exp_percent > 0
+            ? "gained"
+            : "lost"
         } ${Math.abs(changes.exp_percent)}% experience!\n`;
       }
 
       if (changes.reputation) {
         response += `You have ${
-          changes.reputation > 0 ? "gained" : "lost"
+          changes.reputation > 0
+            ? "gained"
+            : "lost"
         } ${Math.abs(changes.reputation)} reputation!\n`;
       }
 
@@ -140,11 +146,13 @@ ${module.exports.getTokenString(
   },
   getTokenString(tokens) {
     if (tokens) {
-      return `You have ${tokens} token${tokens === 1 ? "" : "s"} left.`;
+      return `You have ${tokens} token${tokens === 1
+        ? ""
+        : "s"} left.`;
     }
     return "You have no more tokens!";
   },
   rollDice() {
     return Math.floor(Math.random() * 100) + 1;
-  },
+  }
 };
