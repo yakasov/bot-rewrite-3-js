@@ -1,6 +1,7 @@
 "use strict";
 
 const { getTimeInSeconds, getRequiredExperience, getRequiredExperienceCumulative } = require("./common.js");
+const { statsConfig } = require("../resources/config.json");
 
 module.exports = {
   "addToStats": (a) => {
@@ -162,6 +163,7 @@ module.exports = {
   "baseStats": {
     "achievementTracking": {},
     "achievements": [],
+    "charms": [],
     "coolEmojis": {},
     "coolHandicap": 0,
     "coolScore": 0,

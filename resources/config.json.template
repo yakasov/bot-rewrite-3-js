@@ -31,6 +31,7 @@
     "reputationGain": 75,
     "reputationGainCooldown": 900,
     "tokenMax": 50,
-    "dailyTokens": 3",
+    "dailyTokens": 3,
+    "charmCost": 5
   },
 }
