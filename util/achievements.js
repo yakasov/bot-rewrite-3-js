@@ -56,7 +56,7 @@ exports.run = (msg) => {
 
   if (
     !achievements.includes("messages1000") &&
-    stats.messages  === 1000
+    stats.messages === 1000
   ) {
     achievements.push("messages1000");
   }

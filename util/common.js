@@ -1,7 +1,6 @@
 "use strict";
 
 const ranks = require("../resources/ranks.json");
-const { statsConfig } = require("../resources/config.json");
 
 module.exports = {
   "formatMsgs": (e, ms) => {

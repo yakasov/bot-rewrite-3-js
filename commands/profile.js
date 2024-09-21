@@ -7,7 +7,6 @@ const {
   getNicknameInteraction,
   getRequiredExperience
 } = require("../util/common.js");
-const { statsConfig } = require("../resources/config.json");
 
 module.exports = {
   "data": new SlashCommandBuilder()

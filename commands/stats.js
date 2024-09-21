@@ -104,7 +104,7 @@ module.exports = {
           ),
           "Rep": module.exports.formatReputation(
             module.exports.addLeadingZero(guildStats[a[0]].reputation)
-          ),
+          )
         });
       });
     /* eslint-enable sort-keys*/
