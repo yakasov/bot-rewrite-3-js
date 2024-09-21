@@ -60,20 +60,24 @@ function getRarity() {
   // RarityBonus starts at highest possible
   let rarityBonus = 80; 
   let colour = 31;
-  const name = "Legendary";
+  let name = ["Legendary", "GOATed", "Masterpiece"][Math.floor(Math.random() * 3)];
 
   if (rarityRoll < 0.33) {
     rarityBonus = 0;
     colour = 37;
+    name = ["Common", "Basic", "Loser"][Math.floor(Math.random() * 3)];
   } else if (rarityRoll < 0.63) {
     rarityBonus = 20;
     colour = 32;
+    name = ["Uncommon", "Mid", "Strange"][Math.floor(Math.random() * 3)];
   } else if (rarityRoll < 0.79) {
     rarityBonus = 40;
     colour = 34;
+    name = ["Rare", "Unique", "Decent"][Math.floor(Math.random() * 3)];
   } else if (rarityRoll < 0.93) {
     rarityBonus = 60;
     colour = 35;
+    name = ["Epic", "Exceptional", "Superior"][Math.floor(Math.random() * 3)];
   }
 
   return [Math.ceil(Math.random() * 20) + rarityBonus, colour, name];
