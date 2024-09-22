@@ -19,7 +19,7 @@ function getButtons(charms, canBuy = true) {
     buttons.push(
       new ButtonBuilder()
         .setCustomId(`charm${i}`)
-        .setLabel(`Remove ${charm} charm`)
+        .setLabel(`Remove ${charm.name} ${getCharmName(charm.effect)} charm`)
         .setStyle(ButtonStyle.Danger)
     );
   }
@@ -50,37 +50,68 @@ function generateCharm() {
     "voice_mult"
   ];
   const roll = Math.floor(Math.random() * charms.length);
-  const [rarity, colour, name] = getRarity();
+  const [
+    rarity,
+    colour,
+    name
+  ] = getRarity();
 
-  return { colour, effect: charms[roll], name, rarity };
+  return { colour,
+    "effect": charms[roll],
+    name,
+    rarity };
 }
 
 function getRarity() {
   const rarityRoll = Math.random();
   // RarityBonus starts at highest possible
-  let rarityBonus = 80; 
+  let rarityBonus = 80;
   let colour = 31;
-  let name = ["Legendary", "GOATed", "Masterpiece"][Math.floor(Math.random() * 3)];
+  let name = [
+    "Legendary",
+    "GOATed",
+    "Masterpiece"
+  ][Math.floor(Math.random() * 3)];
 
   if (rarityRoll < 0.33) {
     rarityBonus = 0;
     colour = 37;
-    name = ["Common", "Basic", "Loser"][Math.floor(Math.random() * 3)];
+    name = [
+      "Common",
+      "Basic",
+      "Loser"
+    ][Math.floor(Math.random() * 3)];
   } else if (rarityRoll < 0.63) {
     rarityBonus = 20;
     colour = 32;
-    name = ["Uncommon", "Mid", "Strange"][Math.floor(Math.random() * 3)];
+    name = [
+      "Uncommon",
+      "Mid",
+      "Strange"
+    ][Math.floor(Math.random() * 3)];
   } else if (rarityRoll < 0.79) {
     rarityBonus = 40;
     colour = 34;
-    name = ["Rare", "Unique", "Decent"][Math.floor(Math.random() * 3)];
+    name = [
+      "Rare",
+      "Unique",
+      "Decent"
+    ][Math.floor(Math.random() * 3)];
   } else if (rarityRoll < 0.93) {
     rarityBonus = 60;
     colour = 35;
-    name = ["Epic", "Exceptional", "Superior"][Math.floor(Math.random() * 3)];
+    name = [
+      "Epic",
+      "Exceptional",
+      "Superior"
+    ][Math.floor(Math.random() * 3)];
   }
 
-  return [Math.ceil(Math.random() * 20) + rarityBonus, colour, name];
+  return [
+    Math.ceil(Math.random() * 20) + rarityBonus,
+    colour,
+    name
+  ];
 }
 
 function getCharmName(effect) {
@@ -111,24 +142,53 @@ function displayCharms(charms) {
     return "```You have no charms!```";
   }
 
-  return `\`\`\`ansi\n==== Charms ====\n${
+  return `\`\`\`ansi\n===== Charms =====\n${
     charms
       .map((c) => `• \u001b[${c.colour};000m ${c.name} Charm of ${
         getCharmName(c.effect)
-      }\u001b[0m]`)
+      }\u001b[0m (${c.rarity}%)`)
       .join("\n")
   }\`\`\``;
 }
 
 module.exports = {
   "data": new SlashCommandBuilder()
-    .setName("ping")
-    .setDescription("Ping!"),
-  execute(interaction) {
+    .setName("charms")
+    .setDescription("Get new charms, or sell your old ones."),
+  async execute(interaction) {
+    await interaction.deferReply();
     const guildId = interaction.guild.id;
     const userId = interaction.user.id;
     const { charms } = globalThis.stats[guildId][userId];
+    let { luckTokens } = globalThis.stats[guildId][userId];
 
-    interaction.reply(`Pong! ${interaction.client.ws.ping}ms`);
+    const response = await interaction.editReply({
+      "components": [getButtons(charms, luckTokens > statsConfig.charmCost)],
+      "content": displayCharms(charms)
+    });
+
+    const collectorFilter = (i) => i.user.id === interaction.user.id;
+    const collector = response.createMessageComponentCollector({
+      "filter": collectorFilter,
+      "time": 60_000
+    });
+
+    collector.on("collect", async (i) => {
+      const charmNumber = parseInt(i.customId.replace("charm", ""), 10);
+
+      if (charms[charmNumber]) {
+        charms.splice(charmNumber, 1);
+        luckTokens += Math.floor(statsConfig.charmCost / 2);
+      } else {
+        const charm = generateCharm();
+        charms.push(charm);
+        luckTokens -= statsConfig.charmCost;
+      }
+
+      await i.update({
+        "components": [getButtons(charms, luckTokens > statsConfig.charmCost)],
+        "content": displayCharms(charms)
+      });
+    });
   }
 };

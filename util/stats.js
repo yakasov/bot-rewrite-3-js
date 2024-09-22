@@ -1,6 +1,10 @@
 "use strict";
 
-const { getTimeInSeconds, getRequiredExperience, getRequiredExperienceCumulative } = require("./common.js");
+const {
+  getTimeInSeconds,
+  getRequiredExperience,
+  getRequiredExperienceCumulative
+} = require("./common.js");
 const { statsConfig } = require("../resources/config.json");
 
 module.exports = {
@@ -189,6 +193,17 @@ module.exports = {
     "voiceTime": 0
   },
 
+  "checkCharmEffect": (charmName, charms) => {
+    const matchingCharms = charms.filter((c) => c.effect === charmName);
+    let bonus = 0;
+
+    for (const charm of matchingCharms) {
+      bonus += charm.rarity / 100;
+    }
+
+    return bonus;
+  },
+
   "checkVoiceChannels": () => {
     const guilds = globalThis.client.guilds.cache;
     guilds.forEach((guild) => {
@@ -332,15 +347,20 @@ module.exports = {
   },
 
   "updateScoreValue": (guildId, userId) => {
+    const { charms } = globalThis.stats[guildId][userId];
     const exp = Math.floor(
       (globalThis.stats[guildId][userId].voiceTime *
-        statsConfig.voiceChatSRGain +
+        (1 + module.exports.checkCharmEffect("voice_mult", charms)) *
+        (statsConfig.voiceChatSRGain +
+          module.exports.checkCharmEffect("voice_bonus", charms) / 25) +
         globalThis.stats[guildId][userId].messages *
-          statsConfig.messageSRGain) *
+          (1 + module.exports.checkCharmEffect("msg_mult", charms)) *
+          (statsConfig.messageSRGain +
+            module.exports.checkCharmEffect("msg_bonus", charms) * 10)) *
         Math.max(
           1 +
             globalThis.stats[guildId][userId].reputation *
-              statsConfig.reputationGain,
+              statsConfig.reputationGain * (1 + module.exports.checkCharmEffect("rep_mult", charms) / 10),
           0.01
         ) +
         globalThis.stats[guildId][userId].luckHandicap +
@@ -348,8 +368,13 @@ module.exports = {
         globalThis.stats[guildId][userId].nerdScore
     );
 
-    globalThis.stats[guildId][userId].levelExperience =
-      Math.max(exp - getRequiredExperienceCumulative(globalThis.stats[guildId][userId].level - 1), 0);
+    globalThis.stats[guildId][userId].levelExperience = Math.max(
+      exp -
+        getRequiredExperienceCumulative(
+          globalThis.stats[guildId][userId].level - 1
+        ),
+      0
+    );
     globalThis.stats[guildId][userId].totalExperience = Math.max(exp, 0);
   },
 

@@ -3,6 +3,7 @@
 const { SlashCommandBuilder } = require("discord.js");
 const { getTimeInSeconds } = require("../util/common.js");
 const { statsConfig } = require("../resources/config.json");
+const { checkCharmEffect } = require("../util/stats.js");
 const wait = require("node:timers/promises").setTimeout;
 
 module.exports = {
@@ -34,7 +35,16 @@ module.exports = {
         .first());
     const giver = interaction.member;
     const amount =
-      (1 + Math.floor(globalThis.stats[interaction.guild.id][giver.id].level / 20)) *
+      (1 +
+        Math.floor(
+          globalThis.stats[interaction.guild.id][giver.id].level / 20
+        ) +
+        Math.ceil(
+          checkCharmEffect(
+            "rep_bonus",
+            globalThis.stats[interaction.guild.id][giver.id].charms
+          ) * 5
+        )) *
       (type === "+"
         ? 1
         : -1);
@@ -77,9 +87,7 @@ module.exports = {
         : "removing"} successful!`
     );
     await interaction.followUp({
-      "content": `${giver.displayName} has given ${
-        amount
-      } rep to ${userMemberObject}!`,
+      "content": `${giver.displayName} has given ${amount} rep to ${userMemberObject}!`,
       "ephemeral": false
     });
 
