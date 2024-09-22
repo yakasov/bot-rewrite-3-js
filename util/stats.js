@@ -349,7 +349,7 @@ module.exports = {
   "updateScoreValue": (guildId, userId) => {
     const { charms } = globalThis.stats[guildId][userId];
     const exp = Math.floor(
-      (globalThis.stats[guildId][userId].voiceTime *
+      ((globalThis.stats[guildId][userId].voiceTime *
         (1 + module.exports.checkCharmEffect("voice_mult", charms)) *
         (statsConfig.voiceChatSRGain +
           module.exports.checkCharmEffect("voice_bonus", charms) / 25) +
@@ -360,12 +360,14 @@ module.exports = {
         Math.max(
           1 +
             globalThis.stats[guildId][userId].reputation *
-              statsConfig.reputationGain * (1 + module.exports.checkCharmEffect("rep_mult", charms) / 10),
+              statsConfig.reputationGain *
+              (1 + module.exports.checkCharmEffect("rep_mult", charms) / 10),
           0.01
         ) +
         globalThis.stats[guildId][userId].luckHandicap +
         globalThis.stats[guildId][userId].coolScore -
-        globalThis.stats[guildId][userId].nerdScore
+        globalThis.stats[guildId][userId].nerdScore) *
+        (module.exports.checkCharmEffect("xp_mult", charms) / 2)
     );
 
     globalThis.stats[guildId][userId].levelExperience = Math.max(
