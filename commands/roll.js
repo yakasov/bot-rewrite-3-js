@@ -67,8 +67,10 @@ module.exports = {
       case "exp_percent":
         globalThis.stats[interaction.guild.id][
           interaction.user.id
-        ].levelExperience *= result.action.amount;
-        changes.exp_percent += result.action.amount;
+        ].luckHandicap += globalThis.stats[interaction.guild.id][
+          interaction.user.id
+        ].levelExperience * result.action.amount;
+        changes.exp_percent += result.action.amount * 100;
         break;
       case "reputation":
         globalThis.stats[interaction.guild.id][
@@ -119,7 +121,7 @@ ${module.exports.getTokenString(
           changes.exp_percent > 0
             ? "gained"
             : "lost"
-        } ${Math.abs(changes.exp_percent)}% experience!\n`;
+        } ${Math.abs(changes.exp_percent * 100)}% experience!\n`;
       }
 
       if (changes.reputation) {

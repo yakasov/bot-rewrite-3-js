@@ -100,10 +100,6 @@ module.exports = {
       allUserStats.coolHandicap
         ? `(offset by -${Math.floor(allUserStats.coolHandicap)})`
         : ""
-    }\n    Luck Bonus: ${allUserStats.luckHandicap}${
-      userStats[2]
-        ? ""
-        : "\n\n    == #1 of friends! =="
     }`;
 
     await interaction.followUp(

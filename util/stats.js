@@ -357,7 +357,7 @@ module.exports = {
         globalThis.stats[guildId][userId].luckHandicap +
         globalThis.stats[guildId][userId].coolScore -
         globalThis.stats[guildId][userId].nerdScore) *
-        (module.exports.checkCharmEffect("xp_mult", charms) / 2)
+        (1 + module.exports.checkCharmEffect("xp_mult", charms) / 2)
     );
 
     globalThis.stats[guildId][userId].levelExperience = Math.max(
@@ -367,7 +367,8 @@ module.exports = {
         ),
       0
     );
-    globalThis.stats[guildId][userId].totalExperience = Math.max(exp, 0);
+
+    globalThis.stats[guildId][userId].totalExperience = Math.max(exp, globalThis.stats[guildId][userId].totalExperience);
   },
 
   "updateScores": () => {
@@ -395,8 +396,8 @@ module.exports = {
             module.exports.updateScoreValue(guildId, userId);
 
             if (
-              globalThis.stats[guildId][userId].levelExperience >=
-            getRequiredExperience(globalThis.stats[guildId][userId].level)
+              globalThis.stats[guildId][userId].totalExperience >=
+            getRequiredExperienceCumulative(globalThis.stats[guildId][userId].level)
             ) {
               module.exports.levelUp(guildId, userId);
             }
@@ -405,20 +406,18 @@ module.exports = {
   },
 
   "updateStatsOnLevelUp": (userStats) => {
+    userStats.levelExperience = userStats.totalExperience - getRequiredExperienceCumulative(userStats.level);
     userStats.level++;
-    userStats.levelExperience = 0;
-
+    
     // Add nerdHandicap to offset nerdScore
     userStats.nerdHandicap = Math.max(userStats.nerdScore, 0) * 0.8;
 
     // Do the same with coolHandicap
     userStats.coolHandicap = Math.max(userStats.coolScore, 0) * 0.8;
 
-    // Cap max saved handicap at max XP / 3
-    userStats.luckHandicap = Math.min(
-      userStats.luckHandicap,
-      Math.floor(getRequiredExperience(userStats.level) / 3)
-    );
+    if (userStats.levelExperience > getRequiredExperience(userStats.level)) {
+      module.exports.updateStatsOnLevelUp(userStats);
+    }
 
     return userStats;
   }

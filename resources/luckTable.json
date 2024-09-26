@@ -1,6 +1,6 @@
 [
   {
-    "description": "You have gained 10 reputation!!",
+    "description": "You have gained 10 reputation!",
     "min": 0,
     "max": 1,
     "action": {
@@ -27,7 +27,7 @@
     }
   },
   {
-    "description": "You have lost 7 reputation!!",
+    "description": "You have lost 7 reputation!",
     "min": 9.5,
     "max": 13.5,
     "action": {
@@ -45,12 +45,12 @@
     }
   },
   {
-    "description": "You have gained +1% of your experience!",
+    "description": "You have gained 1% of your experience!",
     "min": 20,
     "max": 45,
     "action": {
       "type": "exp_percent",
-      "amount": 1
+      "amount": 0.01
     }
   },
   {
@@ -59,7 +59,7 @@
     "max": 60,
     "action": {
       "type": "exp_percent",
-      "amount": -5
+      "amount": -0.05
     }
   },
   {
@@ -77,7 +77,7 @@
     "max": 75,
     "action": {
       "type": "exp_percent",
-      "amount": 25
+      "amount": 0.25
     }
   },
   {
