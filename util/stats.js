@@ -22,16 +22,6 @@ module.exports = {
       };
     }
 
-    if (!globalThis.stats[guildId].luckTokenTime) {
-      // Post-casino update patch
-      globalThis.stats[guildId].luckTokenTime = 0;
-    }
-
-    if (!globalThis.stats[guildId].allowResponses) {
-      // Post-responses allow patch
-      globalThis.stats[guildId].allowResponses = true;
-    }
-
     module.exports.initialiseStats(guildId, userId);
     module.exports.initialiseStats(guildId, giverId);
 
