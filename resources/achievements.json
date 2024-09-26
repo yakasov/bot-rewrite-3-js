@@ -10,13 +10,16 @@
     "unlock": "Gooner"
   },
   "level25": {
+    "desc": "Reach level 25",
     "name": "A Quarter"
   },
   "level50": {
+    "desc": "Reach level 50",
     "name": "Ben's Age",
     "unlock": "OAP"
   },
   "level100": {
+    "desc": "Reach level 100",
     "name": "Gulag Enthusiast",
     "unlock": "_"
   },
@@ -26,10 +29,12 @@
     "unlock": "_"
   },
   "messages500": {
+    "desc": "Send 500 messages",
     "name": "Amateur Glazer",
     "unlock": "_"
   },
   "messages1000": {
+    "desc": "Send 1000 messages",
     "name": "Megabytes Lost"
   },
   "messages2500": {
@@ -42,13 +47,16 @@
     "secret": true
   },
   "voiceTime1hr": {
+    "desc": "Spend an hour in voice chat",
     "name": "@CHUG JUG CHUGGERS!!!"
   },
   "voiceTime8hrs": {
+    "desc": "Spend an workday in voice chat",
     "name": "Wagie",
     "unlock": "_"
   },
   "voiceTime24hrs": {
+    "desc": "Spend a full day in voice chat",
     "name": "One Day Wasted"
   },
   "voiceTime100hrs": {

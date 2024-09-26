@@ -81,8 +81,8 @@ module.exports = {
       case "token":
         globalThis.stats[interaction.guild.id][
           interaction.user.id
-        ].luckTokens += 2;
-        changes.tokens += 2;
+        ].luckTokens += result.action.amount;
+        changes.tokens += result.action.amount;
         break;
       default:
         break;

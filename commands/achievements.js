@@ -25,18 +25,20 @@ module.exports = {
       .map(([, v]) => v.name);
     const allNormalAchievements = Object.entries(achievements)
       .filter((a) => !a[1].secret)
-      .map(([, v]) => v.name);
+      .map(([, v]) => ({ desc: v.desc, name: v.name }));
 
     await interaction.reply(
       `\`\`\`ansi\n===== Achievements =====\n${
         allNormalAchievements
-          .map((a) => `• \u001b[${unlocks.includes(a)
+          .map((a) => `• \u001b[1;${unlocks.includes(a)
             ? 32
-            : 31};000m ${a}\u001b[0m`)
+            : 31}m ${a.name}\u001b[0m\u001b[2;${unlocks.includes(a.name)
+            ? 32
+            : 31}m - ${a.desc}\u001b[0m`)
           .join("\n")
       }\n\n===== Secret Achievements =====\n${
         secretAchievements
-          .map((a) => `• \u001b[32;000m ${a}\u001b[0m`)
+          .map((a) => `• \u001b[1;32m ${a}\u001b[0m`)
           .join("\n")
       }\`\`\``
     );
