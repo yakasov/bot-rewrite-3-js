@@ -25,7 +25,8 @@ module.exports = {
       .map(([, v]) => v.name);
     const allNormalAchievements = Object.entries(achievements)
       .filter((a) => !a[1].secret)
-      .map(([, v]) => ({ desc: v.desc, name: v.name }));
+      .map(([, v]) => ({ "desc": v.desc,
+        "name": v.name }));
 
     await interaction.reply(
       `\`\`\`ansi\n===== Achievements =====\n${
