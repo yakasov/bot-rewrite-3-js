@@ -168,7 +168,7 @@ module.exports = {
     "level": 0,
     "levelExperience": 0,
     "luckHandicap": 0,
-    "luckTokens": 5,
+    "luckTokens": 10,
     "messages": 0,
     "nerdEmojis": {},
     "nerdHandicap": 0,
