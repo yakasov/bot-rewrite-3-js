@@ -408,7 +408,7 @@ module.exports = {
   "updateStatsOnLevelUp": (userStats) => {
     userStats.levelExperience = userStats.totalExperience - getRequiredExperienceCumulative(userStats.level);
     userStats.level++;
-    
+
     // Add nerdHandicap to offset nerdScore
     userStats.nerdHandicap = Math.max(userStats.nerdScore, 0) * 0.8;
 

@@ -8,7 +8,6 @@ const {
 } = require("discord.js");
 const { statsConfig } = require("../resources/config.json");
 
-
 function getButtons(charms, canBuy = true) {
   const buttons = [];
 
@@ -71,7 +70,9 @@ function getRarity() {
     "Legendary",
     "GOATed",
     "Masterpiece"
-  ][Math.floor(Math.random() * 3)];
+  ][
+    Math.floor(Math.random() * 3)
+  ];
 
   if (rarityRoll < 0.33) {
     rarityBonus = 0;
@@ -142,13 +143,14 @@ function displayCharms(charms) {
     return "```You have no charms!```";
   }
 
-  return `\`\`\`ansi\n===== Charms =====\n${
-    charms
-      .map((c) => `• \u001b[${c.colour};000m ${c.name} Charm of ${
-        getCharmName(c.effect)
-      }\u001b[0m (${c.rarity}%)`)
-      .join("\n")
-  }\`\`\``;
+  return `\`\`\`ansi\n===== Charms =====\n${charms
+    .map(
+      (c) =>
+        `• \u001b[${c.colour};000m ${c.name} Charm of ${getCharmName(
+          c.effect
+        )}\u001b[0m (${c.rarity}%)`
+    )
+    .join("\n")}\`\`\``;
 }
 
 module.exports = {
@@ -160,10 +162,14 @@ module.exports = {
     const guildId = interaction.guild.id;
     const userId = interaction.user.id;
     const { charms } = globalThis.stats[guildId][userId];
-    let { luckTokens } = globalThis.stats[guildId][userId];
 
     const response = await interaction.editReply({
-      "components": [getButtons(charms, luckTokens > statsConfig.charmCost)],
+      "components": [
+        getButtons(
+          charms,
+          globalThis.stats[guildId][userId].luckTokens > statsConfig.charmCost
+        )
+      ],
       "content": displayCharms(charms)
     });
 
@@ -178,15 +184,22 @@ module.exports = {
 
       if (charms[charmNumber]) {
         charms.splice(charmNumber, 1);
-        luckTokens += Math.floor(statsConfig.charmCost / 2);
+        globalThis.stats[guildId][userId].luckTokens += Math.floor(
+          statsConfig.charmCost / 2
+        );
       } else {
         const charm = generateCharm();
         charms.push(charm);
-        luckTokens -= statsConfig.charmCost;
+        globalThis.stats[guildId][userId].luckTokens -= statsConfig.charmCost;
       }
 
       await i.update({
-        "components": [getButtons(charms, luckTokens > statsConfig.charmCost)],
+        "components": [
+          getButtons(
+            charms,
+            globalThis.stats[guildId][userId].luckTokens > statsConfig.charmCost
+          )
+        ],
         "content": displayCharms(charms)
       });
     });
