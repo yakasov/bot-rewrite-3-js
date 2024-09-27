@@ -7,7 +7,7 @@ const birthdays = require("../resources/birthdays.json");
 module.exports = {
   "data": new SlashCommandBuilder()
     .setName("nextbirthdays")
-    .setDescription("See when the next three birthdays are."),
+    .setDescription("See when the next five birthdays are."),
   execute(interaction) {
     const year = globalThis.currentDate.year();
     let orderedBirthdays = Object.entries(birthdays)
@@ -34,7 +34,7 @@ module.exports = {
       if (
         module.exports.f(date)
           .isAfter(globalThis.currentDate, "day") &&
-        future < 3
+        future < 5
       ) {
         output += `${module.exports.f(date)
           .format("MMMM Do")}: ${name}\n`;

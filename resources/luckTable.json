@@ -1,6 +1,6 @@
 [
   {
-    "description": "You have gained 10 reputation!!",
+    "description": "You have gained 10 reputation!",
     "min": 0,
     "max": 1,
     "action": {
@@ -27,7 +27,7 @@
     }
   },
   {
-    "description": "You have lost 7 reputation!!",
+    "description": "You have lost 7 reputation!",
     "min": 9.5,
     "max": 13.5,
     "action": {
@@ -45,39 +45,39 @@
     }
   },
   {
-    "description": "You have gained 500 score!",
+    "description": "You have gained 1% of your experience!",
     "min": 20,
     "max": 45,
     "action": {
-      "type": "score",
-      "amount": 500
+      "type": "exp_percent",
+      "amount": 0.01
     }
   },
   {
-    "description": "You have lost 2000 score!",
+    "description": "You have lost 5% of your experience!",
     "min": 45,
     "max": 60,
     "action": {
-      "type": "score",
-      "amount": -2000
+      "type": "exp_percent",
+      "amount": -0.05
     }
   },
   {
-    "description": "You have gained 2500 score!",
+    "description": "You have gained 250 experience!",
     "min": 60,
     "max": 70,
     "action": {
-      "type": "score",
-      "amount": 2500
+      "type": "exp",
+      "amount": 250
     }
   },
   {
-    "description": "You have gained 10000 score!!",
+    "description": "You have gained 25% of your experience!",
     "min": 70,
     "max": 75,
     "action": {
-      "type": "score",
-      "amount": 10000
+      "type": "exp_percent",
+      "amount": 0.25
     }
   },
   {
@@ -90,17 +90,8 @@
     }
   },
   {
-    "description": "You can change the server icon! <@135410033524604928>",
-    "min": 80,
-    "max": 80.5,
-    "action": {
-      "type": "",
-      "amount": 0
-    }
-  },
-  {
     "description": "You didn't get anything...",
-    "min": 80.5,
+    "min": 80,
     "max": 101,
     "action": {
       "type": "",

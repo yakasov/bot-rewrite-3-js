@@ -3,11 +3,10 @@
 const { SlashCommandBuilder } = require("discord.js");
 const {
   formatTime,
+  getLevelName,
   getNicknameInteraction,
-  getPrestige,
-  getRanking
+  getRequiredExperience
 } = require("../util/common.js");
-const { statsConfig } = require("../resources/config.json");
 
 module.exports = {
   "data": new SlashCommandBuilder()
@@ -46,7 +45,7 @@ module.exports = {
         v
       ]) => [
         k,
-        v.score
+        v.totalExperience
       ])
       .sort(([, f], [, s]) => s - f)
       .map(([
@@ -70,29 +69,18 @@ module.exports = {
       return null;
     }
 
-    const rankingBeforePenalties = Math.floor(
-      (allUserStats.voiceTime * statsConfig.voiceChatSRGain +
-        allUserStats.messages * statsConfig.messageSRGain) *
-        Math.max(1 + allUserStats.reputation * statsConfig.reputationGain, 1) *
-        1.2 ** allUserStats.prestige +
-        allUserStats.luckHandicap +
-        allUserStats.coolScore
-    );
-
     const outputMessage = `=== Profile for ${getNicknameInteraction(
       interaction,
       userStats[0]
     )}, #${userStats[2] + 1} on server ===\n    Messages: ${
-      allUserStats.messages + allUserStats.previousMessages
+      allUserStats.messages
     }\n    Voice Time: ${formatTime(
-      allUserStats.voiceTime + allUserStats.previousVoiceTime
-    )}\n    Prestige: ${getPrestige(
-      allUserStats
-    )}\n\n    Ranking: ${getRanking(allUserStats)} (${
-      allUserStats.score
-    }SR)\n    Ranking before penalties: ${
-      rankingBeforePenalties
-    }SR\n    Reputation: ${
+      allUserStats.voiceTime
+    )}\n\n    Level: ${allUserStats.level} (${allUserStats.levelExperience}/${
+      getRequiredExperience(allUserStats.level)
+    })\n    Ranking: ${getLevelName(allUserStats.level)} (${
+      allUserStats.totalExperience
+    } XP)\n    Reputation: ${
       allUserStats.reputation
     }\n\n    Nerd Emojis given: ${
       allUserStats.nerdsGiven
@@ -112,10 +100,6 @@ module.exports = {
       allUserStats.coolHandicap
         ? `(offset by -${Math.floor(allUserStats.coolHandicap)})`
         : ""
-    }\n    Luck Bonus: ${allUserStats.luckHandicap}${
-      userStats[2]
-        ? ""
-        : "\n\n    == #1 of friends! =="
     }`;
 
     await interaction.followUp(

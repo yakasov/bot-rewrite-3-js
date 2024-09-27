@@ -33,49 +33,56 @@ module.exports = {
     let response = "";
 
     const rolls = [];
-    const changes = { "reputation": 0,
-      "score": 0,
-      "tokens": 0 };
+    const changes = {
+      "exp": 0,
+      "exp_percent": 0,
+      "reputation": 0,
+      "tokens": 0
+    };
 
     if (!tokens) {
-      return interaction.editReply(
-        "You don't have any tokens!"
-      );
+      return interaction.editReply("You don't have any tokens!");
     }
 
     if (tokens < rollCount) {
-      return interaction.editReply(
-        "You don't have enough tokens!"
-      );
+      return interaction.editReply("You don't have enough tokens!");
     }
 
     for (let i = 0; i < rollCount; i++) {
       globalThis.stats[interaction.guild.id][interaction.user.id].luckTokens--;
       const roll1 = module.exports.rollDice();
       const roll2 = module.exports.rollDice();
-      const roll3 = module.exports.rollDice() % 5 + 1;
+      const roll3 = (module.exports.rollDice() % 5) + 1;
       const roll = (roll1 + roll2 - 2) / 2 + 0.2 * roll3;
       const result = module.exports.getLuckAction(roll);
       rolls.push(roll);
 
       switch (result.action.type) {
+      case "exp":
+        globalThis.stats[interaction.guild.id][
+          interaction.user.id
+        ].luckHandicap += result.action.amount;
+        changes.exp += result.action.amount;
+        break;
+      case "exp_percent":
+        globalThis.stats[interaction.guild.id][
+          interaction.user.id
+        ].luckHandicap += globalThis.stats[interaction.guild.id][
+          interaction.user.id
+        ].levelExperience * result.action.amount;
+        changes.exp_percent += result.action.amount * 100;
+        break;
       case "reputation":
         globalThis.stats[interaction.guild.id][
           interaction.user.id
         ].reputation += result.action.amount;
         changes.reputation += result.action.amount;
         break;
-      case "score":
-        globalThis.stats[interaction.guild.id][
-          interaction.user.id
-        ].luckHandicap += result.action.amount;
-        changes.score += result.action.amount;
-        break;
       case "token":
         globalThis.stats[interaction.guild.id][
           interaction.user.id
-        ].luckTokens += 2;
-        changes.tokens += 2;
+        ].luckTokens += result.action.amount;
+        changes.tokens += result.action.amount;
         break;
       default:
         break;
@@ -101,20 +108,28 @@ ${module.exports.getTokenString(
         ", "
       )}\`, resulting in these results:\n\n`;
 
+      if (changes.exp) {
+        response += `You have ${
+          changes.exp > 0
+            ? "gained"
+            : "lost"
+        } ${Math.abs(changes.exp)} experience!\n`;
+      }
+
+      if (changes.exp_percent) {
+        response += `You have ${
+          changes.exp_percent > 0
+            ? "gained"
+            : "lost"
+        } ${Math.abs(changes.exp_percent * 100)}% experience!\n`;
+      }
+
       if (changes.reputation) {
         response += `You have ${
           changes.reputation > 0
             ? "gained"
             : "lost"
         } ${Math.abs(changes.reputation)} reputation!\n`;
-      }
-
-      if (changes.score) {
-        response += `You have ${
-          changes.score > 0
-            ? "gained"
-            : "lost"
-        } ${Math.abs(changes.score)} score!\n`;
       }
 
       if (changes.tokens) {

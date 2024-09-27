@@ -30,7 +30,7 @@ module.exports = {
                 globalThis.stats[guildId][userId].previousVoiceTime +
                 globalThis.stats[guildId][userId].voiceTime;
 
-              globalThis.stats[guildId][userId] = baseStats;
+              globalThis.stats[guildId][userId] = structuredClone(baseStats);
               globalThis.stats[guildId][userId].previousMessages =
                 previousMessages;
               globalThis.stats[guildId][userId].previousVoiceTime =
@@ -38,5 +38,7 @@ module.exports = {
             });
         });
     }
+
+    return interaction.reply(`Reset all guild stats for guild ${interaction.guild.id}.`);
   }
 };

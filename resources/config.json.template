@@ -30,13 +30,8 @@
     "_voiceChatSRGain": "The amount of SR to gain per second whilst in voice chat.",
     "reputationGain": 75,
     "reputationGainCooldown": 900,
-    "prestigeRequirement": 50000,
-    "_prestigeRequirement": "The SR that needs to be met before a user can prestige.",
-    "prestigeMaximum": 5,
-    "_prestigeMaximum": "The highest prestige allowed.",
     "tokenMax": 50,
-    "dailyTokens": 3",
-    "postPrestigeNerdModifier": 4,
-    "prePrestigeNerdModifier": 2.5
+    "dailyTokens": 3,
+    "charmCost": 5
   },
 }

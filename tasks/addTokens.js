@@ -1,5 +1,6 @@
 "use strict";
 
+const { checkCharmEffect } = require("../util/stats.js");
 const { getTimeInSeconds } = require("../util/common.js");
 const { statsConfig } = require("../resources/config.json");
 
@@ -20,10 +21,16 @@ exports.run = () => {
               if (globalThis.stats[guildId][userId].luckTokens < 0) {
                 globalThis.stats[guildId][userId].luckTokens = 0;
               }
-              
+
               globalThis.stats[guildId][userId].luckTokens =
               (globalThis.stats[guildId][userId].luckTokens ?? 0) +
-              statsConfig.tokenRefreshAmount;
+              statsConfig.tokenRefreshAmount +
+              Math.ceil(
+                checkCharmEffect(
+                  "token_bonus",
+                  globalThis.stats[guildId][userId].charms
+                ) * 5
+              );
             }
           });
 
