@@ -23,8 +23,8 @@ function generateTable(data) {
       if (header === "★") {
         return null;
       }
-      return header.padEnd(header === "Rep"
-        ? 5
+      return header.padEnd(header === "Title"
+        ? 20
         : columnWidths[index] + 2);
     })
     .join("")}\n`;
