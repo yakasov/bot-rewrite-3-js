@@ -138,6 +138,29 @@ function getCharmName(effect) {
   }
 }
 
+function getCharmMult(charm) {
+  switch (charm.effect) {
+  case "rep_bonus":
+    return `+${charm.rarity / 20} rep`;
+  case "rep_mult":
+    return `${1 + charm.rarity / 1000}x`;
+  case "xp_mult":
+    return `${1 + charm.rarity / 200}x`;
+  case "token_bonus":
+    return `+${charm.rarity / 20} tokens`;
+  case "msg_bonus":
+    return `+${charm.rarity / 10} SR`;
+  case "msg_mult":
+    return `${1 + charm.rarity / 100}x`;
+  case "voice_bonus":
+    return `+${charm.rarity / 2500} SR`;
+  case "voice_mult":
+    return `${1 + charm.rarity / 100}x`;
+  default:
+    return "Undefined";
+  }
+}
+
 function displayCharms(charms) {
   if (!charms.length) {
     return "```You have no charms!```";
@@ -148,7 +171,7 @@ function displayCharms(charms) {
       (c) =>
         `• \u001b[${c.colour};000m ${c.name} Charm of ${getCharmName(
           c.effect
-        )}\u001b[0m (${c.rarity}%)`
+        )}\u001b[0m (${c.rarity}%, ${getCharmMult(c)})`
     )
     .join("\n")}\`\`\``;
 }
@@ -197,7 +220,7 @@ module.exports = {
         "components": [
           getButtons(
             charms,
-            globalThis.stats[guildId][userId].luckTokens > statsConfig.charmCost
+            globalThis.stats[guildId][userId].luckTokens >= statsConfig.charmCost
           )
         ],
         "content": displayCharms(charms)
