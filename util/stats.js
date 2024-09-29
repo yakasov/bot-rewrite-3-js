@@ -342,11 +342,11 @@ module.exports = {
       ((globalThis.stats[guildId][userId].voiceTime *
         (1 + module.exports.checkCharmEffect("voice_mult", charms)) *
         (statsConfig.voiceChatSRGain +
-          module.exports.checkCharmEffect("voice_bonus", charms) / 25) +
+          module.exports.checkCharmEffect("voice_bonus", charms) * statsConfig.voiceChatSRGain) +
         globalThis.stats[guildId][userId].messages *
           (1 + module.exports.checkCharmEffect("msg_mult", charms)) *
           (statsConfig.messageSRGain +
-            module.exports.checkCharmEffect("msg_bonus", charms) * 10)) *
+            module.exports.checkCharmEffect("msg_bonus", charms) * statsConfig.messageSRGain)) *
         Math.max(
           1 +
             globalThis.stats[guildId][userId].reputation *
