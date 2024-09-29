@@ -190,7 +190,7 @@ module.exports = {
       "components": [
         getButtons(
           charms,
-          globalThis.stats[guildId][userId].luckTokens > statsConfig.charmCost
+          globalThis.stats[guildId][userId].luckTokens >= statsConfig.charmCost
         )
       ],
       "content": displayCharms(charms)
