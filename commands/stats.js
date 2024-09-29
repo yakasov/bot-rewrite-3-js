@@ -6,7 +6,8 @@ const {
   formatTime,
   getNicknameInteraction,
   getRequiredExperience,
-  getLevelName
+  getLevelName,
+  getTitle
 } = require("../util/common.js");
 
 module.exports = {
@@ -102,6 +103,7 @@ module.exports = {
           "Time": formatTime(
             guildStats[a[0]].voiceTime
           ),
+          "Title": getTitle(guildStats[a[0]]),
           "Rep": module.exports.formatReputation(
             module.exports.addLeadingZero(guildStats[a[0]].reputation)
           )

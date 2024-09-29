@@ -62,5 +62,13 @@ module.exports = {
 
   "getRequiredExperienceCumulative": (level) => (level * ((level + 1) * 100) / 2),
 
-  "getTimeInSeconds": () => Math.floor(Date.now() / 1000)
+  "getTimeInSeconds": () => Math.floor(Date.now() / 1000),
+
+  "getTitle": (stats) => {
+    if (!stats.name) {
+      stats.name = stats.unlockedNames[0] ?? "HUH";
+    }
+
+    return stats.name;
+  }
 };

@@ -5,7 +5,8 @@ const {
   formatTime,
   getLevelName,
   getNicknameInteraction,
-  getRequiredExperience
+  getRequiredExperience,
+  getTitle
 } = require("../util/common.js");
 
 module.exports = {
@@ -78,7 +79,9 @@ module.exports = {
       allUserStats.voiceTime
     )}\n\n    Level: ${allUserStats.level} (${allUserStats.levelExperience}/${
       getRequiredExperience(allUserStats.level)
-    })\n    Ranking: ${getLevelName(allUserStats.level)} (${
+    })\n    Title: ${getTitle(
+      allUserStats
+    )}\n    Ranking: ${getLevelName(allUserStats.level)} (${
       allUserStats.totalExperience
     } XP)\n    Reputation: ${
       allUserStats.reputation
