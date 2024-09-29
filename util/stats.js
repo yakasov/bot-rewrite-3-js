@@ -1,6 +1,7 @@
 "use strict";
 
 const {
+  getLevelName,
   getTimeInSeconds,
   getRequiredExperience,
   getRequiredExperienceCumulative
@@ -162,6 +163,7 @@ module.exports = {
     "coolHandicap": 0,
     "coolScore": 0,
     "coolsGiven": 0,
+    "customSetName": false,
     "joinTime": 0,
     "lastDailyTime": 0,
     "lastGainTime": 0,
@@ -170,6 +172,7 @@ module.exports = {
     "luckHandicap": 0,
     "luckTokens": 10,
     "messages": 0,
+    "name": "",
     "nerdEmojis": {},
     "nerdHandicap": 0,
     "nerdScore": 0,
@@ -318,57 +321,65 @@ module.exports = {
   },
 
   "updateNerdCoolScores": (guildId, userId) => {
-    const nerdPower = globalThis.stats[guildId][userId].level < 15
+    const s = globalThis.stats[guildId][userId];
+    const nerdPower = s.level < 15
       ? 2.8
       : 1.8;
-    globalThis.stats[guildId][userId].nerdScore =
-      Object.values(globalThis.stats[guildId][userId].nerdEmojis)
+    s.nerdScore =
+      Object.values(s.nerdEmojis)
         .reduce(
           (sum, a) => sum + Math.max(nerdPower ** a + 1, 0) - 1,
           0
-        ) - globalThis.stats[guildId][userId].nerdHandicap;
+        ) - s.nerdHandicap;
 
-    globalThis.stats[guildId][userId].coolScore =
-      Object.values(globalThis.stats[guildId][userId].coolEmojis)
+    s.coolScore =
+      Object.values(s.coolEmojis)
         .reduce(
           (sum, a) => sum + Math.max(2.8 ** a + 1, 0) - 1,
           0
-        ) - globalThis.stats[guildId][userId].coolHandicap;
+        ) - s.coolHandicap;
   },
 
   "updateScoreValue": (guildId, userId) => {
-    const { charms } = globalThis.stats[guildId][userId];
+    const s = globalThis.stats[guildId][userId];
+    const { charms } = s;
     const exp = Math.floor(
-      ((globalThis.stats[guildId][userId].voiceTime *
+      ((s.voiceTime *
         (1 + module.exports.checkCharmEffect("voice_mult", charms)) *
         (statsConfig.voiceChatSRGain +
-          module.exports.checkCharmEffect("voice_bonus", charms) * statsConfig.voiceChatSRGain) +
-        globalThis.stats[guildId][userId].messages *
+          module.exports.checkCharmEffect("voice_bonus", charms) *
+            statsConfig.voiceChatSRGain) +
+        s.messages *
           (1 + module.exports.checkCharmEffect("msg_mult", charms)) *
           (statsConfig.messageSRGain +
-            module.exports.checkCharmEffect("msg_bonus", charms) * statsConfig.messageSRGain)) *
+            module.exports.checkCharmEffect("msg_bonus", charms) *
+              statsConfig.messageSRGain)) *
         Math.max(
           1 +
-            globalThis.stats[guildId][userId].reputation *
+            s.reputation *
               statsConfig.reputationGain *
               (1 + module.exports.checkCharmEffect("rep_mult", charms) / 10),
           0.01
         ) +
-        globalThis.stats[guildId][userId].luckHandicap +
-        globalThis.stats[guildId][userId].coolScore -
-        globalThis.stats[guildId][userId].nerdScore) *
+        s.luckHandicap +
+        s.coolScore -
+        s.nerdScore) *
         (1 + module.exports.checkCharmEffect("xp_mult", charms) / 2)
     );
 
-    globalThis.stats[guildId][userId].levelExperience = Math.max(
-      exp -
-        getRequiredExperienceCumulative(
-          globalThis.stats[guildId][userId].level - 1
-        ),
+    s.levelExperience = Math.max(
+      exp - getRequiredExperienceCumulative(s.level - 1),
       0
     );
+    s.totalExperience = Math.max(exp, s.totalExperience);
 
-    globalThis.stats[guildId][userId].totalExperience = Math.max(exp, globalThis.stats[guildId][userId].totalExperience);
+    if (!s.unlockedNames.includes(getLevelName(s.level))) {
+      s.unlockedNames.push(getLevelName(s.level));
+    }
+
+    if (!s.customSetName) {
+      s.name = getLevelName(s.level);
+    }
   },
 
   "updateScores": () => {
@@ -397,7 +408,9 @@ module.exports = {
 
             if (
               globalThis.stats[guildId][userId].totalExperience >=
-            getRequiredExperienceCumulative(globalThis.stats[guildId][userId].level)
+            getRequiredExperienceCumulative(
+              globalThis.stats[guildId][userId].level
+            )
             ) {
               module.exports.levelUp(guildId, userId);
             }
@@ -406,7 +419,9 @@ module.exports = {
   },
 
   "updateStatsOnLevelUp": (userStats) => {
-    userStats.levelExperience = userStats.totalExperience - getRequiredExperienceCumulative(userStats.level);
+    userStats.levelExperience =
+      userStats.totalExperience -
+      getRequiredExperienceCumulative(userStats.level);
     userStats.level++;
 
     // Add nerdHandicap to offset nerdScore
