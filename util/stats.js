@@ -377,7 +377,7 @@ module.exports = {
     for (let i = 0; i < Math.floor(s.level / 10); i++) {
       const str = `${i + 1}`;
       if (!s.unlockedNames.includes(ranks[str])) {
-        s.unlockedNames.push(ranks[str]);
+        s.unlockedNames.push(`${ranks[str]}\u001b[0m`);
       }
     }
 
