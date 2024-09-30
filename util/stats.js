@@ -375,8 +375,9 @@ module.exports = {
     s.totalExperience = Math.max(exp, s.totalExperience);
 
     for (let i = 0; i < Math.floor(s.level / 10); i++) {
-      if (!s.unlockedNames.includes(ranks[i + 1])) {
-        s.unlockedNames.push(ranks[i + 1]);
+      const str = `${i + 1}`;
+      if (!s.unlockedNames.includes(ranks[str])) {
+        s.unlockedNames.push(ranks[str]);
       }
     }
 
