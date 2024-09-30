@@ -7,7 +7,7 @@ const {
   getRequiredExperienceCumulative
 } = require("./common.js");
 const { statsConfig } = require("../resources/config.json");
-const { ranks } = require("../resources/ranks.json");
+const ranks  = require("../resources/ranks.json");
 
 module.exports = {
   "addToStats": (a) => {
