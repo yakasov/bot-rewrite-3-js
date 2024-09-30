@@ -103,10 +103,9 @@ module.exports = {
           "Time": formatTime(
             guildStats[a[0]].voiceTime
           ),
-          "Rep": 
-            module.exports.addLeadingZero(guildStats[a[0]].reputation)
-          ,
-          "Title": getTitle(guildStats[a[0]]),
+          "Rep":
+            module.exports.addLeadingZero(guildStats[a[0]].reputation),
+          "Title": getTitle(guildStats[a[0]])
         });
       });
     /* eslint-enable sort-keys*/

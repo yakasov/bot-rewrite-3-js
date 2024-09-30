@@ -7,6 +7,7 @@ const {
   getRequiredExperienceCumulative
 } = require("./common.js");
 const { statsConfig } = require("../resources/config.json");
+const { ranks } = require("../resources/ranks.json");
 
 module.exports = {
   "addToStats": (a) => {
@@ -373,8 +374,10 @@ module.exports = {
     );
     s.totalExperience = Math.max(exp, s.totalExperience);
 
-    if (!s.unlockedNames.includes(getLevelName(s.level))) {
-      s.unlockedNames.push(getLevelName(s.level));
+    for (let i = 0; i < Math.floor(s.level / 10); i++) {
+      if (!s.unlockedNames.includes(ranks[i + 1])) {
+        s.unlockedNames.push(ranks[i + 1]);
+      }
     }
 
     if (!s.customSetName) {
