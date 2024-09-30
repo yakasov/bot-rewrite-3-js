@@ -17,28 +17,40 @@ function getOptions(names) {
 function getStandardName(name) {
   switch (name) {
   case "\u001b[30;000mBozo\u001b[0m":
+  case "\u001b[30;000mBozo":
     return "Bozo";
   case "\u001b[00;000m:nerd:\u001b[0m":
+  case "\u001b[00;000m:nerd:":
     return ":nerd";
   case "\u001b[32;000mChump\u001b[0m":
+  case "\u001b[32;000mChump":
     return "Chump";
   case "\u001b[37;000mLiverpool Fan\u001b[0m":
+  case "\u001b[37;000mLiverpool Fan":
     return "Liverpool Fan";
   case "\u001b[34;000mYoung Fly\u001b[0m":
+  case "\u001b[34;000mYoung Fly":
     return "Young Fly";
   case "\u001b[36;000mPickleman\u001b[0m":
+  case "\u001b[36;000mPickleman":
     return "Pickleman";
   case "\u001b[33;000mLooksmaxxer\u001b[0m":
+  case "\u001b[33;000mLooksmaxxer":
     return "Looksmaxxer";
   case "\u001b[35;000mGoonmaxxer\u001b[0m":
+  case "\u001b[35;000mGoonmaxxer":
     return "Goonmaxxer";
   case "\u001b[34;1;1mCaked-up\u001b[0m":
+  case "\u001b[34;1;1mCaked-up":
     return "Caked-up";
   case "\u001b[37;1;1mDiscord Mod\u001b[0m":
+  case "\u001b[37;1;1mDiscord Mod":
     return "Discord Mod";
   case "\u001b[35;1;1mLisan al-Gaib\u001b[0m":
+  case "\u001b[35;1;1mLisan al-Gaib":
     return "Lisan al-Gaib";
   case "\u001b[31;1;4mTrue #1 of Friends\u001b[0m":
+  case "\u001b[31;1;4mTrue #1 of Friends":
     return "True #1 of Friends";
   default:
     return name;
