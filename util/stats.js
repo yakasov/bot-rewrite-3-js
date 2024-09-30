@@ -376,10 +376,13 @@ module.exports = {
 
     for (let i = 0; i < Math.floor(s.level / 10); i++) {
       const str = `${i + 1}`;
-      if (!s.unlockedNames.includes(ranks[str])) {
+      if (!s.unlockedNames.includes(`${ranks[str]}\u001b[0m`)) {
         s.unlockedNames.push(`${ranks[str]}\u001b[0m`);
       }
     }
+
+    // Fix for duplicates in unlockedNames
+    s.unlockedNames = [...new Set(s.unlockedNames)];
 
     if (!s.customSetName) {
       s.name = getLevelName(s.level);
