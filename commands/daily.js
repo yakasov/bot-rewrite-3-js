@@ -28,7 +28,6 @@ module.exports = {
   },
   "getLastMidnightUnix": () =>
     moment()
-      .subtract(1, "days")
       .startOf("day")
       .unix()
       .toString()
