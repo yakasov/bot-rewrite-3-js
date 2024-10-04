@@ -21,7 +21,7 @@ exports.run = (msg) => {
   if (!achievements.includes("jorkPro") && content.includes("jork")) {
     achievementTracking.jork++;
 
-    if (achievementTracking.jork === 100) {
+    if (achievementTracking.jork === 25) {
       achievements.push("jorkPro");
       unlockedNames.push(actualAchievements.jorkPro.unlock);
     }
@@ -88,10 +88,10 @@ exports.run = (msg) => {
   }
 
   if (
-    !achievements.includes("voiceTime8hr") &&
+    !achievements.includes("voiceTime8hrs") &&
     stats.voiceTime >= 3600 * 8
   ) {
-    achievements.push("voiceTime8hr");
+    achievements.push("voiceTime8hrs");
     unlockedNames.push(actualAchievements.voiceTime8hrs.name);
   }
 
