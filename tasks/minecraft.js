@@ -8,19 +8,20 @@ const {
 } = require("../resources/config.json");
 
 exports.run = (client, splash) => {
-  /*  
+
+  /*
    * 0 - Minecraft has been run at least once
    * 1 - Minecraft has not yet been run (is on first run)
    * 2 - Minecraft errored and should not be queried again
-   */ 
+   */
   if (globalThis.firstRun.minecraft === 2) {
     return;
   }
 
   if (!(minecraftServerIp && minecraftServerPort)) {
     if (globalThis.firstRun.minecraft === 1) {
-      console.log("No IP and/or Port for Minecraft server query!");
-      globalThis.firstRun.minecraft = 0;
+      console.error("No IP and/or Port for Minecraft server query!");
+      globalThis.firstRun.minecraft = 2;
     }
 
     return;
@@ -46,8 +47,13 @@ exports.run = (client, splash) => {
         globalThis.firstRun.minecraft = 0;
       })
       .catch((e) => {
-        console.log(`\n${e}`);
+        console.error(`\n${e}`);
         globalThis.firstRun.minecraft = 2;
+        console.warn(
+          `globalThis.firstRun.minecraft is set to state ${
+            globalThis.firstRun.minecraft
+          }, Minecraft will not be queried again this session`
+        );
       });
   }
 

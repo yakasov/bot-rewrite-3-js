@@ -74,7 +74,7 @@ Message.prototype.reply = function (s) {
       "failIfNotExists": false
     });
   } catch (e) {
-    return console.log(e.message);
+    return console.error(e.message);
   }
 };
 
@@ -83,7 +83,7 @@ Message.prototype.delete = function () {
   try {
     return superDelete.call(this);
   } catch (e) {
-    return console.log(e.message);
+    return console.error(e.message);
   }
 };
 
@@ -99,7 +99,7 @@ for (const file of commandFiles) {
   if ("data" in command && "execute" in command) {
     globalThis.client.commands.set(command.data.name, command);
   } else {
-    console.log(
+    console.warn(
       `[WARNING] The command at ${filePath} is 
       missing a required "data" or "execute" property.`
     );
@@ -251,7 +251,7 @@ async function checkMessageReactions(msg) {
 
             return true;
           } catch (e) {
-            console.log(e);
+            console.error(e);
             return false;
           }
         }

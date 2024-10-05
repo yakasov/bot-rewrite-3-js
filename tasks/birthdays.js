@@ -28,7 +28,7 @@ exports.run = async (client, force = false) => {
       Object.keys(birthdays)
         .forEach((id) => {
           if (!guildMembers.some((gm) => gm.id === id)) {
-            console.log(`${id} is not present in the server!`);
+            console.warn(`${id} is not present in the server!`);
           }
         });
 
