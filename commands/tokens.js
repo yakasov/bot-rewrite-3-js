@@ -2,6 +2,7 @@
 
 const { SlashCommandBuilder } = require("discord.js");
 const { statsConfig } = require("../resources/config.json");
+const { checkCharmEffect } = require("../util/stats.js");
 
 module.exports = {
   "data": new SlashCommandBuilder()
@@ -13,7 +14,13 @@ module.exports = {
     );
     interaction.reply({
       "content": `${tokenString}\n\nYou will gain ${
-        statsConfig.tokenRefreshAmount
+        statsConfig.tokenRefreshAmount +
+        Math.ceil(
+          checkCharmEffect(
+            "token_bonus",
+            globalThis.stats[interaction.guild.id][interaction.user.id].charms
+          ) * 5
+        )
       } tokens ${module.exports.getTimestamp(interaction)}.`,
       "ephemeral": true
     });
