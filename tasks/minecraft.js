@@ -8,16 +8,25 @@ const {
 } = require("../resources/config.json");
 
 exports.run = (client, splash) => {
+  /*  
+   * 0 - Minecraft has been run at least once
+   * 1 - Minecraft has not yet been run (is on first run)
+   * 2 - Minecraft errored and should not be queried again
+   */ 
+  if (globalThis.firstRun.minecraft === 2) {
+    return;
+  }
+
   if (!(minecraftServerIp && minecraftServerPort)) {
-    if (globalThis.firstRun.minecraft) {
+    if (globalThis.firstRun.minecraft === 1) {
       console.log("No IP and/or Port for Minecraft server query!");
-      globalThis.firstRun.minecraft = false;
+      globalThis.firstRun.minecraft = 0;
     }
 
     return;
   }
 
-  if (globalThis.firstRun.minecraft) {
+  if (globalThis.firstRun.minecraft === 1) {
     console.log(
       `Using ${
         minecraftServerIp
@@ -33,12 +42,13 @@ exports.run = (client, splash) => {
             `\nFound Minecraft server! Latency: ${res.roundTripLatency}`
           );
         }
+
+        globalThis.firstRun.minecraft = 0;
       })
       .catch((e) => {
         console.log(`\n${e}`);
+        globalThis.firstRun.minecraft = 2;
       });
-
-    globalThis.firstRun.minecraft = false;
   }
 
   queryFull(minecraftServerIp, minecraftServerPort)

@@ -44,7 +44,7 @@ globalThis.insights = insights;
 globalThis.currentDate = moment()
   .tz("Europe/London");
 globalThis.firstRun = { "birthdays": true,
-  "minecraft": true };
+  "minecraft": 1 };
 globalThis.botUptime = 0;
 globalThis.client = new Client({
   "allowedMentions": {
