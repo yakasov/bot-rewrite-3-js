@@ -3,14 +3,6 @@
 const { SlashCommandBuilder } = require("discord.js");
 const achievements = require("../resources/achievements.json");
 
-function strikethrough(text) {
-  // I might use this for grey achievements?
-  return text
-    .split("")
-    .map((char) => `${char}\u0336`)
-    .join("");
-}
-
 module.exports = {
   "data": new SlashCommandBuilder()
     .setName("achievements")

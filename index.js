@@ -131,7 +131,8 @@ async function checkMessageResponse(msg) {
       "https://x.com/",
       "https://twitter.com/"
     ].find((l) =>
-      msg.content.includes(l))
+      msg.content.includes(l)) &&
+    msg.content.includes("status")
   ) {
     msg.channel.send(
       `${getNicknameMsg(msg)} sent:\n${msg.content
@@ -144,14 +145,15 @@ async function checkMessageResponse(msg) {
     return;
   }
 
+  const steamLinkRegex = /https:\/\/steamcommunity\.com\S*/gu;
   // Swap steamcommunity links for openable ones
-  if (msg.content.includes("https://steamcommunity.com")) {
+  if (steamLinkRegex.test(msg.content)) {
     const steamLink = msg.content
       .split(" ")
-      .find((m) => m.includes("https://steamcommunity.com"));
+      .find((m) => steamLinkRegex.test(m));
     msg.channel.send(
       /* eslint-disable-next-line max-len */
-      `Embedded link: https://yakasov.github.io/pages/miscellaneous/steam_direct.html?page=${steamLink}`
+      `Embedded link: https://yakasov.github.io/pages/miscellaneous/steam_direct.html?page=${encodeURIComponent(steamLink)}`
     );
   }
 
@@ -295,8 +297,10 @@ async function handleMessageCreate(msg) {
   }
 
   await checkMessageResponse(msg);
-  if (globalThis.stats[msg.guild.id] &&
-    (globalThis.stats[msg.guild.id].allowResponses ?? true)) {
+  if (
+    globalThis.stats[msg.guild.id] &&
+    (globalThis.stats[msg.guild.id].allowResponses ?? true)
+  ) {
     await checkMessageReactions(msg);
   }
 
