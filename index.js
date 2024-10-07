@@ -150,7 +150,7 @@ async function checkMessageResponse(msg) {
   if (steamLinkRegex.test(msg.content)) {
     const steamLink = msg.content
       .split(" ")
-      .find((m) => steamLinkRegex.test(m));
+      .find((m) => steamLinkRegex.test(m)) ?? msg.content;
     msg.channel.send(
       /* eslint-disable-next-line max-len */
       `Embedded link: https://yakasov.github.io/pages/miscellaneous/steam_direct.html?page=${encodeURIComponent(steamLink)}`
