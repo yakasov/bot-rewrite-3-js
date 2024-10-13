@@ -35,7 +35,7 @@ module.exports = {
       const res = createAudioResource(await ytdl(url));
       player.play(res);
     } catch (e) {
-      await interaction.reply(e.message);
+      await interaction.editReply(e.message);
     }
   }
 };
