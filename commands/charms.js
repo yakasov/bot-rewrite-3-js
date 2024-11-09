@@ -37,7 +37,7 @@ function getButtons(charms, canBuy = true) {
     .addComponents(...buttons);
 }
 
-function generateCharm() {
+function generateCharm(maxRarity = 100) {
   const charms = [
     "rep_bonus",
     "rep_mult",
@@ -53,7 +53,7 @@ function generateCharm() {
     rarity,
     colour,
     name
-  ] = getRarity();
+  ] = getRarity(maxRarity);
 
   return { colour,
     "effect": charms[roll],
@@ -61,8 +61,12 @@ function generateCharm() {
     rarity };
 }
 
-function getRarity() {
-  const rarityRoll = Math.random();
+function getRarity(maxRarity = 100) {
+  let rarityRoll = 1.01;
+  while (rarityRoll > maxRarity / 100) {
+    rarityRoll = Math.random();
+  }
+  
   // RarityBonus starts at highest possible
   let rarityBonus = 80;
   let colour = 31;
@@ -213,6 +217,7 @@ module.exports = {
       } else {
         const charm = generateCharm();
         charms.push(charm);
+        globalThis.stats[guildId][userId].charmsRolled = true;
         globalThis.stats[guildId][userId].luckTokens -= statsConfig.charmCost;
       }
 
@@ -226,5 +231,5 @@ module.exports = {
         "content": displayCharms(charms)
       });
     });
-  }
+  }, generateCharm
 };

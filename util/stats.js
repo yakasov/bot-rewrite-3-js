@@ -6,6 +6,7 @@ const {
   getRequiredExperience,
   getRequiredExperienceCumulative
 } = require("./common.js");
+const { generateCharm } = require("../commands/charms.js");
 const { statsConfig } = require("../resources/config.json");
 const ranks = require("../resources/ranks.json");
 
@@ -160,6 +161,7 @@ module.exports = {
     "achievementTracking": {},
     "achievements": [],
     "charms": [],
+    "charmsRolled": false,
     "coolEmojis": {},
     "coolHandicap": 0,
     "coolScore": 0,
@@ -239,6 +241,12 @@ module.exports = {
           delete globalThis.stats[guildId][userId][k];
         }
       });
+
+    if (!globalThis.stats[guildId][userId].charmsRolled && globalThis.stats[guildId][userId].charms.length === 0) {
+      for (let _ = 0; _ < 3; _++) {
+        globalThis.stats[guildId][userId].charms.push(generateCharm(40));
+      }
+    }
 
     return null;
   },
