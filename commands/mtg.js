@@ -29,15 +29,15 @@ const replacements = {
   "{U}": ":black_circle:",
   "{W}": ":white_circle:",
 };
-let page = 1;
-const cards = [];
+const interactions = {};
 
-async function generateBoosterPack() {
+async function generateBoosterPack(id) {
   const sets = (await Sets.all())
     .filter((s) => s.card_count > 100)
     .map((s) => ({ code: s.code, count: s.card_count, name: s.name }));
 
-  const randomSet = sets[Math.floor(Math.random() * sets.length)];
+  //Const randomSet = sets[Math.floor(Math.random() * sets.length)];
+  const randomSet = sets[0];
 
   for (let _ = 0; _ < 12; _++) {
     const randomId = Math.floor(Math.random() * sets[0].count)
@@ -47,18 +47,18 @@ async function generateBoosterPack() {
         ? cache[randomSet.code][randomId]
         : await Cards.bySet(sets[0].code, randomId);
 
-    // TODO: caching might be broken
-
     if (randomCard && randomCard.name) {
+      const convertedCard = convertForCache(randomCard);
+
       if (!cache[randomSet.code]) {
         cache[randomSet.code] = {};
       }
 
-      if (!cache[randomSet.code][randomCard.collector_number]) {
-        cache[randomSet.code][randomCard.collector_number] = randomCard;
+      if (!cache[randomSet.code][convertedCard.number]) {
+        cache[randomSet.code][convertedCard.number] = convertedCard;
       }
 
-      cards.push(randomCard);
+      interactions[id].cards.push(convertedCard);
     } else {
       _--;
     }
@@ -67,30 +67,30 @@ async function generateBoosterPack() {
   fs.writeFileSync("./resources/mtgCache.json", JSON.stringify(cache));
 }
 
-function getButtons() {
+function getButtons(id) {
   const buttons = [
     new ButtonBuilder()
       .setCustomId("previousPage")
       .setLabel("Previous card")
       .setStyle(ButtonStyle.Secondary)
-      .setDisabled(page === 1),
+      .setDisabled(interactions[id].page === 1),
     new ButtonBuilder()
       .setCustomId("nextPage")
       .setLabel("Next card")
       .setStyle(ButtonStyle.Secondary)
-      .setDisabled(page === 12),
+      .setDisabled(interactions[id].page === 12),
   ];
 
   return new ActionRowBuilder()
     .addComponents(...buttons);
 }
 
-function getContent() {
-  const c = cards[page - 1];
+function getContent(id) {
+  const c = interactions[id].cards[interactions[id].page - 1];
 
   return new EmbedBuilder()
     .setTitle(c.name)
-    .setURL(c.scryfall_uri)
+    .setURL(c.url)
     .setDescription(c.type_line)
     .addFields(
       {
@@ -103,10 +103,10 @@ function getContent() {
       },
       {
         name: "Flavour text",
-        value: replaceIcons(c.flavor_text),
+        value: replaceIcons(c.flavour_text),
       }
     )
-    .setImage(c.image_uris.normal);
+    .setImage(c.image);
 }
 
 function replaceIcons(text) {
@@ -120,35 +120,66 @@ function replaceIcons(text) {
   return returnText;
 }
 
+function convertForCache(card) {
+  return {
+    colours: card.colors,
+    flavour_text: card.flavor_text,
+    foil: card.foil,
+    id: card.id,
+    image: card.image_uris.normal,
+    keywords: card.keywords,
+    legal: card.legalities.commander === "legal",
+    mana_cost: card.mana_cost,
+    name: card.name,
+    number: card.collector_number,
+    oracle_text: card.oracle_text,
+    power: card.power,
+    price: card.foil ? card.prices.usd : card.prices.usd_foil,
+    rarity: card.rarity,
+    set: card.set,
+    set_name: card.set_name,
+    toughness: card.toughness,
+    type_line: card.type_line,
+    url: card.scryfall_uri
+  };
+}
+
 module.exports = {
   data: new SlashCommandBuilder()
     .setName("mtg")
     .setDescription("Random card"),
   async execute(interaction) {
+    interactions[interaction.user.id] = {
+      cards: [],
+      page: 1
+    };
+
     await interaction.deferReply();
-    await generateBoosterPack();
+    await generateBoosterPack(interaction.user.id);
 
     const response = await interaction.editReply({
-      components: [getButtons()],
-      embeds: [getContent()],
+      components: [getButtons(interaction.user.id)],
+      embeds: [getContent(interaction.user.id)],
     });
+
+    console.log(interactions[interaction.user.id].cards[0]);
 
     const collectorFilter = (i) => i.user.id === interaction.user.id;
     const collector = response.createMessageComponentCollector({
       filter: collectorFilter,
-      time: 60_000,
+      time: 120_000,
     });
 
     collector.on("collect", async (i) => {
       if (i.customId === "nextPage") {
-        page++;
+        interactions[i.user.id].page++;
       } else {
-        page--;
+        interactions[i.user.id].page--;
       }
 
       await i.update({
-        components: [getButtons()],
-        embeds: [getContent()],
+        components: [getButtons(interaction.user.id)],
+        embeds: [getContent(interaction.user.id)],
       });
     });
   },
