@@ -13,3 +13,6 @@ stats-*
 .DS_Store
 stats.json
 insights.json
+mtgCache.json
+mtgCards.json
+images
