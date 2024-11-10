@@ -9,9 +9,15 @@ const {
   SlashCommandBuilder,
 } = require("discord.js");
 const fs = require("fs");
-const https = require("https");
-const { joinImages } = require("join-images");
 const { Cards } = require("scryfall-api");
+const {
+  boosterGetConnected,
+  boosterGetHeadTurning,
+  boosterGetLand,
+  boosterGetMythic,
+  boosterGetRare,
+  boosterGetWildCard,
+} = require("../util/mtgBoosterHelper.js");
 const cache = require("../resources/mtg/mtgCache.json");
 const { allSets } = require("../resources/mtg/mtgSets.js");
 
@@ -26,12 +32,13 @@ const replacements = {
   "{8}": ":eight:",
   "{9}": ":nine:",
   "{B}": ":blue_circle:",
-  "{C}": ":grey_circle:",
+  "{C}": ":grey_question:",
   "{G}": ":green_circle:",
   "{R}": ":red_circle:",
   "{T}": ":arrow_right_hook:",
   "{U}": ":black_circle:",
   "{W}": ":white_circle:",
+  "{X}": ":regional_indicator_x:",
 };
 const interactions = {};
 
@@ -45,6 +52,16 @@ async function generateBoosterPack(id, chosenSet) {
     setToUse = allSets[Math.floor(Math.random() * allSets.length)];
   }
 
+  interactions[id].cards = [
+    await boosterGetLand(setToUse),
+    ...boosterGetConnected(setToUse),
+    boosterGetHeadTurning(setToUse),
+    ...boosterGetWildCard(setToUse),
+    boosterGetRare(setToUse),
+    boosterGetMythic(setToUse),
+  ];
+  return;
+
   for (let _ = 0; _ < 12; _++) {
     const randomId = Math.floor(Math.random() * setToUse.count)
       .toString();
@@ -53,6 +70,10 @@ async function generateBoosterPack(id, chosenSet) {
         ? cache[setToUse.code][randomId]
         : await Cards.bySet(setToUse.code, randomId);
 
+    /*
+     * TODO: Refine this check further
+     * Checking legalities is weird and arbitrary
+     */
     if (randomCard && randomCard.name && randomCard.legalities) {
       const convertedCard = await convertForCache(randomCard);
 
@@ -138,90 +159,6 @@ function replaceIcons(text) {
     });
 
   return returnText;
-}
-
-async function convertForCache(card) {
-  if (card.flavour_text) {
-    // Already converted... actually fix this issue above at some point (TODO)
-    return card;
-  }
-
-  let image = null;
-  let local = false;
-  if (card.image_uris) {
-    image = card.image_uris.normal;
-  } else {
-    image = await combineImages(card);
-    local = true;
-  }
-
-  return {
-    colours: card.colors ?? card.card_faces[0].colors,
-    flavour_text: card.flavor_text,
-    id: card.id,
-    image,
-    keywords: card.keywords,
-    legal: card.legalities.commander === "legal",
-    local,
-    mana_cost: card.mana_cost ?? card.card_faces[0].mana_cost,
-    name: card.name ?? card.card_faces[0].name,
-    number: card.collector_number,
-    oracle_text: card.oracle_text ?? card.card_faces[0].mana_cost,
-    power: card.power,
-    price: card.prices.usd,
-    rarity: card.rarity,
-    set: card.set,
-    set_name: card.set_name,
-    toughness: card.toughness,
-    type_line: card.type_line ?? card.card_faces[0].type_line,
-    url: card.scryfall_uri,
-  };
-}
-
-async function combineImages(card) {
-  const baseFilePath = `./resources/mtg/images/${card.id}`;
-
-  const filePaths = await Promise.all([
-    downloadImage(card, 0, baseFilePath),
-    downloadImage(card, 1, baseFilePath),
-  ]);
-  const img = await joinImages(filePaths, { direction: "horizontal" });
-  await img.toFile(`${baseFilePath}.jpg`);
-
-  deleteFiles(filePaths);
-  return baseFilePath;
-}
-
-function downloadImage(card, i, filePath) {
-  return new Promise((resolve, reject) => {
-    const file = fs.createWriteStream(`${filePath}-part${i}`);
-    https
-      .get(card.card_faces[i].image_uris.normal, (res) => {
-        res.pipe(file);
-
-        file.on("finish", () => {
-          file.close(() => resolve(`${filePath}-part${i}`));
-        });
-
-        // If file fails to download for whatever reason, handle it gracefully
-        file.on("error", (err) => {
-          fs.unlink(`${filePath}-part${i}`, () => reject(err));
-        });
-      })
-      .on("error", (err) => {
-        reject(err);
-      });
-  });
-}
-
-function deleteFiles(filePaths) {
-  filePaths.forEach((filePath) => {
-    fs.unlink(filePath, (err) => {
-      if (err) {
-        console.error(`Failed to delete ${filePath}:`, err);
-      }
-    });
-  });
 }
 
 module.exports = {
