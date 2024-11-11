@@ -9,13 +9,14 @@ const cache = require("../resources/mtg/mtgCache.json");
 async function getFullSet(set) {
   if (cache[set]) {
     return;
-  } 
+  }
   cache[set] = [];
 
   const result = await Promise.all(
     (await Cards.search(`set:${set}`)
-      .all())
-      .map(async (c) => await convertForCache(c))
+      .all()).map(
+      async (c) => await convertForCache(c)
+    )
   );
 
   result.forEach((c) => {
@@ -25,10 +26,12 @@ async function getFullSet(set) {
   fs.writeFileSync("./resources/mtg/mtgCache.json", JSON.stringify(cache));
 }
 
-function setFilter(rules) {
+function setFilter(set, rules) {
   /*
    * Rules will be a dictionary
-   * e.g. { k: "type", v: "land" }
+   * e.g. 
+   * { k: "type", t: "includes", v: "land" },
+   * { k: "is", t: "is", v: isFoil ? "foil" : "nonfoil" },
    * where all rules will be iterated through
    */
 }
@@ -148,7 +151,7 @@ module.exports = {
       { chance: 87.5, common: 3, uncommon: 3 },
       { chance: 94.5, common: 2, uncommon: 4 },
       { chance: 98, common: 1, uncommon: 5 },
-      { chance: 100, common: 0, uncommon: 6 }
+      { chance: 100, common: 0, uncommon: 6 },
     ];
     const roll = Math.random() * 100;
     const cardsToPull = chances.find(({ chance }) => roll < chance).result;
@@ -156,7 +159,10 @@ module.exports = {
   boosterGetHeadTurning(set) {},
   async boosterGetLand(set) {
     const isFoil = lucky(15);
-    const cards = await searchHelper(set.code, "land", isFoil ? "is:foil" : "");
+    const cards = setFilter(set.code, [
+      { k: "type", t: "includes", v: "land" },
+      { k: "is", t: "is", v: isFoil ? "foil" : "nonfoil" },
+    ]);
     const card = getRandom(cards);
     card.foil = isFoil;
 
@@ -165,5 +171,5 @@ module.exports = {
   boosterGetMythic(set) {},
   boosterGetRare(set) {},
   boosterGetWildCard(set) {},
-  getFullSet
+  getFullSet,
 };

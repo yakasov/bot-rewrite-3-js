@@ -56,38 +56,6 @@ async function generateBoosterPack(id, chosenSet = null) {
     boosterGetRare(setToUse),
     boosterGetMythic(setToUse),   
   ];
-  return;
-
-  for (let _ = 0; _ < 12; _++) {
-    const randomId = Math.floor(Math.random() * setToUse.count)
-      .toString();
-    const randomCard =
-      cache[setToUse.code] && cache[setToUse.code][randomId]
-        ? cache[setToUse.code][randomId]
-        : await Cards.bySet(setToUse.code, randomId);
-
-    /*
-     * TODO: Refine this check further
-     * Checking legalities is weird and arbitrary
-     */
-    if (randomCard && randomCard.name && randomCard.legalities) {
-      const convertedCard = await convertForCache(randomCard);
-
-      if (!cache[setToUse.code]) {
-        cache[setToUse.code] = {};
-      }
-
-      if (!cache[setToUse.code][convertedCard.number]) {
-        cache[setToUse.code][convertedCard.number] = convertedCard;
-      }
-
-      interactions[id].cards.push(convertedCard);
-    } else {
-      _--;
-    }
-  }
-
-  fs.writeFileSync("./resources/mtg/mtgCache.json", JSON.stringify(cache));
 }
 
 function getButtons(id) {
