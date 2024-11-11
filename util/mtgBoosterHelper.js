@@ -5,62 +5,32 @@ const { Cards } = require("scryfall-api");
 const https = require("https");
 const { joinImages } = require("join-images");
 const cache = require("../resources/mtg/mtgCache.json");
-const searchCache = require("../resources/mtg/mtgSearchCache.json");
-const { allSets } = require("../resources/mtg/mtgSets.js");
 
-async function searchHelper(set, type) {
+async function getFullSet(set) {
+  if (cache[set]) {
+    return;
+  } 
+  cache[set] = [];
+
+  const result = await Promise.all(
+    (await Cards.search(`set:${set}`)
+      .all())
+      .map(async (c) => await convertForCache(c))
+  );
+
+  result.forEach((c) => {
+    cache[set][c.number] = c;
+  });
+
+  fs.writeFileSync("./resources/mtg/mtgCache.json", JSON.stringify(cache));
+}
+
+function setFilter(rules) {
   /*
-   * Run a full search.
-   * If we already have the set AND type searched,
-   * then we can use searchCache.
-   * Otherwise, process data like normal
+   * Rules will be a dictionary
+   * e.g. { k: "type", v: "land" }
+   * where all rules will be iterated through
    */
-  const searchTerm = `set:${set} type:${type}`;
-  let result = [];
-
-  if (!searchCache.searchTerms) {
-    searchCache.searchTerms = [];
-  }
-
-  if (searchCache.searchTerms.includes(searchTerm) && false) {
-    const potentialCards = cache[set];
-    result = [];
-
-    Object.values(potentialCards)
-      .filter((c) => Object.keys(potentialCards)
-        .includes(c.number))
-      .forEach((c) => {
-        if (c.type_line.toLowerCase()
-          .includes(type)) {
-          result.push(c);
-        }
-      });
-  } else {
-    result = await Cards.search(searchTerm)
-      .all()
-      .map((c) => convertForCache(c));
-
-    /*
-     * Cache all cards from the search under their set
-     * Cache the numbers in searchCache (and then cache normally)
-     * These can then be cross-referenced with cards in the cache
-     */
-    if (!searchCache[set]) {
-      searchCache[set] = [];
-    }
-    console.log(result);
-    result.forEach((c) => {
-      searchCache[set].push(c.number);
-      cache[set][c.number] = c;
-    });
-
-    searchCache.searchTerms.push(searchTerm);
-
-    fs.writeFileSync("./resources/mtg/mtgCache.json", JSON.stringify(cache));
-    fs.writeFileSync("./resources/mtg/mtgSearchCache.json", JSON.stringify(searchCache));
-  }
-
-  return result;
 }
 
 async function convertForCache(card) {
@@ -85,6 +55,7 @@ async function convertForCache(card) {
   }
 
   return {
+    canBeFoil: card.foil,
     colours: card.colors ?? card.card_faces[0].colors,
     flavour_text: card.flavor_text,
     foil: false,
@@ -170,19 +141,29 @@ function lucky(i) {
 }
 
 module.exports = {
-  boosterGetConnected(set) {},
+  boosterGetConnected(set) {
+    const chances = [
+      { chance: 35, common: 5, uncommon: 1 },
+      { chance: 75, common: 4, uncommon: 2 },
+      { chance: 87.5, common: 3, uncommon: 3 },
+      { chance: 94.5, common: 2, uncommon: 4 },
+      { chance: 98, common: 1, uncommon: 5 },
+      { chance: 100, common: 0, uncommon: 6 }
+    ];
+    const roll = Math.random() * 100;
+    const cardsToPull = chances.find(({ chance }) => roll < chance).result;
+  },
   boosterGetHeadTurning(set) {},
   async boosterGetLand(set) {
-    const cards = await searchHelper(set.code, "land");
+    const isFoil = lucky(15);
+    const cards = await searchHelper(set.code, "land", isFoil ? "is:foil" : "");
     const card = getRandom(cards);
+    card.foil = isFoil;
 
-    if (lucky(15)) {
-      card.foil = true;
-    }
-    
     return card;
   },
   boosterGetMythic(set) {},
   boosterGetRare(set) {},
   boosterGetWildCard(set) {},
+  getFullSet
 };

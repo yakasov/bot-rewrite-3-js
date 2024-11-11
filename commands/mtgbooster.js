@@ -17,6 +17,7 @@ const {
   boosterGetMythic,
   boosterGetRare,
   boosterGetWildCard,
+  getFullSet
 } = require("../util/mtgBoosterHelper.js");
 const cache = require("../resources/mtg/mtgCache.json");
 const { allSets } = require("../resources/mtg/mtgSets.js");
@@ -31,26 +32,21 @@ const replacements = {
   "{7}": ":seven:",
   "{8}": ":eight:",
   "{9}": ":nine:",
-  "{B}": ":blue_circle:",
-  "{C}": ":grey_question:",
-  "{G}": ":green_circle:",
-  "{R}": ":red_circle:",
+  "{B}": ":cold_face",
+  "{C}": ":nerd:",
+  "{G}": ":nauseated:",
+  "{R}": ":rage:",
   "{T}": ":arrow_right_hook:",
-  "{U}": ":black_circle:",
-  "{W}": ":white_circle:",
+  "{U}": ":new_moon_with_face:",
+  "{W}": ":alien:",
   "{X}": ":regional_indicator_x:",
 };
 const interactions = {};
 
-async function generateBoosterPack(id, chosenSet) {
-  let setToUse = null;
-
-  if (chosenSet) {
-    [setToUse] = allSets.filter((s) => s.code === chosenSet);
-  }
-  if (!setToUse) {
-    setToUse = allSets[Math.floor(Math.random() * allSets.length)];
-  }
+async function generateBoosterPack(id, chosenSet = null) {
+  const setToUse = allSets.find((s) => s.code === chosenSet) 
+              || allSets[Math.floor(Math.random() * allSets.length)];
+  await getFullSet(setToUse);
 
   interactions[id].cards = [
     await boosterGetLand(setToUse),
@@ -58,7 +54,7 @@ async function generateBoosterPack(id, chosenSet) {
     boosterGetHeadTurning(setToUse),
     ...boosterGetWildCard(setToUse),
     boosterGetRare(setToUse),
-    boosterGetMythic(setToUse),
+    boosterGetMythic(setToUse),   
   ];
   return;
 
