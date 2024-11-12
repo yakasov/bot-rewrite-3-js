@@ -29,25 +29,28 @@ async function getFullSet(set) {
 function setFilter(set, rules) {
   /*
    * Rules will be a dictionary
-   * e.g. 
+   * e.g.
    * { k: "type", t: "includes", v: "land" },
    * { k: "is", t: "is", v: isFoil ? "foil" : "nonfoil" },
    * where all rules will be iterated through
    */
+  const filterIncludes = (k, v) => k.includes(v);
+  const filterIs = (k, v) => k === v;
+
+  let returnCache = Object.values(cache[set]);
+
+  // This can definitely be improved
+  rules.forEach((rule) => {
+    returnCache = returnCache.filter((c) =>
+      c[rule.k] && rule.t === "includes"
+        ? filterIncludes(c[rule.k], rule.v)
+        : filterIs(c[rule.k], rule.v));
+  });
+
+  return returnCache;
 }
 
 async function convertForCache(card) {
-  if (card.flavour_text) {
-    /*
-     * TODO: Make this check less... hacky
-     * This check stops cards being converted if they're already cached
-     * (because a non-cache card won't have 'flavour' text)
-     *
-     * This can properly be mitigated by checking it when called
-     */
-    return card;
-  }
-
   let image = null;
   let local = false;
   if (card.image_uris) {
@@ -144,32 +147,8 @@ function lucky(i) {
 }
 
 module.exports = {
-  boosterGetConnected(set) {
-    const chances = [
-      { chance: 35, common: 5, uncommon: 1 },
-      { chance: 75, common: 4, uncommon: 2 },
-      { chance: 87.5, common: 3, uncommon: 3 },
-      { chance: 94.5, common: 2, uncommon: 4 },
-      { chance: 98, common: 1, uncommon: 5 },
-      { chance: 100, common: 0, uncommon: 6 },
-    ];
-    const roll = Math.random() * 100;
-    const cardsToPull = chances.find(({ chance }) => roll < chance).result;
-  },
-  boosterGetHeadTurning(set) {},
-  async boosterGetLand(set) {
-    const isFoil = lucky(15);
-    const cards = setFilter(set.code, [
-      { k: "type", t: "includes", v: "land" },
-      { k: "is", t: "is", v: isFoil ? "foil" : "nonfoil" },
-    ]);
-    const card = getRandom(cards);
-    card.foil = isFoil;
-
-    return card;
-  },
-  boosterGetMythic(set) {},
-  boosterGetRare(set) {},
-  boosterGetWildCard(set) {},
   getFullSet,
+  getRandom,
+  lucky,
+  setFilter
 };

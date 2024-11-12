@@ -9,17 +9,15 @@ const {
   SlashCommandBuilder,
 } = require("discord.js");
 const fs = require("fs");
-const { Cards } = require("scryfall-api");
+const { getFullSet } = require("../util/mtgBoosterHelper.js");
 const {
   boosterGetConnected,
+  boosterGetFoil,
   boosterGetHeadTurning,
   boosterGetLand,
-  boosterGetMythic,
-  boosterGetRare,
+  boosterGetRareOrMythic,
   boosterGetWildCard,
-  getFullSet
-} = require("../util/mtgBoosterHelper.js");
-const cache = require("../resources/mtg/mtgCache.json");
+} = require("../util/mtgBoosterGenerator.js");
 const { allSets } = require("../resources/mtg/mtgSets.js");
 
 const replacements = {
@@ -44,8 +42,9 @@ const replacements = {
 const interactions = {};
 
 async function generateBoosterPack(id, chosenSet = null) {
-  const setToUse = allSets.find((s) => s.code === chosenSet) 
-              || allSets[Math.floor(Math.random() * allSets.length)];
+  const setToUse =
+    allSets.find((s) => s.code === chosenSet) ||
+    allSets[Math.floor(Math.random() * allSets.length)];
   await getFullSet(setToUse);
 
   interactions[id].cards = [
@@ -53,8 +52,8 @@ async function generateBoosterPack(id, chosenSet = null) {
     ...boosterGetConnected(setToUse),
     boosterGetHeadTurning(setToUse),
     ...boosterGetWildCard(setToUse),
-    boosterGetRare(setToUse),
-    boosterGetMythic(setToUse),   
+    boosterGetRareOrMythic(setToUse),
+    boosterGetFoil(setToUse),
   ];
 }
 
