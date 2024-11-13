@@ -32,7 +32,7 @@ function boosterGetFoil(set) {
   const cards = setFilter(set.code, [
     { k: "canBeFoil", t: "is", v: true },
   ]);
-  const card = getRandom(cards);
+  const card = getRandom(cards.length === 0 ? setFilter(set.code, []) : cards);
   card.foil = true;
 
   return card;
