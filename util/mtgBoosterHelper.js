@@ -10,17 +10,21 @@ async function getFullSet(set) {
   if (cache[set]) {
     return;
   }
-  cache[set] = [];
+  cache[set] = {};
 
   const result = await Promise.all(
-    (await Cards.search(`set:${set}`)
-      .all()).map(
-      async (c) => await convertForCache(c)
-    )
+    await Cards.search(`set:${set}`)
+      .all()
+      .then((res) => res.map(
+        async (c) => await convertForCache(c)
+      ))
   );
 
   result.forEach((c) => {
-    cache[set][c.number] = c;
+    // Investigate why c would be null
+    if (c) {
+      cache[set][c.number] = c;
+    }
   });
 
   fs.writeFileSync("./resources/mtg/mtgCache.json", JSON.stringify(cache));
@@ -42,7 +46,7 @@ function setFilter(set, rules) {
   // This can definitely be improved
   rules.forEach((rule) => {
     returnCache = returnCache.filter((c) =>
-      c[rule.k] && rule.t === "includes"
+      c && c[rule.k] && rule.t === "includes"
         ? filterIncludes(c[rule.k], rule.v)
         : filterIs(c[rule.k], rule.v));
   });
@@ -65,6 +69,7 @@ async function convertForCache(card) {
     colours: card.colors ?? card.card_faces[0].colors,
     flavour_text: card.flavor_text,
     foil: false,
+    frameEffects: card.frame_effects,
     id: card.id,
     image,
     keywords: card.keywords,

@@ -32,7 +32,6 @@ function boosterGetFoil(set) {
   const cards = setFilter(set.code, [
     { k: "canBeFoil", t: "is", v: true },
   ]);
-  console.log(cards);
   const card = getRandom(cards);
   card.foil = true;
 
@@ -41,9 +40,9 @@ function boosterGetFoil(set) {
 
 function boosterGetHeadTurning(set) {
   const cards = setFilter(set.code, [
-    { k: "frame", t: "is", v: "showcase" },
+    { k: "frameEffects", t: "includes", v: "showcase" },
   ]);
-  const card = getRandom(cards);
+  const card = getRandom(cards.length === 0 ? setFilter(set.code, []) : cards);
 
   return card;
 }
@@ -62,7 +61,6 @@ function boosterGetLand(set) {
 function boosterGetRareOrMythic(set) {
   const isMythic = lucky(13.5);
   const cards = setFilter(set.code, [
-    { k: "type_line", t: "includes", v: "Land" },
     { k: "rarity", t: "is", v: isMythic ? "mythic" : "rare" },
   ]);
   const card = getRandom(cards);

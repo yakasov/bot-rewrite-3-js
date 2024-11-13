@@ -21,23 +21,23 @@ const {
 const { allSets } = require("../resources/mtg/mtgSets.js");
 
 const replacements = {
-  "{1}": ":one:",
-  "{2}": ":two:",
-  "{3}": ":three:",
-  "{4}": ":four:",
-  "{5}": ":five:",
-  "{6}": ":six:",
-  "{7}": ":seven:",
-  "{8}": ":eight:",
-  "{9}": ":nine:",
-  "{B}": ":cold_face",
-  "{C}": ":nerd:",
-  "{G}": ":nauseated:",
-  "{R}": ":rage:",
-  "{T}": ":arrow_right_hook:",
-  "{U}": ":new_moon_with_face:",
-  "{W}": ":alien:",
-  "{X}": ":regional_indicator_x:",
+  "{1}": " :one: ",
+  "{2}": " :two: ",
+  "{3}": " :three: ",
+  "{4}": " :four: ",
+  "{5}": " :five: ",
+  "{6}": " :six: ",
+  "{7}": " :seven: ",
+  "{8}": " :eight: ",
+  "{9}": " :nine: ",
+  "{B}": " :cold_face: ",
+  "{C}": " :nerd: ",
+  "{G}": " :nauseated_face: ",
+  "{R}": " :rage: ",
+  "{T}": " :arrow_right_hook: ",
+  "{U}": " :new_moon_with_face: ",
+  "{W}": " :alien: ",
+  "{X}": " :regional_indicator_x: ",
 };
 const interactions = {};
 
@@ -45,7 +45,7 @@ async function generateBoosterPack(id, chosenSet = null) {
   const setToUse =
     allSets.find((s) => s.code === chosenSet) ||
     allSets[Math.floor(Math.random() * allSets.length)];
-  await getFullSet(setToUse);
+  await getFullSet(setToUse.code);
 
   interactions[id].cards = [
     await boosterGetLand(setToUse),
@@ -82,7 +82,7 @@ function getContent(id) {
     const file = c.local ? new AttachmentBuilder(`${c.image}.jpg`) : null;
     return [
       new EmbedBuilder()
-        .setTitle(c.name)
+        .setTitle(`${interactions[id].page} - ${c.name}`)
         .setURL(c.url)
         .setDescription(c.type_line)
         .addFields(
@@ -106,8 +106,8 @@ function getContent(id) {
       file,
     ];
   } catch (e) {
-    console.log(e);
-    console.log(c);
+    console.log(`getContent error: ${e}`);
+    console.log(`getContent card: ${c}`);
   }
 
   return null;
