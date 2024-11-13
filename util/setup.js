@@ -6,6 +6,8 @@ const basicJsonFiles = [
   "./resources/chanceResponses.json",
   "./resources/insights.json",
   "./resources/luckTable.json",
+  "./resources/mtg/mtgCache.json",
+  "./resources/mtg/mtgCards.json",
   "./resources/stats.json",
   "./resources/ranks.json",
   "./resources/roles.json"
