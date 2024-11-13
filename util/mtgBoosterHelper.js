@@ -15,14 +15,12 @@ async function getFullSet(set) {
   const result = await Promise.all(
     await Cards.search(`set:${set}`)
       .all()
-      .then((res) => res.map(
-        async (c) => await convertForCache(c)
-      ))
+      .then((res) => res.map(async (c) => await convertForCache(c)))
   );
 
   result.forEach((c) => {
     // Investigate why c would be null
-    if (c) {
+    if (c && !c.type_line.includes("Token")) {
       cache[set][c.number] = c;
     }
   });
@@ -155,5 +153,5 @@ module.exports = {
   getFullSet,
   getRandom,
   lucky,
-  setFilter
+  setFilter,
 };
