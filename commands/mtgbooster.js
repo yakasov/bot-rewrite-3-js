@@ -255,7 +255,7 @@ module.exports = {
     const collectorFilter = (i) => i.user.id === interaction.user.id;
     const collector = response.createMessageComponentCollector({
       filter: collectorFilter,
-      time: 120_000,
+      idle: 300_000,
     });
 
     collector.on("collect", async (i) => {
