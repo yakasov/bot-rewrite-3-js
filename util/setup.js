@@ -4,7 +4,6 @@ const fs = require("fs");
 const basicJsonFiles = [
   "./resources/birthdays.json",
   "./resources/chanceResponses.json",
-  "./resources/insights.json",
   "./resources/luckTable.json",
   "./resources/mtg/mtgCache.json",
   "./resources/mtg/mtgCards.json",
@@ -25,6 +24,14 @@ Please obtain the config.json.template from the GitHub page.`);
 
     console.warn("config.json not found, copying from template...");
     fs.copyFile("./resources/config.json.template", "./resources/config.json");
+  }
+
+  if (!fs.existsSync("./resources/mtg")) {
+    fs.mkdirSync("./resources/mtg");
+  }
+
+  if (!fs.existsSync("./resources/mtg/images")) {
+    fs.mkdirSync("./resources/mtg/images");
   }
 
   basicJsonFiles.forEach((file) => {
