@@ -14,7 +14,7 @@ const {
   GatewayIntentBits,
   Message,
   Collection,
-  EmbedBuilder
+  EmbedBuilder,
 } = require("discord.js");
 const moment = require("moment-timezone");
 const fs = require("fs");
@@ -32,7 +32,7 @@ const {
   backupStats,
   checkVoiceChannels,
   saveStats,
-  updateScores
+  updateScores,
 } = require("./util/stats.js");
 const { generateRollTable } = require("./util/rollTableGenerator.js");
 const fetch = require("node-fetch");
@@ -42,26 +42,22 @@ globalThis.stats = loadedStats;
 globalThis.rollTable = generateRollTable(chanceResponses);
 globalThis.currentDate = moment()
   .tz("Europe/London");
-globalThis.firstRun = { "birthdays": true,
-  "minecraft": 1 };
+globalThis.firstRun = { birthdays: true, minecraft: 1 };
 globalThis.botUptime = 0;
 globalThis.client = new Client({
-  "allowedMentions": {
-    "parse": [
-      "users",
-      "roles"
-    ],
-    "repliedUser": true
+  allowedMentions: {
+    parse: ["users", "roles"],
+    repliedUser: true,
   },
-  "intents": [
+  intents: [
     GatewayIntentBits.Guilds,
     GatewayIntentBits.GuildMembers,
     GatewayIntentBits.GuildMessages,
     GatewayIntentBits.GuildMessageReactions,
     GatewayIntentBits.GuildPresences,
     GatewayIntentBits.GuildVoiceStates,
-    GatewayIntentBits.MessageContent
-  ]
+    GatewayIntentBits.MessageContent,
+  ],
 });
 let splash = "";
 
@@ -69,8 +65,8 @@ const superReply = Message.prototype.reply;
 Message.prototype.reply = function (s) {
   try {
     return superReply.call(this, {
-      "content": s,
-      "failIfNotExists": false
+      content: s,
+      failIfNotExists: false,
     });
   } catch (e) {
     return console.error(e.message);
@@ -126,10 +122,7 @@ function getNewSplash() {
 async function checkMessageResponse(msg) {
   // Swap Twitter/X URLs for proper embedding ones
   if (
-    [
-      "https://x.com/",
-      "https://twitter.com/"
-    ].find((l) =>
+    ["https://x.com/", "https://twitter.com/"].find((l) =>
       msg.content.includes(l)) &&
     msg.content.includes("status")
   ) {
@@ -147,9 +140,9 @@ async function checkMessageResponse(msg) {
   const steamLinkRegex = /https:\/\/steamcommunity\.com\S*/gu;
   // Swap steamcommunity links for openable ones
   if (steamLinkRegex.test(msg.content)) {
-    const steamLink = msg.content
-      .split(" ")
-      .find((m) => steamLinkRegex.test(m)) ?? msg.content;
+    const steamLink =
+      msg.content.split(" ")
+        .find((m) => steamLinkRegex.test(m)) ?? msg.content;
     msg.channel.send(
       /* eslint-disable-next-line max-len */
       `Embedded link: https://yakasov.github.io/pages/miscellaneous/steam_direct.html?page=${encodeURIComponent(steamLink)}`
@@ -173,7 +166,7 @@ async function checkMessageResponse(msg) {
       ) {
         lastMsg = await msg.channel.messages
           .fetch({
-            "limit": 2
+            limit: 2,
           })
           .then((c) => getNicknameMsg([...c.values()].pop()));
       }
@@ -197,7 +190,7 @@ async function checkMessageResponse(msg) {
       );
       if (sticker.size) {
         return msg.channel.send({
-          "stickers": sticker
+          stickers: sticker,
         });
       }
       return null;
@@ -208,10 +201,7 @@ async function checkMessageResponse(msg) {
 
   const entries = Object.entries(responses);
   for (let i = 0; i < entries.length; i++) {
-    const [
-      k,
-      v
-    ] = entries[i];
+    const [k, v] = entries[i];
     if (` ${msg.content.toLowerCase()} `.includes(` ${k} `)) {
       /* eslint-disable-next-line consistent-return */
       return f(k, v);
@@ -291,32 +281,45 @@ function handleClientReady(c) {
 
 async function handleMessageCreate(msg) {
   // Check if Scryfall has given a stupid response
-  if (msg.author.id === "268547439714238465" && msg?.embeds[0]?.data?.description.includes("Multiple cards match")) {
-    const cardName = msg.embeds[0].data.description.match(/(?<=Multiple cards match “)(?:.*)(?=”, can you be more specific?)/gu)[0];
-    
+  if (
+    msg.author.id === "268547439714238465" &&
+    msg?.embeds[0]?.data?.description?.includes("Multiple cards match")
+  ) {
+    const cardName = msg.embeds[0].data.description.match(
+      /(?<=Multiple cards match “)(?:.*)(?=”, can you be more specific?)/gu
+    )[0];
+
     if (cardName.length > 1) {
       const results = await Cards.autoCompleteName(cardName);
+
+      /*
+       * Sometimes this happens with names like 'miku'
+       * I think the Scryfall bot works for all languages
+       * whereas AutoCompleteName only works for one at a time
+       */
+      if (!results.length) {
+        return;
+      }
 
       let embedString = "";
       results.forEach((c, i) => {
         embedString += `${i + 1}. ${c}\n`;
       });
-      
+
       const embed = new EmbedBuilder()
         .setTitle("Scryfall Cards")
-        .addFields(
-          {
-            name: `Returned ${results.length} cards:`,
-            value: embedString,
-          },
-        );
+        .addFields({
+          name: `Returned ${results.length} cards:`,
+          value: embedString,
+        });
 
-      return msg.channel.send({ embeds: [embed] });
+      msg.channel.send({ embeds: [embed] });
+      return;
     }
   }
 
   if (msg.author.bot || !msg.guild) {
-    return null;
+    return;
   }
 
   await checkMessageResponse(msg);
@@ -328,14 +331,12 @@ async function handleMessageCreate(msg) {
   }
 
   addToStats({
-    "guildId": msg.guild.id,
-    "type": "message",
-    "userId": msg.author.id
+    guildId: msg.guild.id,
+    type: "message",
+    userId: msg.author.id,
   });
 
   checkAchievements.run(msg);
-
-  return null;
 }
 
 async function handleInteractionCreate(interaction) {
@@ -356,13 +357,13 @@ async function handleInteractionCreate(interaction) {
     console.error(error);
     if (interaction.replied || interaction.deferred) {
       await interaction.followUp({
-        "content": "There was an error while executing this command!",
-        "ephemeral": true
+        content: "There was an error while executing this command!",
+        ephemeral: true,
       });
     } else {
       await interaction.reply({
-        "content": "There was an error while executing this command!",
-        "ephemeral": true
+        content: "There was an error while executing this command!",
+        ephemeral: true,
       });
     }
   }
@@ -375,15 +376,15 @@ function handleVoiceStateUpdate(oldState, newState) {
 
   if (oldState.channel && !newState.channel) {
     addToStats({
-      "guildId": newState.guild.id,
-      "type": "leftVoiceChannel",
-      "userId": newState.member.id
+      guildId: newState.guild.id,
+      type: "leftVoiceChannel",
+      userId: newState.member.id,
     });
   } else if (!oldState.channel && newState.channel) {
     addToStats({
-      "guildId": newState.guild.id,
-      "type": "joinedVoiceChannel",
-      "userId": newState.member.id
+      guildId: newState.guild.id,
+      type: "joinedVoiceChannel",
+      userId: newState.member.id,
     });
   }
 }
@@ -396,22 +397,18 @@ function handleReaction(reaction, user, action) {
   if (reaction.emoji.name === "🤓" || reaction.emoji.name === "😎") {
     let type = "";
     if (action === "add") {
-      type = reaction.emoji.name === "🤓"
-        ? "nerdEmojiAdded"
-        : "coolEmojiAdded";
+      type = reaction.emoji.name === "🤓" ? "nerdEmojiAdded" : "coolEmojiAdded";
     } else {
       type =
-        reaction.emoji.name === "🤓"
-          ? "nerdEmojiRemoved"
-          : "coolEmojiRemoved";
+        reaction.emoji.name === "🤓" ? "nerdEmojiRemoved" : "coolEmojiRemoved";
     }
 
     addToStats({
-      "giver": user,
-      "guildId": reaction.message.guildId,
-      "messageId": reaction.message.id,
+      giver: user,
+      guildId: reaction.message.guildId,
+      messageId: reaction.message.id,
       type,
-      "userId": reaction.message.author.id
+      userId: reaction.message.author.id,
     });
   }
 }
