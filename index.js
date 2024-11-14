@@ -13,16 +13,17 @@ const {
   Events,
   GatewayIntentBits,
   Message,
-  Collection
+  Collection,
+  EmbedBuilder
 } = require("discord.js");
 const moment = require("moment-timezone");
 const fs = require("fs");
+const { Cards } = require("scryfall-api");
 const npFile = require("./commands/np.js");
 const { token, botResponseChance } = require("./resources/config.json");
 const responses = require("./resources/responses.json");
 const chanceResponses = require("./resources/chanceResponses.json");
 const loadedStats = require("./resources/stats.json");
-const insights = require("./resources/insights.json");
 const checkAchievements = require("./util/achievements.js");
 const { getNicknameMsg } = require("./util/common.js");
 const {
@@ -30,7 +31,6 @@ const {
   addTokens,
   backupStats,
   checkVoiceChannels,
-  saveInsights,
   saveStats,
   updateScores
 } = require("./util/stats.js");
@@ -40,7 +40,6 @@ const path = require("node:path");
 globalThis.fetch = fetch;
 globalThis.stats = loadedStats;
 globalThis.rollTable = generateRollTable(chanceResponses);
-globalThis.insights = insights;
 globalThis.currentDate = moment()
   .tz("Europe/London");
 globalThis.firstRun = { "birthdays": true,
@@ -287,13 +286,37 @@ function handleClientReady(c) {
   setInterval(backupStats, getTime(0, 15)); // 15 minutes
   setInterval(addTokens, getTime(0, 1)); // 1 minute
   setInterval(updateScores, getTime(30)); // 30 seconds
-  setInterval(saveInsights, getTime(0, 5)); // 5 minutes
   /* eslint-enable line-comment-position */
 }
 
 async function handleMessageCreate(msg) {
+  // Check if Scryfall has given a stupid response
+  if (msg.author.id === "268547439714238465" && msg?.embeds[0]?.data?.description.includes("Multiple cards match")) {
+    const cardName = msg.embeds[0].data.description.match(/(?<=Multiple cards match “)(?:.*)(?=”, can you be more specific?)/gu)[0];
+    
+    if (cardName.length > 1) {
+      const results = await Cards.autoCompleteName(cardName);
+
+      let embedString = "";
+      results.forEach((c, i) => {
+        embedString += `${i + 1}. ${c}\n`;
+      });
+      
+      const embed = new EmbedBuilder()
+        .setTitle("Scryfall Cards")
+        .addFields(
+          {
+            name: `Returned ${results.length} cards:`,
+            value: embedString,
+          },
+        );
+
+      return msg.channel.send({ embeds: [embed] });
+    }
+  }
+
   if (msg.author.bot || !msg.guild) {
-    return;
+    return null;
   }
 
   await checkMessageResponse(msg);
@@ -311,6 +334,8 @@ async function handleMessageCreate(msg) {
   });
 
   checkAchievements.run(msg);
+
+  return null;
 }
 
 async function handleInteractionCreate(interaction) {
@@ -327,8 +352,6 @@ async function handleInteractionCreate(interaction) {
 
   try {
     await command.execute(interaction);
-    globalThis.insights[interaction.commandName] =
-      (globalThis.insights[interaction.commandName] ?? 0) + 1;
   } catch (error) {
     console.error(error);
     if (interaction.replied || interaction.deferred) {

@@ -266,15 +266,6 @@ module.exports = {
     }
   },
 
-  "saveInsights": () => {
-    try {
-      const task = require("../tasks/saveInsights.js");
-      return task.run();
-    } catch (e) {
-      return console.error(e);
-    }
-  },
-
   "saveStats": () => {
     try {
       const task = require("../tasks/saveStats.js");
