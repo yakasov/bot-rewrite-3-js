@@ -78,7 +78,7 @@ async function convertForCache(card) {
     number: card.collector_number,
     oracle_text: card.oracle_text ?? card.card_faces[0].mana_cost,
     power: card.power,
-    price: card.prices.usd,
+    price: (card.prices.usd ?? card.prices.usd_foil) ?? 0,
     price_foil: card.prices.usd_foil,
     rarity: card.rarity,
     set: card.set,
