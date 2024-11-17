@@ -24,6 +24,7 @@ const {
 } = require("../util/mtgBoosterGenerator.js");
 const { allSets } = require("../resources/mtg/mtgSets.js");
 const cache = require("../resources/mtg/mtgCache.json");
+const cardCache = require("../resources/mtg/mtgCards.json");
 
 const replacements = {
   "{1}": " :one: ",
@@ -47,6 +48,10 @@ const replacements = {
 const interactions = {};
 
 async function generateBoosterPack(interaction, chosenSet = null) {
+  if (chosenSet && !allSets.find((s) => s.code === chosenSet)) {
+    return true;
+  }
+
   const { id } = interaction.user;
   const setToUse =
     allSets.find((s) => s.code === chosenSet) ||
@@ -77,6 +82,36 @@ async function generateBoosterPack(interaction, chosenSet = null) {
       interactions[id].cardFill = _;
     }
   }
+
+  if (!cardCache[id]) {
+    cardCache[id] = { netWorth: 0 };
+  }
+
+  if (!cardCache[id][setToUse.code]) {
+    cardCache[id][setToUse.code] = [];
+  }
+
+  interactions[id].cards.forEach((c) => {
+    if (!cardCache[id][setToUse.code].includes(c.id)) {
+      cardCache[id][setToUse.code].push(c.id);
+    }
+  });
+
+  interactions[id].overallPrice = Math.round(
+    (interactions[id].cards.reduce(
+      (partial, ca) =>
+        partial + parseFloat((ca.foil ? ca.price_foil : ca.price) ?? 0),
+      0
+    ) *
+      100) /
+      100
+  );
+  const setPrice = setToUse.price;
+  const cardValue = interactions[id].overallPrice;
+  cardCache[id].netWorth += (cardValue - setPrice);
+
+  fs.writeFileSync("./resources/mtg/mtgCards.json", JSON.stringify(cardCache));
+  return false;
 }
 
 function getButtons(id) {
@@ -104,15 +139,11 @@ function getContent(id) {
       .toUpperCase() + String(s)
       .slice(1);
   const c = interactions[id].cards[interactions[id].page - 2];
-  interactions[id].overallPrice = Math.round(
-    (interactions[id].cards.reduce(
-      (partial, ca) =>
-        partial + parseFloat((ca.foil ? ca.price_foil : ca.price) ?? 0),
-      0
-    ) *
-      100) /
-      100
-  );
+
+  const setPrice = allSets.find(
+    (s) => s.code === interactions[id].cards[1].set
+  ).price;
+  const cardValue = interactions[id].overallPrice;
 
   if (interactions[id].page === 1) {
     return [
@@ -129,7 +160,7 @@ function getContent(id) {
           },
           {
             name: "Overall Price",
-            value: `$${interactions[id].overallPrice}`,
+            value: `Set: $${setPrice} // Cards: $${cardValue} // Profit: $${cardValue - setPrice}`,
           },
           { name: "\u200B", value: "\u200B" },
           {
@@ -243,7 +274,10 @@ module.exports = {
     const chosenSet = interaction.options.getString("set") ?? null;
 
     await interaction.deferReply();
-    await generateBoosterPack(interaction, chosenSet);
+    const shouldSkip = await generateBoosterPack(interaction, chosenSet);
+    if (shouldSkip) {
+      return interaction.editReply("Chosen set not found!");
+    }
 
     let [embed, file] = getContent(interaction.user.id);
     const response = await interaction.editReply({
@@ -276,5 +310,7 @@ module.exports = {
         files: file ? [file] : [],
       });
     });
+
+    return null;
   },
 };
