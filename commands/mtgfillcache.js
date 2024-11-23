@@ -9,14 +9,14 @@ module.exports = {
   data: new SlashCommandBuilder()
     .setName("mtgfillcache")
     .setDescription("Fill MTG cache"),
-  execute(interaction) {
-    const cachedSets = Object.keys(cache);
-    allSets.forEach(async (s) => {
+  async execute(interaction) {
+    const cachedSets = Object.keys(cache)[0];
+    for (const s of allSets) {
       if (!cachedSets.includes(s.code)) {
         console.log(`Processing set ${s.code}...`);
         await getFullSet(s.code);
       }
-    });
+    }
     console.log("Finished processing all sets!");
   },
 };
