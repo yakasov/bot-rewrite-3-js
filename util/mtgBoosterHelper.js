@@ -64,7 +64,7 @@ async function convertForCache(card) {
 
   return {
     canBeFoil: card.foil,
-    colours: card.colors || card.card_faces[0].colors,
+    colours: card.colors ?? card.card_faces[0].colors,
     flavour_text: card.flavor_text,
     foil: false,
     frameEffects: card.frame_effects,
@@ -73,18 +73,18 @@ async function convertForCache(card) {
     keywords: card.keywords,
     legal: card.legalities.commander === "legal",
     local,
-    mana_cost: card.mana_cost || card.card_faces[0].mana_cost,
-    name: card.name || card.card_faces[0].name,
+    mana_cost: card.mana_cost ?? card.card_faces[0].mana_cost,
+    name: card.name ?? card.card_faces[0].name,
     number: card.collector_number,
-    oracle_text: card.oracle_text || card.card_faces[0].mana_cost,
+    oracle_text: card.oracle_text ?? card.card_faces[0].mana_cost,
     power: card.power,
-    price: (card.prices.usd || card.prices.usd_foil) || 0,
+    price: (card.prices.usd ?? card.prices.usd_foil) ?? 0,
     price_foil: card.prices.usd_foil,
     rarity: card.rarity,
     set: card.set,
     set_name: card.set_name,
     toughness: card.toughness,
-    type_line: card.type_line || card.card_faces[0].type_line,
+    type_line: card.type_line ?? card.card_faces[0].type_line,
     url: card.scryfall_uri,
   };
 }
