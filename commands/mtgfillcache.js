@@ -10,7 +10,7 @@ module.exports = {
     .setName("mtgfillcache")
     .setDescription("Fill MTG cache"),
   async execute(interaction) {
-    const cachedSets = Object.keys(cache)[0];
+    const cachedSets = Object.keys(cache);
     for (const s of allSets) {
       if (!cachedSets.includes(s.code)) {
         console.log(`Processing set ${s.code}...`);
