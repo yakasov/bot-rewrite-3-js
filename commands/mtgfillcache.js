@@ -17,9 +17,13 @@ module.exports = {
 
     (await rawSets).forEach((s) => allSets.push(s.code));
     for (const s of allSets) {
-      if (!cachedSets.includes(s.code)) {
-        console.log(`Processing set ${s.code}...`);
-        await getFullSet(s.code);
+      if (!cachedSets.includes(s)) {
+        console.log(`Processing set ${s}...`);
+        try {
+          await getFullSet(s);
+        } catch (e) {
+          console.log(e);
+        }
       }
     }
     console.log("Finished processing all sets!");
