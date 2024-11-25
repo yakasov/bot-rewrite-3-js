@@ -29,7 +29,7 @@
     "moment-timezone": "^0.5.45",
     "node-fetch": "^2.7.0",
     "node-html-parser": "^6.1.13",
-    "openai": "^4.63.0",
+    "openai": "^4.73.0",
     "scryfall-api": "^4.0.1",
     "sharp": "^0.33.5",
     "ytdl-core": "^4.11.5",
