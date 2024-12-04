@@ -7,7 +7,7 @@ const { joinImages } = require("join-images");
 const cache = require("../resources/mtg/mtgCache.json");
 
 async function getFullSet(set) {
-  if (cache[set] && Object.keys(cache[set]) > 0) {
+  if (cache[set] && Object.keys(cache[set]).length > 0) {
     return;
   }
   cache[set] = {};
