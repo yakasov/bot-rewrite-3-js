@@ -13,7 +13,7 @@ async function getFullSet(set) {
   cache[set] = {};
 
   const result = await Promise.all(
-    await Cards.search(`set:${set}`)
+    await Cards.search(`set:${set} unique:prints`)
       .all()
       .then((res) => res.map(async (c) => await convertForCache(c)))
   );
