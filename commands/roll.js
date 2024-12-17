@@ -36,7 +36,6 @@ module.exports = {
     const changes = {
       "exp": 0,
       "exp_percent": 0,
-      "reputation": 0,
       "tokens": 0
     };
 
@@ -71,12 +70,6 @@ module.exports = {
           interaction.user.id
         ].levelExperience * result.action.amount;
         changes.exp_percent += result.action.amount * 100;
-        break;
-      case "reputation":
-        globalThis.stats[interaction.guild.id][
-          interaction.user.id
-        ].reputation += result.action.amount;
-        changes.reputation += result.action.amount;
         break;
       case "token":
         globalThis.stats[interaction.guild.id][
@@ -122,14 +115,6 @@ ${module.exports.getTokenString(
             ? "gained"
             : "lost"
         } ${Math.abs(changes.exp_percent * 100)}% experience!\n`;
-      }
-
-      if (changes.reputation) {
-        response += `You have ${
-          changes.reputation > 0
-            ? "gained"
-            : "lost"
-        } ${Math.abs(changes.reputation)} reputation!\n`;
       }
 
       if (changes.tokens) {

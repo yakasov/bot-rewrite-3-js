@@ -1,50 +1,5 @@
 [
   {
-    "description": "You have gained 10 reputation!",
-    "min": 0,
-    "max": 1,
-    "action": {
-      "type": "reputation",
-      "amount": 10
-    }
-  },
-  {
-    "description": "You have gained 5 reputation!",
-    "min": 1,
-    "max": 2.5,
-    "action": {
-      "type": "reputation",
-      "amount": 5
-    }
-  },
-  {
-    "description": "You have gained 3 reputation!",
-    "min": 2.5,
-    "max": 9.5,
-    "action": {
-      "type": "reputation",
-      "amount": 3
-    }
-  },
-  {
-    "description": "You have lost 7 reputation!",
-    "min": 9.5,
-    "max": 13.5,
-    "action": {
-      "type": "reputation",
-      "amount": -7
-    }
-  },
-  {
-    "description": "You have lost 5 reputation!",
-    "min": 13.5,
-    "max": 20,
-    "action": {
-      "type": "reputation",
-      "amount": -5
-    }
-  },
-  {
     "description": "You have gained 1% of your experience!",
     "min": 20,
     "max": 45,
