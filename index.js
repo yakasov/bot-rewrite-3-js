@@ -389,37 +389,9 @@ function handleVoiceStateUpdate(oldState, newState) {
   }
 }
 
-function handleReaction(reaction, user, action) {
-  if (user.id === reaction.message.author.id) {
-    return;
-  }
-
-  if (reaction.emoji.name === "🤓" || reaction.emoji.name === "😎") {
-    let type = "";
-    if (action === "add") {
-      type = reaction.emoji.name === "🤓" ? "nerdEmojiAdded" : "coolEmojiAdded";
-    } else {
-      type =
-        reaction.emoji.name === "🤓" ? "nerdEmojiRemoved" : "coolEmojiRemoved";
-    }
-
-    addToStats({
-      giver: user,
-      guildId: reaction.message.guildId,
-      messageId: reaction.message.id,
-      type,
-      userId: reaction.message.author.id,
-    });
-  }
-}
-
 globalThis.client.once(Events.ClientReady, handleClientReady);
 globalThis.client.on(Events.MessageCreate, handleMessageCreate);
 globalThis.client.on(Events.InteractionCreate, handleInteractionCreate);
 globalThis.client.on(Events.VoiceStateUpdate, handleVoiceStateUpdate);
-globalThis.client.on(Events.MessageReactionAdd, (reaction, user) =>
-  handleReaction(reaction, user, "add"));
-globalThis.client.on(Events.MessageReactionRemove, (reaction, user) =>
-  handleReaction(reaction, user, "remove"));
 
 globalThis.client.login(token);

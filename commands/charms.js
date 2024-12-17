@@ -145,9 +145,9 @@ function getCharmName(effect) {
 function getCharmMult(charm) {
   switch (charm.effect) {
   case "rep_bonus":
-    return `+${charm.rarity / 20} rep`;
+    return "LOLOLOLOLOL";
   case "rep_mult":
-    return `${1 + charm.rarity / 1000}x`;
+    return "LOLOLOLOLOL";
   case "xp_mult":
     return `${1 + charm.rarity / 200}x`;
   case "token_bonus":

@@ -26,27 +26,6 @@ module.exports = {
         interaction.guild.members.cache.filter((m) => m.id === k)
           .first());
 
-    const topNerder = filterStats
-      .map(([
-        k,
-        v
-      ]) => [
-        k,
-        v.nerdsGiven
-      ])
-      .sort(([, f], [, s]) => s - f)[0];
-
-    const topNerded = filterStats
-      .map(([
-        k,
-        v
-      ]) => [
-        k,
-        Object.values(v.nerdEmojis)
-          .reduce((sum, count) => sum + count, 0)
-      ])
-      .sort(([, f], [, s]) => s - f)[0];
-
     const topScores = filterStats
       .map(([
         k,
@@ -57,34 +36,7 @@ module.exports = {
       ])
       .sort(([, f], [, s]) => s - f);
 
-    const reputations = filterStats.map(([
-      k,
-      v
-    ]) => [
-      k,
-      v.reputation
-    ]);
-
-    const topReputation = [...reputations].sort(([, f], [, s]) => s - f)[0];
-    const bottomReputation = [...reputations].sort(([, f], [, s]) => f - s)[0];
-
-    let outputMessage = `Top nerder: ${getNicknameInteraction(
-      interaction,
-      topNerder[0]
-    )} (${topNerder[1]} emojis given)\nMost nerded: ${getNicknameInteraction(
-      interaction,
-      topNerded[0]
-    )} (${
-      topNerded[1]
-    } emojis received)\nHighest reputation: ${getNicknameInteraction(
-      interaction,
-      topReputation[0]
-    )} (${
-      topReputation[1]
-    } reputation)\nLowest reputation: ${getNicknameInteraction(
-      interaction,
-      bottomReputation[0]
-    )} (${bottomReputation[1]} reputation)\n\n`;
+    let outputMessage = "";
 
     const data = [];
 
@@ -103,8 +55,6 @@ module.exports = {
           "Time": formatTime(
             guildStats[a[0]].voiceTime
           ),
-          "Rep":
-            module.exports.addLeadingZero(guildStats[a[0]].reputation),
           "Title": getTitle(guildStats[a[0]])
         });
       });
@@ -142,15 +92,4 @@ module.exports = {
     }
     return num;
   },
-  "formatReputation": (rep) =>
-    `${module.exports.getColorCode(rep)}${rep}\u001b[0m`,
-  "getColorCode": (rep) => {
-    if (rep > 0) {
-      return "\u001b[1;32m";
-    }
-    if (rep < 0) {
-      return "\u001b[1;31m";
-    }
-    return "\u001b[1;00m";
-  }
 };

@@ -28,8 +28,6 @@
     "_messageSRGainCooldown": "The cooldown (in seconds) to wait before message SR can be gained again.",
     "voiceChatSRGain": 0.2,
     "_voiceChatSRGain": "The amount of SR to gain per second whilst in voice chat.",
-    "reputationGain": 75,
-    "reputationGainCooldown": 900,
     "tokenMax": 50,
     "dailyTokens": 3,
     "charmCost": 5

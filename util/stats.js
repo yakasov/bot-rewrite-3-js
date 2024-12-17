@@ -12,7 +12,7 @@ const ranks = require("../resources/ranks.json");
 
 module.exports = {
   "addToStats": (a) => {
-    const { type, userId, guildId, messageId, giver } = a;
+    const { type, userId, guildId, giver } = a;
     const giverId = giver
       ? giver.id
       : 0;
@@ -67,70 +67,6 @@ module.exports = {
       );
       break;
 
-    case "nerdEmojiAdded":
-      if (!messageId) {
-        return;
-      }
-      if (!giver.bot) {
-        globalThis.stats[guildId][giverId].nerdsGiven++;
-      }
-
-      globalThis.stats[guildId][userId].nerdEmojis[messageId] =
-          (globalThis.stats[guildId][userId].nerdEmojis[messageId] ?? 0) +
-          1 +
-          Math.floor(globalThis.stats[guildId][giverId].level / 25);
-      break;
-
-    case "nerdEmojiRemoved":
-      if (!messageId) {
-        return;
-      }
-      if (!giver.bot) {
-        globalThis.stats[guildId][giverId].nerdsGiven = Math.max(
-          0,
-          (globalThis.stats[guildId][giverId].nerdsGiven ?? 0) - 1
-        );
-      }
-
-      globalThis.stats[guildId][userId].nerdEmojis[messageId] = Math.max(
-        0,
-        globalThis.stats[guildId][userId].nerdEmojis[messageId] -
-            (1 + Math.floor(globalThis.stats[guildId][giverId].level / 25))
-      );
-      break;
-
-    case "coolEmojiAdded":
-      if (!messageId) {
-        return;
-      }
-      if (!giver.bot) {
-        globalThis.stats[guildId][giverId].coolsGiven++;
-      }
-
-      globalThis.stats[guildId][userId].coolEmojis[messageId] =
-          (globalThis.stats[guildId][userId].coolEmojis[messageId] ?? 0) +
-          1 +
-          Math.floor(globalThis.stats[guildId][giverId].level / 25);
-      break;
-
-    case "coolEmojiRemoved":
-      if (!messageId) {
-        return;
-      }
-      if (!giver.bot) {
-        globalThis.stats[guildId][giverId].coolsGiven = Math.max(
-          0,
-          (globalThis.stats[guildId][giverId].coolsGiven ?? 0) - 1
-        );
-      }
-
-      globalThis.stats[guildId][userId].coolEmojis[messageId] = Math.max(
-        0,
-        globalThis.stats[guildId][userId].coolEmojis[messageId] -
-            (1 + Math.floor(globalThis.stats[guildId][giverId].level / 25))
-      );
-      break;
-
     default:
       break;
     }
@@ -162,10 +98,6 @@ module.exports = {
     "achievements": [],
     "charms": [],
     "charmsRolled": false,
-    "coolEmojis": {},
-    "coolHandicap": 0,
-    "coolScore": 0,
-    "coolsGiven": 0,
     "customSetName": false,
     "joinTime": 0,
     "lastDailyTime": 0,
@@ -176,14 +108,8 @@ module.exports = {
     "luckTokens": 10,
     "messages": 0,
     "name": "",
-    "nerdEmojis": {},
-    "nerdHandicap": 0,
-    "nerdScore": 0,
-    "nerdsGiven": 0,
     "previousMessages": 0,
     "previousVoiceTime": 0,
-    "reputation": 0,
-    "reputationTime": 0,
     "totalExperience": 0,
     "unlockedNames": [],
     "voiceTime": 0
@@ -320,26 +246,6 @@ module.exports = {
     }
   },
 
-  "updateNerdCoolScores": (guildId, userId) => {
-    const s = globalThis.stats[guildId][userId];
-    const nerdPower = s.level < 15
-      ? 2.8
-      : 1.8;
-    s.nerdScore =
-      Object.values(s.nerdEmojis)
-        .reduce(
-          (sum, a) => sum + Math.max(nerdPower ** a + 1, 0) - 1,
-          0
-        ) - s.nerdHandicap;
-
-    s.coolScore =
-      Object.values(s.coolEmojis)
-        .reduce(
-          (sum, a) => sum + Math.max(2.8 ** a + 1, 0) - 1,
-          0
-        ) - s.coolHandicap;
-  },
-
   "updateScoreValue": (guildId, userId) => {
     const s = globalThis.stats[guildId][userId];
     const { charms } = s;
@@ -353,17 +259,8 @@ module.exports = {
           (1 + module.exports.checkCharmEffect("msg_mult", charms)) *
           (statsConfig.messageSRGain +
             module.exports.checkCharmEffect("msg_bonus", charms) *
-              statsConfig.messageSRGain)) *
-        Math.max(
-          1 +
-            s.reputation *
-              statsConfig.reputationGain *
-              (1 + module.exports.checkCharmEffect("rep_mult", charms) / 10),
-          0.01
-        ) +
-        s.luckHandicap +
-        s.coolScore -
-        s.nerdScore) *
+              statsConfig.messageSRGain)) +
+        s.luckHandicap) *
         (1 + module.exports.checkCharmEffect("xp_mult", charms) / 2)
     );
 
@@ -403,13 +300,6 @@ module.exports = {
               userId
             });
 
-            if (globalThis.stats[guildId][userId].reputation > 99) {
-              globalThis.stats[guildId][userId].reputation = -99;
-            } else if (globalThis.stats[guildId][userId].reputation < -99) {
-              globalThis.stats[guildId][userId].reputation = 99;
-            }
-
-            module.exports.updateNerdCoolScores(guildId, userId);
             module.exports.updateScoreValue(guildId, userId);
 
             if (
@@ -429,12 +319,6 @@ module.exports = {
       userStats.totalExperience -
       getRequiredExperienceCumulative(userStats.level);
     userStats.level++;
-
-    // Add nerdHandicap to offset nerdScore
-    userStats.nerdHandicap = Math.max(userStats.nerdScore, 0) * 0.8;
-
-    // Do the same with coolHandicap
-    userStats.coolHandicap = Math.max(userStats.coolScore, 0) * 0.8;
 
     if (userStats.levelExperience > getRequiredExperience(userStats.level)) {
       module.exports.updateStatsOnLevelUp(userStats);

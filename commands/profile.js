@@ -83,27 +83,7 @@ module.exports = {
       allUserStats
     )}\n    Ranking: ${getLevelName(allUserStats.level)} (${
       allUserStats.totalExperience
-    } XP)\n    Reputation: ${
-      allUserStats.reputation
-    }\n\n    Nerd Emojis given: ${
-      allUserStats.nerdsGiven
-    }\n    Nerd Emojis received: ${
-      Object.values(allUserStats.nerdEmojis)
-        .reduce((sum, a) => sum + a, 0) ?? 0
-    }\n    Cool Emojis given: ${
-      allUserStats.coolsGiven
-    }\n    Cool Emojis received: ${
-      Object.values(allUserStats.coolEmojis)
-        .reduce((sum, a) => sum + a, 0) ?? 0
-    }\n\n    Nerd Penalty: -${Math.floor(allUserStats.nerdScore)} ${
-      allUserStats.nerdHandicap
-        ? `(offset by ${Math.floor(allUserStats.nerdHandicap)})`
-        : ""
-    }\n    Cool Bonus: ${Math.floor(allUserStats.coolScore)} ${
-      allUserStats.coolHandicap
-        ? `(offset by -${Math.floor(allUserStats.coolHandicap)})`
-        : ""
-    }`;
+    } XP)`;
 
     await interaction.followUp(
       `Showing profile for ${getNicknameInteraction(
