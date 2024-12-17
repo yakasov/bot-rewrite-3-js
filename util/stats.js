@@ -115,6 +115,32 @@ module.exports = {
     "voiceTime": 0
   },
 
+  "calculateExperience": (s) => {
+    const { charms } = s;
+    const exp = Math.floor(
+      ((s.voiceTime *
+        (1 + module.exports.checkCharmEffect("voice_mult", charms)) *
+        (statsConfig.voiceChatSRGain +
+          module.exports.checkCharmEffect("voice_bonus", charms) *
+            statsConfig.voiceChatSRGain) +
+        s.messages *
+          (1 + module.exports.checkCharmEffect("msg_mult", charms)) *
+          (statsConfig.messageSRGain +
+            module.exports.checkCharmEffect("msg_bonus", charms) *
+              statsConfig.messageSRGain)) +
+        s.luckHandicap) *
+        (1 + module.exports.checkCharmEffect("xp_mult", charms) / 2)
+    );
+
+    s.levelExperience = Math.max(
+      exp - getRequiredExperienceCumulative(s.level - 1),
+      0
+    );
+    s.totalExperience = Math.max(exp, s.totalExperience);
+
+    return s;
+  },
+
   "checkCharmEffect": (charmName, charms) => {
     const matchingCharms = charms.filter((c) => c.effect === charmName);
     let bonus = 0;
@@ -192,6 +218,29 @@ module.exports = {
     }
   },
 
+  "recalculateLevels": () => {
+    Object.entries(globalThis.stats)
+      .forEach(([
+        guildId,
+        guildStats
+      ]) => {
+        Object.keys(guildStats)
+          .filter((k) => k.length === 18)
+          .forEach((userId) => {
+            const s = module.exports.calculateExperience(globalThis.stats[guildId][userId]);
+            s.level = 0;
+
+            while (s.totalExperience > getRequiredExperienceCumulative(s.level)) {
+              s.level++;
+            }
+
+            if (!s.customSetName) {
+              s.name = getLevelName(s.level);
+            }
+          });
+      });
+  },
+
   "saveStats": () => {
     try {
       const task = require("../tasks/saveStats.js");
@@ -247,28 +296,7 @@ module.exports = {
   },
 
   "updateScoreValue": (guildId, userId) => {
-    const s = globalThis.stats[guildId][userId];
-    const { charms } = s;
-    const exp = Math.floor(
-      ((s.voiceTime *
-        (1 + module.exports.checkCharmEffect("voice_mult", charms)) *
-        (statsConfig.voiceChatSRGain +
-          module.exports.checkCharmEffect("voice_bonus", charms) *
-            statsConfig.voiceChatSRGain) +
-        s.messages *
-          (1 + module.exports.checkCharmEffect("msg_mult", charms)) *
-          (statsConfig.messageSRGain +
-            module.exports.checkCharmEffect("msg_bonus", charms) *
-              statsConfig.messageSRGain)) +
-        s.luckHandicap) *
-        (1 + module.exports.checkCharmEffect("xp_mult", charms) / 2)
-    );
-
-    s.levelExperience = Math.max(
-      exp - getRequiredExperienceCumulative(s.level - 1),
-      0
-    );
-    s.totalExperience = Math.max(exp, s.totalExperience);
+    const s = module.exports.calculateExperience(globalThis.stats[guildId][userId]);
 
     for (let i = 0; i < Math.floor(s.level / 10); i++) {
       const str = `${i + 1}`;
