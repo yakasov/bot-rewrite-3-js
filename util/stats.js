@@ -227,8 +227,11 @@ module.exports = {
         Object.keys(guildStats)
           .filter((k) => k.length === 18)
           .forEach((userId) => {
-            const s = module.exports.calculateExperience(globalThis.stats[guildId][userId]);
+            let s = globalThis.stats[guildId][userId];
             s.level = 0;
+            s.levelExperience = 0;
+            s.totalExperience = 0;
+            s = module.exports.calculateExperience(globalThis.stats[guildId][userId]);
 
             while (s.totalExperience > getRequiredExperienceCumulative(s.level)) {
               s.level++;
