@@ -240,7 +240,7 @@
     "type": "message"
   },
   "dan16": {
-    "string": "I'm going to comment on your code'",
+    "string": "I'm going to comment on your code",
     "chance": 0.03,
     "type": "message"
   },
