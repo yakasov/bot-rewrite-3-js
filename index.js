@@ -28,7 +28,6 @@ const checkAchievements = require("./util/achievements.js");
 const { getNicknameMsg } = require("./util/common.js");
 const {
   addToStats,
-  addTokens,
   backupStats,
   checkVoiceChannels,
   saveStats,
@@ -262,7 +261,6 @@ function handleClientReady(c) {
   checkMinecraftServer();
   getNewSplash();
   backupStats();
-  addTokens();
 
   /* eslint-disable line-comment-position */
   setInterval(() => {
@@ -274,7 +272,6 @@ function handleClientReady(c) {
   setInterval(checkVoiceChannels, getTime(15)); // 15 seconds
   setInterval(saveStats, getTime(0, 3)); // 3 minutes
   setInterval(backupStats, getTime(0, 15)); // 15 minutes
-  setInterval(addTokens, getTime(0, 1)); // 1 minute
   setInterval(updateScores, getTime(30)); // 30 seconds
   /* eslint-enable line-comment-position */
 }

@@ -4,7 +4,6 @@ const fs = require("fs");
 const basicJsonFiles = [
   "./resources/birthdays.json",
   "./resources/chanceResponses.json",
-  "./resources/luckTable.json",
   "./resources/mtg/mtgCache.json",
   "./resources/mtg/mtgCards.json",
   "./resources/stats.json",

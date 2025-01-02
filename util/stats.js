@@ -4,24 +4,20 @@ const {
   getLevelName,
   getTimeInSeconds,
   getRequiredExperience,
-  getRequiredExperienceCumulative
+  getRequiredExperienceCumulative,
 } = require("./common.js");
-const { generateCharm } = require("../commands/charms.js");
 const { statsConfig } = require("../resources/config.json");
 const ranks = require("../resources/ranks.json");
 
 module.exports = {
-  "addToStats": (a) => {
+  addToStats: (a) => {
     const { type, userId, guildId, giver } = a;
-    const giverId = giver
-      ? giver.id
-      : 0;
+    const giverId = giver ? giver.id : 0;
 
     if (!globalThis.stats[guildId]) {
       globalThis.stats[guildId] = {
-        "allowResponses": true,
-        "luckTokenTime": 0,
-        "rankUpChannel": ""
+        allowResponses: true,
+        rankUpChannel: "",
       };
     }
 
@@ -75,16 +71,7 @@ module.exports = {
     module.exports.saveStats();
   },
 
-  "addTokens": () => {
-    try {
-      const task = require("../tasks/addTokens.js");
-      return task.run();
-    } catch (e) {
-      return console.error(e);
-    }
-  },
-
-  "backupStats": () => {
+  backupStats: () => {
     try {
       const task = require("../tasks/backupstats.js");
       return task.run();
@@ -93,43 +80,30 @@ module.exports = {
     }
   },
 
-  "baseStats": {
-    "achievementTracking": {},
-    "achievements": [],
-    "charms": [],
-    "charmsRolled": false,
-    "customSetName": false,
-    "joinTime": 0,
-    "lastDailyTime": 0,
-    "lastGainTime": 0,
-    "level": 0,
-    "levelExperience": 0,
-    "luckHandicap": 0,
-    "luckTokens": 10,
-    "messages": 0,
-    "name": "",
-    "previousMessages": 0,
-    "previousVoiceTime": 0,
-    "totalExperience": 0,
-    "unlockedNames": [],
-    "voiceTime": 0
+  baseStats: {
+    achievementTracking: {},
+    achievements: [],
+    customSetName: false,
+    joinTime: 0,
+    lastDailyTime: 0,
+    lastGainTime: 0,
+    level: 0,
+    levelExperience: 0,
+    luckHandicap: 0,
+    messages: 0,
+    name: "",
+    previousMessages: 0,
+    previousVoiceTime: 0,
+    totalExperience: 0,
+    unlockedNames: [],
+    voiceTime: 0,
   },
 
-  "calculateExperience": (s) => {
-    const { charms } = s;
+  calculateExperience: (s) => {
     const exp = Math.floor(
-      ((s.voiceTime *
-        (1 + module.exports.checkCharmEffect("voice_mult", charms)) *
-        (statsConfig.voiceChatSRGain +
-          module.exports.checkCharmEffect("voice_bonus", charms) *
-            statsConfig.voiceChatSRGain) +
-        s.messages *
-          (1 + module.exports.checkCharmEffect("msg_mult", charms)) *
-          (statsConfig.messageSRGain +
-            module.exports.checkCharmEffect("msg_bonus", charms) *
-              statsConfig.messageSRGain)) +
-        s.luckHandicap) *
-        (1 + module.exports.checkCharmEffect("xp_mult", charms) / 2)
+      s.voiceTime * statsConfig.voiceChatSRGain +
+        s.messages * statsConfig.messageSRGain +
+        s.luckHandicap
     );
 
     s.levelExperience = Math.max(
@@ -141,18 +115,7 @@ module.exports = {
     return s;
   },
 
-  "checkCharmEffect": (charmName, charms) => {
-    const matchingCharms = charms.filter((c) => c.effect === charmName);
-    let bonus = 0;
-
-    for (const charm of matchingCharms) {
-      bonus += charm.rarity / 100;
-    }
-
-    return bonus;
-  },
-
-  "checkVoiceChannels": () => {
+  checkVoiceChannels: () => {
     const guilds = globalThis.client.guilds.cache;
     guilds.forEach((guild) => {
       const channels = guild.channels.cache.filter(
@@ -162,26 +125,23 @@ module.exports = {
       channels.forEach((channel) => {
         channel.members.forEach((member) => {
           module.exports.addToStats({
-            "guildId": member.guild.id,
-            "type": "inVoiceChannel",
-            "userId": member.user.id
+            guildId: member.guild.id,
+            type: "inVoiceChannel",
+            userId: member.user.id,
           });
         });
       });
     });
   },
 
-  "initialiseStats": (guildId, userId) => {
+  initialiseStats: (guildId, userId) => {
     if (!globalThis.stats[guildId][userId]) {
       globalThis.stats[guildId][userId] = module.exports.baseStats;
       return null;
     }
 
     Object.entries(module.exports.baseStats)
-      .forEach(([
-        k,
-        v
-      ]) => {
+      .forEach(([k, v]) => {
         if (globalThis.stats[guildId][userId][k] === undefined) {
           globalThis.stats[guildId][userId][k] = v;
         }
@@ -194,16 +154,10 @@ module.exports = {
         }
       });
 
-    if (!globalThis.stats[guildId][userId].charmsRolled && globalThis.stats[guildId][userId].charms.length === 0) {
-      for (let _ = 0; _ < 3; _++) {
-        globalThis.stats[guildId][userId].charms.push(generateCharm(40));
-      }
-    }
-
     return null;
   },
 
-  "levelUp": (guildId, userId) => {
+  levelUp: (guildId, userId) => {
     globalThis.stats[guildId][userId] = module.exports.updateStatsOnLevelUp(
       globalThis.stats[guildId][userId]
     );
@@ -213,17 +167,14 @@ module.exports = {
         guildId,
         userId,
         "Level Up",
-        `level ${globalThis.stats[guildId][userId].level}!`
+        `level ${globalThis.stats[guildId][userId].level}!`,
       ]);
     }
   },
 
-  "recalculateLevels": () => {
+  recalculateLevels: () => {
     Object.entries(globalThis.stats)
-      .forEach(([
-        guildId,
-        guildStats
-      ]) => {
+      .forEach(([guildId, guildStats]) => {
         Object.keys(guildStats)
           .filter((k) => k.length === 18)
           .forEach((userId) => {
@@ -231,7 +182,9 @@ module.exports = {
             s.level = 0;
             s.levelExperience = 0;
             s.totalExperience = 0;
-            s = module.exports.calculateExperience(globalThis.stats[guildId][userId]);
+            s = module.exports.calculateExperience(
+              globalThis.stats[guildId][userId]
+            );
 
             while (s.totalExperience > getRequiredExperienceCumulative(s.level)) {
               s.level++;
@@ -244,7 +197,7 @@ module.exports = {
       });
   },
 
-  "saveStats": () => {
+  saveStats: () => {
     try {
       const task = require("../tasks/saveStats.js");
       return task.run();
@@ -253,13 +206,8 @@ module.exports = {
     }
   },
 
-  "sendMessage": async (messageArgs) => {
-    const [
-      guildId,
-      userId,
-      title,
-      accolade
-    ] = messageArgs;
+  sendMessage: async (messageArgs) => {
+    const [guildId, userId, title, accolade] = messageArgs;
     const guildObject = await globalThis.client.guilds.fetch(guildId);
     const userObject = guildObject.members.cache
       .filter((m) => m.id === userId)
@@ -298,8 +246,10 @@ module.exports = {
     }
   },
 
-  "updateScoreValue": (guildId, userId) => {
-    const s = module.exports.calculateExperience(globalThis.stats[guildId][userId]);
+  updateScoreValue: (guildId, userId) => {
+    const s = module.exports.calculateExperience(
+      globalThis.stats[guildId][userId]
+    );
 
     for (let i = 0; i < Math.floor(s.level / 10); i++) {
       const str = `${i + 1}`;
@@ -316,19 +266,16 @@ module.exports = {
     }
   },
 
-  "updateScores": () => {
+  updateScores: () => {
     Object.entries(globalThis.stats)
-      .forEach(([
-        guildId,
-        guildStats
-      ]) => {
+      .forEach(([guildId, guildStats]) => {
         Object.keys(guildStats)
           .filter((k) => k.length === 18)
           .forEach((userId) => {
             module.exports.addToStats({
               guildId,
-              "type": "init",
-              userId
+              type: "init",
+              userId,
             });
 
             module.exports.updateScoreValue(guildId, userId);
@@ -345,7 +292,7 @@ module.exports = {
       });
   },
 
-  "updateStatsOnLevelUp": (userStats) => {
+  updateStatsOnLevelUp: (userStats) => {
     userStats.levelExperience =
       userStats.totalExperience -
       getRequiredExperienceCumulative(userStats.level);
@@ -356,5 +303,5 @@ module.exports = {
     }
 
     return userStats;
-  }
+  },
 };
