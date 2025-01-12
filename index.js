@@ -109,8 +109,8 @@ function checkBirthdays(force = false) {
     .run(globalThis.client, force);
 }
 
-function checkMinecraftServer() {
-  require("./tasks/minecraft.js")
+async function checkMinecraftServer() {
+  await require("./tasks/minecraft.js")
     .run(globalThis.client, splash);
 }
 

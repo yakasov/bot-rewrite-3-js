@@ -7,7 +7,7 @@ const {
   minecraftServerPort
 } = require("../resources/config.json");
 
-exports.run = (client, splash) => {
+exports.run = async (client, splash) => {
 
   /*
    * 0 - Minecraft has been run at least once
@@ -36,7 +36,8 @@ exports.run = (client, splash) => {
       } for Minecraft query...\n`
     );
 
-    status(minecraftServerIp, minecraftServerPort)
+    await fetch(`https://api.mcstatus.io/v2/status/java/${minecraftServerIp}`)
+      .then(r => r.json())
       .then((res) => {
         if (res) {
           console.log(
@@ -57,12 +58,13 @@ exports.run = (client, splash) => {
       });
   }
 
-  queryFull(minecraftServerIp, minecraftServerPort)
+  await fetch(`https://api.mcstatus.io/v2/status/java/${minecraftServerIp}`)
+    .then(r => r.json())
     .then((res) => {
       const { online } = res.players;
       let activityString = "";
       if (online) {
-        const players = res.players.list;
+        const players = res.players.list.map((e) => e.name_raw);
         activityString = `(${players.length}) ${players.join(", ")}`;
       } else {
         // If nobody is online and the splash is already set, don't set it again
@@ -80,7 +82,8 @@ exports.run = (client, splash) => {
         ]
       });
     })
-    .catch(() => {
+    .catch((e) => {
+      console.log(e);
       // No catch (hmm...)
     });
 };
