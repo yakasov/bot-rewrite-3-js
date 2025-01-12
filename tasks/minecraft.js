@@ -1,7 +1,6 @@
 "use strict";
 
 const { ActivityType } = require("discord.js");
-const { queryFull, status } = require("minecraft-server-util");
 const {
   minecraftServerIp,
   minecraftServerPort
