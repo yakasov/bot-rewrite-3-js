@@ -294,9 +294,24 @@
     "chance": 0.05,
     "type": "message"
   },
+  "dan17": {
+    "string": "Bro is fact-ose intolerant",
+    "chance": 0.05,
+    "type": "message"
+  },
+  "dan18": {
+    "string": "Go html some grass",
+    "chance": 0.05,
+    "type": "message"
+  },
+  "mo1": {
+    "string": "Shut up you little moist man",
+    "chance": 0.05,
+    "type": "message"
+  },
   "lboozoo": {
     "string": "L boozoo",
-    "chance": 0.4,
+    "chance": 0.05,
     "type": "message"
   },
   "nerd": {
