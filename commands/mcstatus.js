@@ -4,8 +4,7 @@ const { SlashCommandBuilder } = require("discord.js");
 const { status } = require("minecraft-server-util");
 const {
   minecraftServerIp,
-  minecraftServerPort,
-  minecraftServerOwnerId
+  minecraftServerPort
 } = require("../resources/config.json");
 
 module.exports = {
@@ -25,14 +24,8 @@ module.exports = {
           `\`\`\`\n${JSON.stringify(res, null, 4)}\n\`\`\``
         );
       })
-      .catch(async (e) => {
-        let str = e.message;
-
-        if (e.errno && e.errno === -4078) {
-          str += `\n<@${minecraftServerOwnerId}>`;
-        }
-
-        await interaction.reply(str);
+      .catch((e) => {
+        console.error(e);
       });
   }
 };

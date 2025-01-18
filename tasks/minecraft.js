@@ -60,6 +60,10 @@ exports.run = async (client, splash) => {
   await fetch(`https://api.mcstatus.io/v2/status/java/${minecraftServerIp}`)
     .then(r => r.json())
     .then((res) => {
+      if (!res) {
+        return;
+      }
+      
       const { online } = res.players;
       let activityString = "";
       if (online) {
