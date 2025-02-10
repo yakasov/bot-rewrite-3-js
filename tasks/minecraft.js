@@ -40,7 +40,7 @@ exports.run = async (client, splash) => {
       .then((res) => {
         if (res) {
           console.log(
-            `\nFound Minecraft server! Latency: ${res.roundTripLatency}`
+            `\nFound Minecraft server at ${res.ip_address}:${res.port}!`
           );
         }
 
@@ -64,7 +64,7 @@ exports.run = async (client, splash) => {
         return;
       }
       
-      const { online } = res.players;
+      const { online } = res.players ?? 0;
       let activityString = "";
       if (online) {
         const players = res.players.list.map((e) => e.name_raw);

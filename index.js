@@ -125,11 +125,16 @@ async function checkMessageResponse(msg) {
       msg.content.includes(l)) &&
     msg.content.includes("status")
   ) {
-    msg.channel.send(
-      `${getNicknameMsg(msg)} sent:\n${msg.content
-        .replace("https://x.com/", "https://fixupx.com/")
-        .replace("https://twitter.com/", "https://fxtwitter.com/")}`
-    );
+    const content = `${getNicknameMsg(msg)} sent:\n${msg.content
+      .replace("https://x.com/", "https://fixupx.com/")
+      .replace("https://twitter.com/", "https://fxtwitter.com/")}`;
+
+    if (msg.reference && msg.reference.channelId === msg.channel.id) {
+      const replyMsg = await msg.channel.messages.fetch(msg.reference.messageId);
+      replyMsg.reply(content);
+    } else {
+      msg.channel.send(content);
+    }
 
     await msg.delete()
       .catch(console.error);
