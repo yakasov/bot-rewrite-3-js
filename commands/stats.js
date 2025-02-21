@@ -52,7 +52,7 @@ module.exports = {
             getRequiredExperience(guildStats[a[0]].level)
           } XP)`,
           "Msgs": guildStats[a[0]].messages,
-          "Time": formatTime(
+          "Voice Time": formatTime(
             guildStats[a[0]].voiceTime
           ),
           "Title": getTitle(guildStats[a[0]])
