@@ -1,6 +1,7 @@
 "use strict";
 
 const ranks = require("../resources/ranks.json");
+const { statsConfig } = require("../resources/config.json");
 
 module.exports = {
   "formatMsgs": (e, ms) => {
@@ -58,9 +59,9 @@ module.exports = {
       : "???"}`;
   },
 
-  "getRequiredExperience": (level) => level * 50,
+  "getRequiredExperience": (level) => level * statsConfig.xpPerLevel,
 
-  "getRequiredExperienceCumulative": (level) => (level * ((level + 1) * 50) / 2),
+  "getRequiredExperienceCumulative": (level) => (level * ((level + 1) * statsConfig.xpPerLevel) / 2),
 
   "getTimeInSeconds": () => Math.floor(Date.now() / 1000),
 
