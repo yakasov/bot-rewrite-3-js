@@ -58,9 +58,9 @@ module.exports = {
       : "???"}`;
   },
 
-  "getRequiredExperience": (level) => level * 100,
+  "getRequiredExperience": (level) => level * 50,
 
-  "getRequiredExperienceCumulative": (level) => (level * ((level + 1) * 100) / 2),
+  "getRequiredExperienceCumulative": (level) => (level * ((level + 1) * 50) / 2),
 
   "getTimeInSeconds": () => Math.floor(Date.now() / 1000),
 
