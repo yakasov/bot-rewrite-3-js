@@ -18,7 +18,7 @@ module.exports = {
 
     let output = "";
     Object.entries(rules).forEach(([k, v]) => {
-        output += `Rule ${k}: ${v}\n`
+        output += `**Rule ${k}**: ${v}.\n`
     })
     interaction.reply(output);
   }
