@@ -26,6 +26,8 @@ module.exports = {
     module.exports.initialiseStats(guildId, giverId);
 
     switch (type) {
+    case "init":
+      return;
     case "message":
       if (
         getTimeInSeconds() - globalThis.stats[guildId][userId].lastGainTime <
