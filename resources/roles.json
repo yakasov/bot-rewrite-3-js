@@ -1,15 +1,15 @@
 [
-  { "name": "Fortnite", "value": "825445956837310484" },
-  { "name": "Counter-Strike 2", "value": "478640191121391626" },
-  { "name": "Garry's Mod", "value": "576128098479767573" },
-  { "name": "Minecraft", "value": "486587475532316672" },
-  { "name": "Overwatch", "value": "477851007762694157" },
-  { "name": "Rainbow Six Siege", "value": "774715428571709450" },
-  { "name": "Sea of Thieves", "value": "816387599676735568" },
-  { "name": "Sid Meier's Civilization", "value": "911264712707145799" },
-  { "name": "Ready or Not", "value": "1040648247129145356" },
-  { "name": "Lethal Company", "value": "1196186093238882354" },
-  { "name": "VALORANT", "value": "825445956837310484" },
-  { "name": "Barotrauma", "value": "1259874906871562402" },
-  { "name": "Deadlock", "value": "1276238231771283506" }
+  { "_": "Battlefield Bozos", "name": "Battlefield", "value": "1351538562109280266" },
+  { "_": "CHUG JUG CHUGGERS!!!", "name": "Fortnite", "value": "825445956837310484" },
+  { "_": "CS2", "name": "Counter-Strike 2", "value": "478640191121391626" },
+  { "_": "GMOD", "name": "Garry's Mod", "value": "576128098479767573" },
+  { "_": "Lethal Company", "name": "Lethal Company", "value": "1196186093238882354" },
+  { "_": "Magic: The Gathering", "name": "Magic: The Gathering", "value": "1301133760418545764" },
+  { "_": "Marvel Rivals", "name": "Marvel Rivals", "value": "1314946627190132806" },
+  { "_": "Minecraft", "name": "Minecraft", "value": "486587475532316672" },
+  { "_": "Overwatch", "name": "Overwatch", "value": "477851007762694157" },
+  { "_": "RRRRRR", "name": "Rainbow Six Siege", "value": "774715428571709450" },
+  { "_": "sid medidas", "name": "Sid Meier's Civilization", "value": "911264712707145799" },
+  { "_": "War Crime Comitters", "name": "Ready or Not", "value": "1040648247129145356" },  
+  { "_": "VALORANT", "name": "VALORANT", "value": "825445956837310484" }
 ]

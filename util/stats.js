@@ -3,6 +3,7 @@
 const {
   getLevelName,
   getTimeInSeconds,
+  getTitle,
   getRequiredExperience,
   getRequiredExperienceCumulative,
 } = require("./common.js");
@@ -25,10 +26,6 @@ module.exports = {
     module.exports.initialiseStats(guildId, giverId);
 
     switch (type) {
-    case "init":
-      // Used for setting up initial stat values
-      return;
-
     case "message":
       if (
         getTimeInSeconds() - globalThis.stats[guildId][userId].lastGainTime <
@@ -167,7 +164,8 @@ module.exports = {
         guildId,
         userId,
         "Level Up",
-        `level ${globalThis.stats[guildId][userId].level}!`,
+        `level ${globalThis.stats[guildId][userId].level}`,
+        getTitle(globalThis.stats[guildId][userId]),
       ]);
     }
   },
@@ -207,7 +205,7 @@ module.exports = {
   },
 
   sendMessage: async (messageArgs) => {
-    const [guildId, userId, title, accolade] = messageArgs;
+    const [guildId, userId, subject, accolade, title] = messageArgs;
     const guildObject = await globalThis.client.guilds.fetch(guildId);
     const userObject = guildObject.members.cache
       .filter((m) => m.id === userId)
@@ -215,6 +213,7 @@ module.exports = {
 
     // Fix for .displayName on empty user object
     if (!userObject) {
+      console.warn(`userObject for userId ${userId} was null!`);
       return;
     }
 
@@ -223,6 +222,7 @@ module.exports = {
      * I'm not sure why this happens just yet
      */
     if (accolade === "MISSINGNO") {
+      console.warn(`Retrieved accolade was MISSINGNO for userId ${userId}!`);
       return;
     }
 
@@ -241,7 +241,7 @@ module.exports = {
      */
     if (channel && globalThis.stats[guildId].rankUpChannel) {
       channel.send(
-        `## ${title}!\n\`\`\`ansi\n${userObject.displayName} has reached ${accolade}\`\`\``
+        `## ${subject}!\n\`\`\`ansi\n${userObject.displayName} has reached ${accolade} (${title})!\`\`\``
       );
     }
   },
