@@ -3,7 +3,6 @@
 const {
   getLevelName,
   getTimeInSeconds,
-  getTitle,
   getRequiredExperience,
   getRequiredExperienceCumulative,
 } = require("./common.js");
@@ -167,7 +166,7 @@ module.exports = {
         userId,
         "Level Up",
         `level ${globalThis.stats[guildId][userId].level}`,
-        getTitle(globalThis.stats[guildId][userId]),
+        getLevelName(globalThis.stats[guildId][userId].level),
       ]);
     }
   },
