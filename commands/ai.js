@@ -77,6 +77,10 @@ module.exports = {
           }
         );
 
+        if (err && err.error) {
+          console.error(`\nAI Error Type: ${err.type}, message: ${err.error.message}`);
+        }
+
         // Shorten conversation
         module.exports.conversation = [initialMessage].concat(
           module.exports.conversation.slice(
