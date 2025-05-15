@@ -25,7 +25,8 @@ module.exports = {
     const unitArray = date.toISOString()
       .substr(8, 11)
       .split(/:|T/u);
-    return `${parseInt(unitArray[0], 10) - 1}d ${
+    const days = parseInt(unitArray[0], 10) - 1;
+    return `${days < 10 ? " " : ""}${days}d ${
       unitArray[1]
     }h ${unitArray[2]}m ${unitArray[3]}s`;
   },

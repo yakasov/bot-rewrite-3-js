@@ -12,8 +12,14 @@ exports.run = async (client, splash) => {
    * 0 - Minecraft has been run at least once
    * 1 - Minecraft has not yet been run (is on first run)
    * 2 - Minecraft errored and should not be queried again
+   * 3 - Minecraft errored after first query, skip next run
    */
   if (globalThis.firstRun.minecraft === 2) {
+    return;
+  }
+
+  if (globalThis.firstRun.minecraft === 3) {
+    globalThis.firstRun.minecraft = 0;
     return;
   }
 
@@ -86,7 +92,7 @@ exports.run = async (client, splash) => {
       });
     })
     .catch((e) => {
-      console.log(e);
-      // No catch (hmm...)
+      console.error(`\n${e}`);
+      globalThis.firstRun.minecraft = 3;
     });
 };
