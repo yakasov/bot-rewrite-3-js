@@ -109,6 +109,11 @@ function checkBirthdays(force = false) {
     .run(globalThis.client, force);
 }
 
+function checkFortniteShop() {
+  require("./tasks/fortnite.js")
+    .run(globalThis.client);
+}
+
 async function checkMinecraftServer() {
   await require("./tasks/minecraft.js")
     .run(globalThis.client, splash);
@@ -272,6 +277,7 @@ function handleClientReady(c) {
     globalThis.botUptime += 10;
   }, getTime(10));
   setInterval(checkBirthdays, getTime(0, 15)); // 15 minutes
+  setInterval(checkFortniteShop, getTime(0, 15)); // 15 minutes
   setInterval(checkMinecraftServer, getTime(5)); // 5 seconds
   setInterval(getNewSplash, getTime(0, 0, 1)); // 1 hour
   setInterval(checkVoiceChannels, getTime(15)); // 15 seconds
