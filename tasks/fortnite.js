@@ -35,8 +35,8 @@ exports.run = async (client) => {
   const fortniteChannel = await guild.channels.fetch(fortniteChannelId);
 
   const emoteMessages = {
-    "Bring It Around": "The Homer Simpson dance is now in the Fortnite shop!",
-    "Get Griddy": "Get Griddy is now in the Fortnite shop!",
+    "Bring It Around": "**The Homer Simpson dance is now in the Fortnite shop!**",
+    "Get Griddy": "**Get Griddy is now in the Fortnite shop!**",
   };
 
   for (const emote in emoteFlags) {
@@ -59,12 +59,12 @@ exports.run = async (client) => {
     currentSongs = songs;
     if (oldSongs.length > 0) {
       fortniteChannel.send(
-        `Removed Fortnite Jam Tracks:\n${oldSongs.join("\n")}`
+        `__Removed Fortnite Jam Tracks:__\n${oldSongs.join("\n")}`
       );
     }
 
     if (newSongs.length > 0) {
-      fortniteChannel.send(`New Fortnite Jam Tracks:\n${newSongs.join("\n")}`);
+      fortniteChannel.send(`__New Fortnite Jam Tracks:__\n${newSongs.join("\n")}`);
     }
   }
 };
