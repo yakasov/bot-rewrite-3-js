@@ -8,9 +8,9 @@ const fetch = require("node-fetch");
 const { token } = require("./resources/config.json");
 const chanceResponses = require("./resources/chanceResponses.json");
 const loadedStats = require("./resources/stats.json");
-const { initialSetup } = require("./util/setup.js");
+const initialSetup = require("./util/setup.js");
 
-const { generateRollTable } = require("./util/rollTableGenerator.js");
+const generateRollTable = require("./util/rollTableGenerator.js");
 const loadCommands = require("./util/commandLoader.js");
 const messageSuperPatch = require("./util/messageSuperPatch.js");
 
