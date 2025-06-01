@@ -78,9 +78,7 @@ module.exports = {
         );
 
         if (err && err.error) {
-          console.error(
-            `\nAI Error Type: ${err.type}, message: ${err.error.message}`
-          );
+          console.error(`\nAI Error Type: ${err.type}, message: ${err.error.message}`);
         }
 
         // Shorten conversation
@@ -102,8 +100,7 @@ module.exports = {
       });
     } else {
       await interaction.followUp(
-        "Failed after 3 attempts, please try again - " +
-        "your conversation shouldn't be affected!"
+        "Failed after 3 attempts, please try again - your conversation shouldn't be affected!"
       );
     }
   }
