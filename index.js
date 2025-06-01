@@ -23,14 +23,14 @@ process.on("unhandledRejection", (error) => {
   console.error("Unhandled error:", error);
 });
 
-globalThis.fetch = fetch;
-globalThis.stats = loadedStats;
-globalThis.rollTable = generateRollTable(chanceResponses);
+globalThis.botUptime = 0;
 globalThis.currentDate = moment()
   .tz("Europe/London");
+globalThis.fetch = fetch;
 globalThis.firstRun = { birthdays: true, minecraft: 1 };
-globalThis.botUptime = 0;
+globalThis.rollTable = generateRollTable(chanceResponses);
 globalThis.splash = "";
+globalThis.stats = loadedStats;
 
 globalThis.client = new Client({
   allowedMentions: {
@@ -55,8 +55,6 @@ process.on("unhandledRejection", (error) => {
 initialSetup();
 messageSuperPatch();
 loadCommands(globalThis.client);
-
-globalThis.client.login(token);
 
 globalThis.client.once(Events.ClientReady, handleClientReady);
 globalThis.client.on(Events.InteractionCreate, handleInteractionCreate);
