@@ -2,15 +2,13 @@
 
 const { Sets } = require("scryfall-api");
 const { SlashCommandBuilder } = require("discord.js");
-const cache = require("../resources/mtg/mtgCache.json");
 const { getFullSet } = require("../util/mtgBoosterHelper.js");
 
 module.exports = {
   data: new SlashCommandBuilder()
     .setName("mtgfillcache")
     .setDescription("Fill MTG cache"),
-  async execute(interaction) {
-    // Const cachedSets = Object.keys(cache);
+  async execute() {
     const rawSets = Sets.all()
       .then((r) => r);
     const allSets = [];
@@ -25,5 +23,5 @@ module.exports = {
       }
     }
     console.log("Finished processing all sets!");
-  },
+  }
 };

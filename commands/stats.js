@@ -27,10 +27,7 @@ module.exports = {
           .first());
 
     const topScores = filterStats
-      .map(([
-        k,
-        v
-      ]) => [
+      .map(([k, v]) => [
         k,
         v.totalExperience
       ])
@@ -63,10 +60,7 @@ module.exports = {
     outputMessage += generateTable(data);
 
     const userRanking = topScores
-      .map(([
-        k,
-        v
-      ], i) => [
+      .map(([k, v], i) => [
         k,
         v,
         i
@@ -91,5 +85,5 @@ module.exports = {
         : `-0${Math.abs(num)}`;
     }
     return num;
-  },
+  }
 };

@@ -16,10 +16,7 @@ module.exports = {
 
       Object.entries(globalThis.stats)
         .filter(([k]) => k === interaction.guild.id)
-        .forEach(([
-          guildId,
-          guildStats
-        ]) => {
+        .forEach(([guildId, guildStats]) => {
           Object.keys(guildStats)
             .filter((k) => k.length === 18)
             .forEach((userId) => {

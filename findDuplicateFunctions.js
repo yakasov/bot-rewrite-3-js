@@ -60,10 +60,7 @@ async function findDuplicateFunctions(dir) {
   }
 
   const duplicates = {};
-  for (const [
-    name,
-    files
-  ] of Object.entries(functionOccurrences)) {
+  for (const [name, files] of Object.entries(functionOccurrences)) {
     if (files.length > 1) {
       duplicates[name] = files;
     }
@@ -76,10 +73,7 @@ const directoryPath = ".";
 findDuplicateFunctions(directoryPath)
   .then((duplicates) => {
     console.log("Duplicate functions found:");
-    for (const [
-      name,
-      files
-    ] of Object.entries(duplicates)) {
+    for (const [name, files] of Object.entries(duplicates)) {
       console.log(`Function "${name}" is defined in:`);
       files.forEach((file) => {
         console.log(`  - ${file}`);

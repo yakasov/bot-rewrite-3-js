@@ -17,10 +17,7 @@ module.exports = {
       .map(([, v]) => v.name);
     const allNormalAchievements = Object.entries(achievements)
       .filter((a) => !a[1].secret)
-      .map(([
-        k,
-        v
-      ]) => ({ "desc": v.desc,
+      .map(([k, v]) => ({ "desc": v.desc,
         "key": k,
         "name": v.name }));
 

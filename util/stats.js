@@ -4,7 +4,7 @@ const {
   getLevelName,
   getTimeInSeconds,
   getRequiredExperience,
-  getRequiredExperienceCumulative,
+  getRequiredExperienceCumulative
 } = require("./common.js");
 const { statsConfig } = require("../resources/config.json");
 const ranks = require("../resources/ranks.json");
@@ -17,7 +17,7 @@ module.exports = {
     if (!globalThis.stats[guildId]) {
       globalThis.stats[guildId] = {
         allowResponses: true,
-        rankUpChannel: "",
+        rankUpChannel: ""
       };
     }
 
@@ -94,7 +94,7 @@ module.exports = {
     previousVoiceTime: 0,
     totalExperience: 0,
     unlockedNames: [],
-    voiceTime: 0,
+    voiceTime: 0
   },
 
   calculateExperience: (s) => {
@@ -125,7 +125,7 @@ module.exports = {
           module.exports.addToStats({
             guildId: member.guild.id,
             type: "inVoiceChannel",
-            userId: member.user.id,
+            userId: member.user.id
           });
         });
       });
@@ -166,7 +166,7 @@ module.exports = {
         userId,
         "Level Up",
         `level ${globalThis.stats[guildId][userId].level}`,
-        getLevelName(globalThis.stats[guildId][userId].level),
+        getLevelName(globalThis.stats[guildId][userId].level)
       ]);
     }
   },
@@ -206,7 +206,13 @@ module.exports = {
   },
 
   sendMessage: async (messageArgs) => {
-    const [guildId, userId, subject, accolade, title] = messageArgs;
+    const [
+      guildId,
+      userId,
+      subject,
+      accolade,
+      title
+    ] = messageArgs;
     const guildObject = await globalThis.client.guilds.fetch(guildId);
     const userObject = guildObject.members.cache
       .filter((m) => m.id === userId)
@@ -276,7 +282,7 @@ module.exports = {
             module.exports.addToStats({
               guildId,
               type: "init",
-              userId,
+              userId
             });
 
             module.exports.updateScoreValue(guildId, userId);
@@ -304,5 +310,5 @@ module.exports = {
     }
 
     return userStats;
-  },
+  }
 };

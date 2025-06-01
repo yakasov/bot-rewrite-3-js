@@ -2,7 +2,7 @@
 
 const chanceResponses = require("../resources/chanceResponses.json");
 
-function generateRollTable() {
+module.exports = function generateRollTable() {
   let totalChance = 0;
   let cumChance = 0;
   let tempRollTable = [];
@@ -31,6 +31,4 @@ function generateRollTable() {
   });
 
   return rollTable;
-}
-
-module.exports = { generateRollTable };
+};

@@ -29,6 +29,7 @@ async function getFullSet(set) {
 }
 
 function setFilter(set, rules) {
+
   /*
    * Rules will be a dictionary
    * e.g.
@@ -44,9 +45,9 @@ function setFilter(set, rules) {
   // This can definitely be improved
   rules.forEach((rule) => {
     returnCache = returnCache.filter((c) =>
-      c && c[rule.k] && rule.t === "includes"
+      (c && c[rule.k] && rule.t === "includes"
         ? filterIncludes(c[rule.k], rule.v)
-        : filterIs(c[rule.k], rule.v));
+        : filterIs(c[rule.k], rule.v)));
   });
 
   return returnCache;
@@ -85,7 +86,7 @@ async function convertForCache(card) {
     set_name: card.set_name,
     toughness: card.toughness,
     type_line: card.type_line ?? card.card_faces[0].type_line,
-    url: card.scryfall_uri,
+    url: card.scryfall_uri
   };
 }
 
@@ -94,7 +95,7 @@ async function combineImages(card) {
 
   const filePaths = await Promise.all([
     downloadImage(card, 0, baseFilePath),
-    downloadImage(card, 1, baseFilePath),
+    downloadImage(card, 1, baseFilePath)
   ]);
   const img = await joinImages(filePaths, { direction: "horizontal" });
   await img.toFile(`${baseFilePath}.jpg`);
@@ -104,6 +105,7 @@ async function combineImages(card) {
 }
 
 function downloadImage(card, i, filePath) {
+
   /*
    * Only required when a card is reversible
    * Then we need to download the cards to merge them
@@ -153,5 +155,5 @@ module.exports = {
   getFullSet,
   getRandom,
   lucky,
-  setFilter,
+  setFilter
 };
