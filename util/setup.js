@@ -11,7 +11,7 @@ const basicJsonFiles = [
   "./resources/roles.json"
 ];
 
-function initialSetup() {
+module.exports = function initialSetup() {
   // Check that config.json exists
   if (!fs.existsSync("./resources/config.json")) {
     if (!fs.existsSync("./resources/config.json.template")) {
@@ -44,6 +44,4 @@ Please obtain the config.json.template from the GitHub page.`);
       });
     }
   });
-}
-
-module.exports = { initialSetup };
+};
