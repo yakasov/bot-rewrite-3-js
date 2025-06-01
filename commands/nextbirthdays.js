@@ -16,10 +16,7 @@ module.exports = {
         v.name
       ]);
     orderedBirthdays = orderedBirthdays.concat(
-      orderedBirthdays.map(([
-        date,
-        name
-      ]) => [
+      orderedBirthdays.map(([date, name]) => [
         date.replace(year, year + 1),
         name
       ])
@@ -27,10 +24,7 @@ module.exports = {
     let future = 0;
     let output = "";
 
-    orderedBirthdays.forEach(([
-      date,
-      name
-    ]) => {
+    orderedBirthdays.forEach(([date, name]) => {
       if (
         module.exports.f(date)
           .isAfter(globalThis.currentDate, "day") &&

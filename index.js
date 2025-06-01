@@ -35,7 +35,7 @@ globalThis.splash = "";
 globalThis.client = new Client({
   allowedMentions: {
     parse: ["users", "roles"],
-    repliedUser: true,
+    repliedUser: true
   },
   intents: [
     GatewayIntentBits.Guilds,
@@ -44,8 +44,8 @@ globalThis.client = new Client({
     GatewayIntentBits.GuildMessageReactions,
     GatewayIntentBits.GuildPresences,
     GatewayIntentBits.GuildVoiceStates,
-    GatewayIntentBits.MessageContent,
-  ],
+    GatewayIntentBits.MessageContent
+  ]
 });
 
 process.on("unhandledRejection", (error) => {

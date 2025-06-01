@@ -45,6 +45,7 @@ module.exports = {
       ? member.displayName
       : "???";
     if (sanitize) {
+      /* eslint-disable-next-line no-control-regex */
       name = name.replace(/[^\x00-\x7F]/gu, "");
     }
     return name;

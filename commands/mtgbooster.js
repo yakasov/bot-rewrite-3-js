@@ -6,13 +6,13 @@ const {
   ButtonBuilder,
   ButtonStyle,
   EmbedBuilder,
-  SlashCommandBuilder,
+  SlashCommandBuilder
 } = require("discord.js");
 const fs = require("fs");
 const {
   getFullSet,
   getRandom,
-  setFilter,
+  setFilter
 } = require("../util/mtgBoosterHelper.js");
 const {
   boosterGetConnected,
@@ -20,7 +20,7 @@ const {
   boosterGetHeadTurning,
   boosterGetLand,
   boosterGetRareOrMythic,
-  boosterGetWildCard,
+  boosterGetWildCard
 } = require("../util/mtgBoosterGenerator.js");
 const { allSets } = require("../resources/mtg/mtgSets.js");
 const cache = require("../resources/mtg/mtgCache.json");
@@ -43,7 +43,7 @@ const replacements = {
   "{T}": " :arrow_right_hook: ",
   "{U}": " :new_moon_with_face: ",
   "{W}": " :alien: ",
-  "{X}": " :regional_indicator_x: ",
+  "{X}": " :regional_indicator_x: "
 };
 const interactions = {};
 
@@ -71,7 +71,7 @@ async function generateBoosterPack(interaction, chosenSet = null) {
     boosterGetHeadTurning(setToUse),
     ...boosterGetWildCard(setToUse),
     boosterGetRareOrMythic(setToUse),
-    boosterGetFoil(setToUse),
+    boosterGetFoil(setToUse)
   ].filter((c) => c !== undefined);
 
   // If we couldn't filter the cards properly, fill with random cards
@@ -126,7 +126,7 @@ function getButtons(id) {
       .setLabel(
         interactions[id].page === 13 ? "Return to Summary" : "Next card"
       )
-      .setStyle(ButtonStyle.Secondary),
+      .setStyle(ButtonStyle.Secondary)
   ];
 
   return new ActionRowBuilder()
@@ -152,30 +152,30 @@ function getContent(id) {
         .addFields(
           {
             name: "Set",
-            value: `${interactions[id].cards[1].set_name} (${interactions[id].cards[1].set})`,
+            value: `${interactions[id].cards[1].set_name} (${interactions[id].cards[1].set})`
           },
           {
             name: "Rarities",
-            value: getRarityString(interactions[id].cards),
+            value: getRarityString(interactions[id].cards)
           },
           {
             name: "Overall Price",
-            value: `Set: $${setPrice} // Cards: $${cardValue} // Profit: $${cardValue - setPrice}`,
+            value: `Set: $${setPrice} // Cards: $${cardValue} // Profit: $${cardValue - setPrice}`
           },
           { name: "\u200B", value: "\u200B" },
           {
             name: "Cards",
-            value: getAllCardsString(interactions[id].cards),
+            value: getAllCardsString(interactions[id].cards)
           },
           { name: "\u200B", value: "\u200B" },
           {
             name: "Extra cards added?",
             value: interactions[id].cardFill
               ? `Yes, added ${interactions[id].cardFill} card(s)`
-              : "No",
+              : "No"
           }
         ),
-      null,
+      null
     ];
   }
 
@@ -189,38 +189,40 @@ function getContent(id) {
         .addFields(
           {
             name: "Set",
-            value: `${c.set_name} (${c.set})`,
+            value: `${c.set_name} (${c.set})`
           },
           {
             name: "Oracle text",
-            value: replaceIcons(c.oracle_text),
+            value: replaceIcons(c.oracle_text)
           },
           {
             name: "Flavour text",
-            value: replaceIcons(c.flavour_text),
+            value: replaceIcons(c.flavour_text)
           },
           { name: "\u200B", value: "\u200B" },
           {
             inline: true,
             name: "Rarity",
-            value: capitaliseFirst(c.rarity),
+            value: capitaliseFirst(c.rarity)
           },
           {
             inline: true,
             name: "Foil",
-            value: c.foil ? "Yes" : "No",
+            value: c.foil ? "Yes" : "No"
           },
           {
             inline: true,
             name: "Price",
-            value: `$${(c.foil ? c.price_foil : c.price) || "???"}`,
+            value: `$${(c.foil ? c.price_foil : c.price) || "???"}`
           }
         )
         .setImage(
-          c.local ? `attachment://${c.image.split("/")
-            .pop()}.jpg` : c.image
+          c.local
+            ? `attachment://${c.image.split("/")
+              .pop()}.jpg`
+            : c.image
         ),
-      file,
+      file
     ];
   } catch (e) {
     console.error(e);
@@ -269,7 +271,7 @@ module.exports = {
   async execute(interaction) {
     interactions[interaction.user.id] = {
       cards: [],
-      page: 1,
+      page: 1
     };
     const chosenSet = interaction.options.getString("set") ?? null;
 
@@ -283,13 +285,13 @@ module.exports = {
     const response = await interaction.editReply({
       components: [getButtons(interaction.user.id)],
       embeds: [embed],
-      files: file ? [file] : [],
+      files: file ? [file] : []
     });
 
     const collectorFilter = (i) => i.user.id === interaction.user.id;
     const collector = response.createMessageComponentCollector({
       filter: collectorFilter,
-      idle: 300_000,
+      idle: 300_000
     });
 
     collector.on("collect", async (i) => {
@@ -307,10 +309,10 @@ module.exports = {
       await i.update({
         components: [getButtons(interaction.user.id)],
         embeds: [embed],
-        files: file ? [file] : [],
+        files: file ? [file] : []
       });
     });
 
     return null;
-  },
+  }
 };

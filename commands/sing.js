@@ -21,7 +21,7 @@ module.exports = {
   async execute(interaction) {
     await interaction.deferReply();
 
-    const url = `${interaction.options.getString("url")  }&bpctr=${Date.now()}&has_verified=1`;
+    const url = `${interaction.options.getString("url")}&bpctr=${Date.now()}&has_verified=1`;
 
     try {
       const player = createAudioPlayer();

@@ -41,18 +41,12 @@ module.exports = {
 
     const userStats = Object.entries(guildStats)
       .filter(([k]) => k.length === 18)
-      .map(([
-        k,
-        v
-      ]) => [
+      .map(([k, v]) => [
         k,
         v.totalExperience
       ])
       .sort(([, f], [, s]) => s - f)
-      .map(([
-        k,
-        v
-      ], i) => [
+      .map(([k, v], i) => [
         k,
         v,
         i

@@ -28,7 +28,7 @@ module.exports = {
       code: "mat",
       count: 230,
       name: "March of the Machine: The Aftermath",
-      price: 21,
+      price: 21
     },
     { code: "mom", count: 387, name: "March of the Machine", price: 25 },
     { code: "mul", count: 261, name: "Multiverse Legends", price: 5 },
@@ -47,7 +47,7 @@ module.exports = {
       code: "clb",
       count: 936,
       name: "Commander Legends: Battle for Baldur's Gate",
-      price: 26,
+      price: 26
     },
     { code: "snc", count: 513, name: "Streets of New Capenna", price: 25 },
     { code: "neo", count: 531, name: "Kamigawa: Neon Dynasty", price: 27 },
@@ -59,7 +59,7 @@ module.exports = {
       code: "afr",
       count: 424,
       name: "Adventures in the Forgotten Realms",
-      price: 12,
+      price: 12
     },
     { code: "mh2", count: 494, name: "Modern Horizons 2", price: 26 },
     { code: "sta", count: 126, name: "Strixhaven Mystical Archive", price: 5 },
@@ -212,6 +212,6 @@ module.exports = {
     { code: "ced", count: 302, name: "Collectors' Edition", price: 5 },
     { code: "2ed", count: 302, name: "Unlimited Edition", price: 4000 },
     { code: "leb", count: 302, name: "Limited Edition Beta", price: 8000 },
-    { code: "lea", count: 295, name: "Limited Edition Alpha", price: 10000 },
-  ],
+    { code: "lea", count: 295, name: "Limited Edition Alpha", price: 10000 }
+  ]
 };

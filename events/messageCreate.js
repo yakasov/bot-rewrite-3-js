@@ -4,9 +4,9 @@ const { Cards } = require("scryfall-api");
 const { EmbedBuilder } = require("discord.js");
 
 const checkAchievements = require("../util/achievements.js");
-const { 
-  checkMessageResponse, 
-  checkMessageReactions 
+const {
+  checkMessageResponse,
+  checkMessageReactions
 } = require("../util/messageHandlers.js");
 const { addToStats } = require("../util/stats.js");
 
@@ -41,7 +41,7 @@ module.exports = async function handleMessageCreate(message) {
         .setTitle("Scryfall Cards")
         .addFields({
           name: `Returned ${results.length} cards:`,
-          value: embedString,
+          value: embedString
         });
 
       message.channel.send({ embeds: [embed] });
@@ -64,7 +64,7 @@ module.exports = async function handleMessageCreate(message) {
   addToStats({
     guildId: message.guild.id,
     type: "message",
-    userId: message.author.id,
+    userId: message.author.id
   });
 
   checkAchievements.run(message);

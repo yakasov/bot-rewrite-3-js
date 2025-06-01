@@ -58,7 +58,7 @@ async function checkMessageResponse(msg) {
       ) {
         lastMsg = await msg.channel.messages
           .fetch({
-            limit: 2,
+            limit: 2
           })
           .then((c) => getNicknameMsg([...c.values()].pop()));
       }
@@ -82,7 +82,7 @@ async function checkMessageResponse(msg) {
       );
       if (sticker.size) {
         return msg.channel.send({
-          stickers: sticker,
+          stickers: sticker
         });
       }
       return null;
@@ -144,5 +144,5 @@ async function checkMessageReactions(msg) {
 
 module.exports = {
   checkMessageReactions,
-  checkMessageResponse,
+  checkMessageResponse
 };
