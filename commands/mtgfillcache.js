@@ -9,7 +9,8 @@ module.exports = {
     .setName("mtgfillcache")
     .setDescription("Fill MTG cache"),
   async execute() {
-    const rawSets = Sets.all().then((r) => r);
+    const rawSets = Sets.all()
+      .then((r) => r);
     const allSets = [];
 
     (await rawSets).forEach((s) => allSets.push(s.code));
@@ -22,5 +23,5 @@ module.exports = {
       }
     }
     console.log("Finished processing all sets!");
-  },
+  }
 };

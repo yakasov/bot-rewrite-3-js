@@ -7,23 +7,22 @@ module.exports = {
     .setName("edit")
     .setDescription("Edit a user's statistics")
     .addUserOption((opt) =>
-      opt.setName("user").setDescription("The user to edit").setRequired(true)
-    )
+      opt.setName("user")
+        .setDescription("The user to edit")
+        .setRequired(true))
     .addStringOption((opt) =>
       opt
         .setName("attribute")
         .setDescription("The attribute to edit")
-        .setRequired(true)
-    )
+        .setRequired(true))
     .addStringOption((opt) =>
       opt
         .setName("value")
         .setDescription("The value to set the attribute to")
-        .setRequired(true)
-    )
+        .setRequired(true))
     .addBooleanOption((opt) =>
-      opt.setName("add").setDescription("If the value should be set or added")
-    ),
+      opt.setName("add")
+        .setDescription("If the value should be set or added")),
   async execute(interaction) {
     const user = interaction.options.getUser("user").id;
     const attribute = interaction.options.getString("attribute");
@@ -36,7 +35,7 @@ module.exports = {
       interaction.user.id === (await interaction.guild.fetchOwner()).user.id
     ) {
       try {
-        const newVal = /^-?\d+$/u.test(value) ? parseInt(value, 10) : value;
+        const newVal = (/^-?\d+$/u).test(value) ? parseInt(value, 10) : value;
         if (add) {
           if (
             typeof globalThis.stats[interaction.guild.id][user][attribute] !==
@@ -45,7 +44,7 @@ module.exports = {
           ) {
             return interaction.reply({
               content: `Cannot add non-numeric values to attribute "${attribute}".`,
-              ephemeral: true,
+              ephemeral: true
             });
           }
           globalThis.stats[interaction.guild.id][user][attribute] += newVal;
@@ -65,7 +64,7 @@ module.exports = {
 
     return interaction.reply({
       content: "You are not an admin user!",
-      ephemeral: true,
+      ephemeral: true
     });
-  },
+  }
 };

@@ -6,7 +6,7 @@ const {
   getLevelName,
   getNicknameInteraction,
   getRequiredExperience,
-  getTitle,
+  getTitle
 } = require("../util/common.js");
 const { DISCORD_ID_LENGTH } = require("../util/consts.js");
 
@@ -42,11 +42,11 @@ module.exports = {
     .setName("profile")
     .setDescription("Shows personal statistics")
     .addUserOption((opt) =>
-      opt.setName("user").setDescription("The user to get the profile of")
-    )
+      opt.setName("user")
+        .setDescription("The user to get the profile of"))
     .addBooleanOption((opt) =>
-      opt.setName("debug").setDescription("Whether to print the raw statistics")
-    ),
+      opt.setName("debug")
+        .setDescription("Whether to print the raw statistics")),
   async execute(interaction) {
     await interaction.deferReply({ ephemeral: true });
 
@@ -100,9 +100,9 @@ module.exports = {
     for (const r of outputArray) {
       await interaction.followUp({
         content: `\`\`\`ansi\n${r}\n\`\`\``,
-        ephemeral: false,
+        ephemeral: false
       });
     }
     return null;
-  },
+  }
 };

@@ -11,25 +11,30 @@ function parseBirthday(date) {
 function getNextBirthdays(currentDate, count = 5) {
   const year = currentDate.year();
 
-  let orderedBirthdays = Object.entries(birthdays).map(([, v]) => [
-    `${v.date}/${year}`,
-    v.name,
-  ]);
+  let orderedBirthdays = Object.entries(birthdays)
+    .map(([, v]) => [
+      `${v.date}/${year}`,
+      v.name
+    ]);
   orderedBirthdays = orderedBirthdays.concat(
     orderedBirthdays.map(([date, name]) => [date.replace(year, year + 1), name])
   );
 
   orderedBirthdays.sort(
     ([dateA], [dateB]) =>
-      parseBirthday(dateA).diff(currentDate, "days") -
-      parseBirthday(dateB).diff(currentDate, "days")
+      parseBirthday(dateA)
+        .diff(currentDate, "days") -
+      parseBirthday(dateB)
+        .diff(currentDate, "days")
   );
 
   let future = 0;
   let output = "";
   for (const [date, name] of orderedBirthdays) {
-    if (parseBirthday(date).isAfter(currentDate, "day") && future < count) {
-      output += `${parseBirthday(date).format("MMMM Do")}: ${name}\n`;
+    if (parseBirthday(date)
+      .isAfter(currentDate, "day") && future < count) {
+      output += `${parseBirthday(date)
+        .format("MMMM Do")}: ${name}\n`;
       future++;
     }
     if (future >= count) {
@@ -51,11 +56,12 @@ module.exports = {
     if (birthdays[interaction.user.id]) {
       output += `\nYour birthday is set as ${parseBirthday(
         `${birthdays[interaction.user.id].date}/${year}`
-      ).format("MMMM Do")}.`;
+      )
+        .format("MMMM Do")}.`;
     } else {
       output += "\nYou do not have a birthday set!";
     }
 
     return interaction.reply(output);
-  },
+  }
 };

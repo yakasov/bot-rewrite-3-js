@@ -14,6 +14,7 @@ module.exports = {
   },
 
   formatTime: (seconds) => {
+
     /*
      * Note: this will only work up to 30d 23h 59m 59s
      * this is because toISOString() returns 1970-01-01T03:12:49.000Z (eg)
@@ -21,7 +22,9 @@ module.exports = {
      */
     const date = new Date(null);
     date.setSeconds(seconds);
-    const unitArray = date.toISOString().substr(8, 11).split(/:|T/u);
+    const unitArray = date.toISOString()
+      .substr(8, 11)
+      .split(/:|T/u);
     const days = parseInt(unitArray[0], 10) - 1;
     return `${days < 10 ? " " : ""}${days}d ${
       unitArray[1]
@@ -67,5 +70,5 @@ module.exports = {
     }
 
     return stats.name;
-  },
+  }
 };

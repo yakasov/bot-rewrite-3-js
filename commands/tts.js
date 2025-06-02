@@ -4,7 +4,7 @@ const { SlashCommandBuilder } = require("discord.js");
 const {
   createAudioPlayer,
   joinVoiceChannel,
-  createAudioResource,
+  createAudioResource
 } = require("@discordjs/voice");
 const fs = require("node:fs");
 
@@ -16,8 +16,7 @@ module.exports = {
       opt
         .setName("prompt")
         .setDescription("The prompt for TTS to say")
-        .setRequired(true)
-    ),
+        .setRequired(true)),
   async execute(interaction) {
     await interaction.deferReply();
 
@@ -27,29 +26,31 @@ module.exports = {
     joinVoiceChannel({
       adapterCreator: interaction.guild.voiceAdapterCreator,
       channelId: interaction.member.voice.channelId,
-      guildId: interaction.guild.id,
-    }).subscribe(player);
+      guildId: interaction.guild.id
+    })
+      .subscribe(player);
 
     const response = await fetch(
       "https://tiktok-tts.weilnet.workers.dev/api/generation",
       {
         body: JSON.stringify({
           text: prompt,
-          voice: "en_us_001",
+          voice: "en_us_001"
         }),
         headers: { "Content-Type": "application/json" },
-        method: "post",
+        method: "post"
       }
     );
 
-    await response.json().then(async (r) => {
-      if (r.data) {
-        fs.writeFileSync("resources/tts.mp3", r.data, { encoding: "base64" });
-        const res = createAudioResource("resources/tts.mp3");
-        player.play(res);
-      } else {
-        await interaction.reply(r.error);
-      }
-    });
-  },
+    await response.json()
+      .then(async (r) => {
+        if (r.data) {
+          fs.writeFileSync("resources/tts.mp3", r.data, { encoding: "base64" });
+          const res = createAudioResource("resources/tts.mp3");
+          player.play(res);
+        } else {
+          await interaction.reply(r.error);
+        }
+      });
+  }
 };

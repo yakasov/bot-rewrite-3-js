@@ -5,13 +5,13 @@ const {
   checkFortniteShop,
   checkMinecraftServer,
   getNewSplash,
-  getTime,
+  getTime
 } = require("../util/scheduledTasks.js");
 const {
   backupStats,
   checkVoiceChannels,
   saveStats,
-  updateScores,
+  updateScores
 } = require("../util/stats");
 
 async function handleClientReady(c) {

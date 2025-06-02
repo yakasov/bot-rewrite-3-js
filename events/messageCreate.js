@@ -6,7 +6,7 @@ const { EmbedBuilder } = require("discord.js");
 const checkAchievements = require("../util/achievements.js");
 const {
   checkMessageResponse,
-  checkMessageReactions,
+  checkMessageReactions
 } = require("../util/messageHandlers.js");
 const { addToStats } = require("../util/stats");
 
@@ -37,10 +37,12 @@ async function handleMessageCreate(message) {
         embedString += `${i + 1}. ${c}\n`;
       });
 
-      const embed = new EmbedBuilder().setTitle("Scryfall Cards").addFields({
-        name: `Returned ${results.length} cards:`,
-        value: embedString,
-      });
+      const embed = new EmbedBuilder()
+        .setTitle("Scryfall Cards")
+        .addFields({
+          name: `Returned ${results.length} cards:`,
+          value: embedString
+        });
 
       message.channel.send({ embeds: [embed] });
       return;
@@ -62,7 +64,7 @@ async function handleMessageCreate(message) {
   addToStats({
     guildId: message.guild.id,
     type: "message",
-    userId: message.author.id,
+    userId: message.author.id
   });
 
   checkAchievements.run(message);

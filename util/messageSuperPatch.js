@@ -13,7 +13,7 @@ function messageSuperPatch() {
     try {
       return superReply.call(this, {
         content: s,
-        failIfNotExists: false,
+        failIfNotExists: false
       });
     } catch (e) {
       return console.error(e.message);

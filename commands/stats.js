@@ -7,7 +7,7 @@ const {
   getNicknameInteraction,
   getRequiredExperience,
   getLevelName,
-  getTitle,
+  getTitle
 } = require("../util/common.js");
 const { DISCORD_ID_LENGTH, TOP_SCORES_N } = require("../util/consts.js");
 
@@ -21,14 +21,15 @@ function getRankedUsers(guildStats, guild) {
 
 function buildTableData(topScores, guildStats, interaction) {
   /* eslint-disable sort-keys */
-  return topScores.slice(0, TOP_SCORES_N).map((a, i) => ({
-    "#": i + 1,
-    Name: getNicknameInteraction(interaction, a[0], true),
-    Level: `${guildStats[a[0]].level} (${guildStats[a[0]].levelExperience}/${getRequiredExperience(guildStats[a[0]].level)} XP)`,
-    Msgs: guildStats[a[0]].messages,
-    "Voice Time": formatTime(guildStats[a[0]].voiceTime),
-    Title: getTitle(guildStats[a[0]]),
-  }));
+  return topScores.slice(0, TOP_SCORES_N)
+    .map((a, i) => ({
+      "#": i + 1,
+      Name: getNicknameInteraction(interaction, a[0], true),
+      Level: `${guildStats[a[0]].level} (${guildStats[a[0]].levelExperience}/${getRequiredExperience(guildStats[a[0]].level)} XP)`,
+      Msgs: guildStats[a[0]].messages,
+      "Voice Time": formatTime(guildStats[a[0]].voiceTime),
+      Title: getTitle(guildStats[a[0]])
+    }));
   /* eslint-enable sort-keys */
 }
 
@@ -64,5 +65,5 @@ module.exports = {
     outputMessage += formatUserRankingLine(topScores, guildStats, interaction);
 
     return interaction.reply(`\`\`\`ansi\n${outputMessage}\n\`\`\``);
-  },
+  }
 };

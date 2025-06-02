@@ -13,19 +13,17 @@ module.exports = {
       opt
         .setName("key")
         .setDescription("The response to edit")
-        .setRequired(true)
-    )
+        .setRequired(true))
     .addStringOption((opt) =>
-      opt.setName("string").setDescription("The string to reply with")
-    )
+      opt.setName("string")
+        .setDescription("The string to reply with"))
     .addNumberOption((opt) =>
       opt
         .setName("chance")
-        .setDescription("The chance to reply to a given message")
-    )
+        .setDescription("The chance to reply to a given message"))
     .addStringOption((opt) =>
-      opt.setName("type").setDescription("Message or react")
-    ),
+      opt.setName("type")
+        .setDescription("Message or react")),
   async execute(interaction) {
     const key = interaction.options.getString("key");
     const string = interaction.options.getString("string") ?? false;
@@ -41,14 +39,14 @@ module.exports = {
         if (!chanceResponses[key] && !(string && chance && type)) {
           return interaction.reply({
             content: "Key does not exist and not enough values provided.",
-            ephemeral: true,
+            ephemeral: true
           });
         }
 
         chanceResponses[key] = {
           chance: chance ?? chanceResponses[key].chance,
           string: string ?? chanceResponses[key].string,
-          type: type ?? chanceResponses[key].type,
+          type: type ?? chanceResponses[key].type
         };
 
         globalThis.rollTable = generateRollTable(chanceResponses);
@@ -66,7 +64,7 @@ module.exports = {
 
     return interaction.reply({
       content: "You are not an admin user!",
-      ephemeral: true,
+      ephemeral: true
     });
-  },
+  }
 };

@@ -1,7 +1,7 @@
 "use strict";
 
 const { DISCORD_VOICE_CHANNEL_TYPE } = require("../consts.js");
-const { addToStats } = require("./index.js");
+const { addToStats } = require("./stats.js");
 
 function checkVoiceChannels() {
   const guilds = globalThis.client.guilds.cache;
@@ -14,7 +14,7 @@ function checkVoiceChannels() {
         addToStats({
           guildId: member.guild.id,
           type: "inVoiceChannel",
-          userId: member.user.id,
+          userId: member.user.id
         });
       });
     });
@@ -22,5 +22,5 @@ function checkVoiceChannels() {
 }
 
 module.exports = {
-  checkVoiceChannels,
+  checkVoiceChannels
 };

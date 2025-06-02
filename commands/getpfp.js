@@ -9,14 +9,13 @@ module.exports = {
     .addUserOption((opt) =>
       opt
         .setName("user")
-        .setDescription("The user to get the profile picture of")
-    ),
+        .setDescription("The user to get the profile picture of")),
   async execute(interaction) {
     try {
       const user = interaction.options.getUser("user");
       const avatar = (user || interaction.user).displayAvatarURL({
         dynamic: true,
-        size: 4096,
+        size: 4096
       });
 
       const embed = new EmbedBuilder()
@@ -26,5 +25,5 @@ module.exports = {
     } catch (e) {
       await interaction.reply(e.message);
     }
-  },
+  }
 };

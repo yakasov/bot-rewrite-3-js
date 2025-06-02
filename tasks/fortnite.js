@@ -5,7 +5,7 @@ const { mainGuildId, fortniteChannelId } = require("../resources/config.json");
 let currentSongs = [];
 const emoteFlags = {
   "Bring It Around": false,
-  "Get Griddy": false,
+  "Get Griddy": false
 };
 
 async function getFortniteShop() {
@@ -37,7 +37,7 @@ exports.run = async (client) => {
   const emoteMessages = {
     "Bring It Around":
       "**The Homer Simpson dance is now in the Fortnite shop!**",
-    "Get Griddy": "**Get Griddy is now in the Fortnite shop!**",
+    "Get Griddy": "**Get Griddy is now in the Fortnite shop!**"
   };
 
   for (const emote in emoteFlags) {

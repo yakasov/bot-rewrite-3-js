@@ -4,7 +4,7 @@ const {
   ActionRowBuilder,
   StringSelectMenuBuilder,
   StringSelectMenuOptionBuilder,
-  SlashCommandBuilder,
+  SlashCommandBuilder
 } = require("discord.js");
 
 /* eslint-disable sort-keys */
@@ -20,7 +20,7 @@ const STANDARD_NAMES = {
   "\u001b[34;1;1mCaked-up\u001b[0m": "Caked-up",
   "\u001b[37;1;1mDiscord Mod\u001b[0m": "Discord Mod",
   "\u001b[35;1;1mLisan al-Gaib\u001b[0m": "Lisan al-Gaib",
-  "\u001b[31;1;4mTrue #1 of Friends\u001b[0m": "True #1 of Friends",
+  "\u001b[31;1;4mTrue #1 of Friends\u001b[0m": "True #1 of Friends"
 };
 /* eslint-enable sort-keys */
 
@@ -30,8 +30,9 @@ function getStandardName(name) {
 
 function buildSelectOptions(names) {
   return names.map((n) =>
-    new StringSelectMenuOptionBuilder().setLabel(getStandardName(n)).setValue(n)
-  );
+    new StringSelectMenuOptionBuilder()
+      .setLabel(getStandardName(n))
+      .setValue(n));
 }
 
 function buildSelectMenu(unlockedNames) {
@@ -54,14 +55,17 @@ module.exports = {
     const select = buildSelectMenu(unlockedNames);
 
     const response = await interaction.editReply({
-      components: [new ActionRowBuilder().addComponents(select)],
-      content: "Choose a name to use in /stats and /profile!",
+      components: [
+        new ActionRowBuilder()
+          .addComponents(select)
+      ],
+      content: "Choose a name to use in /stats and /profile!"
     });
 
     const collectorFilter = (i) => i.user.id === interaction.user.id;
     const collector = response.createMessageComponentCollector({
       filter: collectorFilter,
-      time: 60_000,
+      time: 60_000
     });
 
     collector.on("collect", async (i) => {
@@ -70,9 +74,12 @@ module.exports = {
       globalThis.stats[guildId][userId].customSetName = true;
 
       await i.update({
-        components: [new ActionRowBuilder().addComponents(select)],
-        content: `Updated name to ${getStandardName(i.values[0])}`,
+        components: [
+          new ActionRowBuilder()
+            .addComponents(select)
+        ],
+        content: `Updated name to ${getStandardName(i.values[0])}`
       });
     });
-  },
+  }
 };

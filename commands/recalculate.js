@@ -19,5 +19,5 @@ module.exports = {
     return interaction.reply(
       `Recalculated all guild stats for guild ${interaction.guild.id}.`
     );
-  },
+  }
 };

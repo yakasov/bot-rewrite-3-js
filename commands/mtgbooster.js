@@ -10,7 +10,7 @@ const { getButtons, getContent } = require("../util/mtg/boosterUI.js");
 const {
   getFullSet,
   getRandom,
-  setFilter,
+  setFilter
 } = require("../util/mtg/boosterHelper.js");
 const {
   boosterGetConnected,
@@ -18,7 +18,7 @@ const {
   boosterGetHeadTurning,
   boosterGetLand,
   boosterGetRareOrMythic,
-  boosterGetWildCard,
+  boosterGetWildCard
 } = require("../util/mtg/boosterGenerator.js");
 
 const interactions = {};
@@ -47,7 +47,7 @@ async function generateBoosterPack(interaction, chosenSet = null) {
     boosterGetHeadTurning(setToUse),
     ...boosterGetWildCard(setToUse),
     boosterGetRareOrMythic(setToUse),
-    boosterGetFoil(setToUse),
+    boosterGetFoil(setToUse)
   ].filter((c) => c !== undefined);
 
   // If we couldn't filter the cards properly, fill with random cards
@@ -97,12 +97,11 @@ module.exports = {
     .addStringOption((opt) =>
       opt
         .setName("set")
-        .setDescription("Which set to pull cards from (leave blank for random)")
-    ),
+        .setDescription("Which set to pull cards from (leave blank for random)")),
   async execute(interaction) {
     interactions[interaction.user.id] = {
       cards: [],
-      page: 1,
+      page: 1
     };
     const chosenSet = interaction.options.getString("set") ?? null;
 
@@ -116,13 +115,13 @@ module.exports = {
     const response = await interaction.editReply({
       components: [getButtons(interactions, interaction.user.id)],
       embeds: [embed],
-      files: file ? [file] : [],
+      files: file ? [file] : []
     });
 
     const collectorFilter = (i) => i.user.id === interaction.user.id;
     const collector = response.createMessageComponentCollector({
       filter: collectorFilter,
-      idle: 300_000,
+      idle: 300_000
     });
 
     collector.on("collect", async (i) => {
@@ -140,10 +139,10 @@ module.exports = {
       await i.update({
         components: [getButtons(interactions, interaction.user.id)],
         embeds: [embed],
-        files: file ? [file] : [],
+        files: file ? [file] : []
       });
     });
 
     return null;
-  },
+  }
 };

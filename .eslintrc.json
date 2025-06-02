@@ -24,7 +24,7 @@
       }
     ],
     "complexity": "off",
-    "consistent-return": ["error", { "treatUndefinedAsUnspecified": true }],
+    "consistent-return": "off",
     "dot-location": ["error", "property"],
     "func-names": "off",
     "func-style": ["error", "declaration", { "allowArrowFunctions": true }],

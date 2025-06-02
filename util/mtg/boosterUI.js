@@ -5,7 +5,7 @@ const {
   ButtonBuilder,
   ButtonStyle,
   EmbedBuilder,
-  AttachmentBuilder,
+  AttachmentBuilder
 } = require("discord.js");
 const { MTG_PACK_SIZE } = require("../consts.js");
 const { allSets } = require("../../resources/mtg/mtgSets.js");
@@ -27,7 +27,7 @@ const replacements = {
   "{T}": " :arrow_right_hook: ",
   "{U}": " :new_moon_with_face: ",
   "{W}": " :alien: ",
-  "{X}": " :regional_indicator_x: ",
+  "{X}": " :regional_indicator_x: "
 };
 
 function getButtons(interactions, id) {
@@ -44,9 +44,10 @@ function getButtons(interactions, id) {
           ? "Return to Summary"
           : "Next card"
       )
-      .setStyle(ButtonStyle.Secondary),
+      .setStyle(ButtonStyle.Secondary)
   ];
-  return new ActionRowBuilder().addComponents(...buttons);
+  return new ActionRowBuilder()
+    .addComponents(...buttons);
 }
 
 function getRarityString(cards) {
@@ -67,15 +68,18 @@ function getAllCardsString(cards) {
 
 function replaceIcons(text) {
   let returnText = text ?? "-";
-  Object.entries(replacements).forEach(([k, v]) => {
-    returnText = returnText.replaceAll(k, v);
-  });
+  Object.entries(replacements)
+    .forEach(([k, v]) => {
+      returnText = returnText.replaceAll(k, v);
+    });
   return returnText || "-";
 }
 
 function getContent(interactions, id) {
   const capitaliseFirst = (s) =>
-    String(s[0]).toUpperCase() + String(s).slice(1);
+    String(s[0])
+      .toUpperCase() + String(s)
+      .slice(1);
   const c = interactions[id].cards[interactions[id].page - 2];
 
   const setPrice = allSets.find(
@@ -85,33 +89,35 @@ function getContent(interactions, id) {
 
   if (interactions[id].page === 1) {
     return [
-      new EmbedBuilder().setTitle("Booster Pack Summary").addFields(
-        {
-          name: "Set",
-          value: `${interactions[id].cards[1].set_name} (${interactions[id].cards[1].set})`,
-        },
-        {
-          name: "Rarities",
-          value: getRarityString(interactions[id].cards),
-        },
-        {
-          name: "Overall Price",
-          value: `Set: $${setPrice} // Cards: $${cardValue} // Profit: $${cardValue - setPrice}`,
-        },
-        { name: "\u200B", value: "\u200B" },
-        {
-          name: "Cards",
-          value: getAllCardsString(interactions[id].cards),
-        },
-        { name: "\u200B", value: "\u200B" },
-        {
-          name: "Extra cards added?",
-          value: interactions[id].cardFill
-            ? `Yes, added ${interactions[id].cardFill} card(s)`
-            : "No",
-        }
-      ),
-      null,
+      new EmbedBuilder()
+        .setTitle("Booster Pack Summary")
+        .addFields(
+          {
+            name: "Set",
+            value: `${interactions[id].cards[1].set_name} (${interactions[id].cards[1].set})`
+          },
+          {
+            name: "Rarities",
+            value: getRarityString(interactions[id].cards)
+          },
+          {
+            name: "Overall Price",
+            value: `Set: $${setPrice} // Cards: $${cardValue} // Profit: $${cardValue - setPrice}`
+          },
+          { name: "\u200B", value: "\u200B" },
+          {
+            name: "Cards",
+            value: getAllCardsString(interactions[id].cards)
+          },
+          { name: "\u200B", value: "\u200B" },
+          {
+            name: "Extra cards added?",
+            value: interactions[id].cardFill
+              ? `Yes, added ${interactions[id].cardFill} card(s)`
+              : "No"
+          }
+        ),
+      null
     ];
   }
 
@@ -125,37 +131,40 @@ function getContent(interactions, id) {
         .addFields(
           {
             name: "Set",
-            value: `${c.set_name} (${c.set})`,
+            value: `${c.set_name} (${c.set})`
           },
           {
             name: "Oracle text",
-            value: replaceIcons(c.oracle_text),
+            value: replaceIcons(c.oracle_text)
           },
           {
             name: "Flavour text",
-            value: replaceIcons(c.flavour_text),
+            value: replaceIcons(c.flavour_text)
           },
           { name: "\u200B", value: "\u200B" },
           {
             inline: true,
             name: "Rarity",
-            value: capitaliseFirst(c.rarity),
+            value: capitaliseFirst(c.rarity)
           },
           {
             inline: true,
             name: "Foil",
-            value: c.foil ? "Yes" : "No",
+            value: c.foil ? "Yes" : "No"
           },
           {
             inline: true,
             name: "Price",
-            value: `$${(c.foil ? c.price_foil : c.price) || "???"}`,
+            value: `$${(c.foil ? c.price_foil : c.price) || "???"}`
           }
         )
         .setImage(
-          c.local ? `attachment://${c.image.split("/").pop()}.jpg` : c.image
+          c.local
+            ? `attachment://${c.image.split("/")
+              .pop()}.jpg`
+            : c.image
         ),
-      file,
+      file
     ];
   } catch (e) {
     console.error(e);
@@ -167,5 +176,5 @@ function getContent(interactions, id) {
 
 module.exports = {
   getButtons,
-  getContent,
+  getContent
 };

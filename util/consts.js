@@ -12,7 +12,7 @@ module.exports = {
     "./resources/mtg/mtgCards.json",
     "./resources/stats.json",
     "./resources/ranks.json",
-    "./resources/roles.json",
+    "./resources/roles.json"
   ],
   BOT_CHANNEL_ID: "1087133384758792272",
   DISCORD_ID_LENGTH: 18,
@@ -20,5 +20,5 @@ module.exports = {
   MTG_PACK_SIZE: 12,
   SPAM_CHANNEL_ID: "485003783399669762",
   TOP_SCORES_N: 10,
-  YT_MAX_AUDIO_SIZE: 33554432,
+  YT_MAX_AUDIO_SIZE: 33554432
 };

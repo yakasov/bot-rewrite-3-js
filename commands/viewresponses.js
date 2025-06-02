@@ -10,8 +10,7 @@ module.exports = {
     .addStringOption((opt) =>
       opt
         .setName("key")
-        .setDescription("The response to view. Leave blank to see all keys")
-    ),
+        .setDescription("The response to view. Leave blank to see all keys")),
   async execute(interaction) {
     await interaction.deferReply({ ephemeral: true });
 
@@ -21,22 +20,24 @@ module.exports = {
       if (chanceResponses[key]) {
         return interaction.followUp({
           content: `\`\`\`json\n${JSON.stringify(chanceResponses[key], null, 2)}\n\`\`\``,
-          ephemeral: true,
+          ephemeral: true
         });
       }
       return interaction.followUp({
         content: `Key "${key}" not found. Valid keys: ${Object.keys(
           chanceResponses
-        ).join(", ")}`,
-        ephemeral: true,
+        )
+          .join(", ")}`,
+        ephemeral: true
       });
     }
 
     return interaction.followUp({
-      content: `Valid keys:\n\`\`\`\n${Object.keys(chanceResponses).join(
-        ", "
-      )}\n\`\`\``,
-      ephemeral: true,
+      content: `Valid keys:\n\`\`\`\n${Object.keys(chanceResponses)
+        .join(
+          ", "
+        )}\n\`\`\``,
+      ephemeral: true
     });
-  },
+  }
 };

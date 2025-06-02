@@ -45,16 +45,14 @@ module.exports = {
           { name: "Server name", value: "server" },
           { name: "Owner name", value: "owner" },
           { name: "Spam channel name", value: "channel" }
-        )
-    )
+        ))
     .addStringOption((opt) =>
       opt
         .setName("value")
         .setDescription("What to set the name to")
         .setRequired(true)
         .setMinLength(1)
-        .setMaxLength(32)
-    ),
+        .setMaxLength(32)),
   async execute(interaction) {
     if (interaction.guild.id !== mainGuildId) {
       return;
@@ -63,7 +61,7 @@ module.exports = {
     if (!isBirthdayUser(interaction)) {
       return interaction.reply({
         content: "It is not your birthday!",
-        ephemeral: true,
+        ephemeral: true
       });
     }
 
@@ -72,42 +70,42 @@ module.exports = {
 
     try {
       switch (option) {
-        case "bot":
-          await setBotNickname(interaction, value);
-          await setChannelName(
-            interaction,
-            BOT_CHANNEL_ID,
-            `chat-with-${value}`
-          );
-          break;
-        case "server":
-          await interaction.guild.setName(value);
-          break;
-        case "owner":
-          return interaction.reply({
-            content:
+      case "bot":
+        await setBotNickname(interaction, value);
+        await setChannelName(
+          interaction,
+          BOT_CHANNEL_ID,
+          `chat-with-${value}`
+        );
+        break;
+      case "server":
+        await interaction.guild.setName(value);
+        break;
+      case "owner":
+        return interaction.reply({
+          content:
               "Due to Discord limitations, this is not possible :(\nPlease message me instead!",
-            ephemeral: true,
-          });
-        case "channel":
-          await setChannelName(interaction, SPAM_CHANNEL_ID, value);
-          break;
-        default:
-          return interaction.reply({
-            content: "Not implemented yet...",
-            ephemeral: true,
-          });
+          ephemeral: true
+        });
+      case "channel":
+        await setChannelName(interaction, SPAM_CHANNEL_ID, value);
+        break;
+      default:
+        return interaction.reply({
+          content: "Not implemented yet...",
+          ephemeral: true
+        });
       }
 
       return interaction.reply({
         content: `Set ${option} name successfully!`,
-        ephemeral: true,
+        ephemeral: true
       });
     } catch (e) {
       return interaction.reply({
         content: `Error: ${e.message}`,
-        ephemeral: true,
+        ephemeral: true
       });
     }
-  },
+  }
 };

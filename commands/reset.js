@@ -39,5 +39,5 @@ module.exports = {
     return interaction.reply(
       `Reset all guild stats for guild ${interaction.guild.id}.`
     );
-  },
+  }
 };

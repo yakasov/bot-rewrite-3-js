@@ -4,7 +4,7 @@ const { SlashCommandBuilder } = require("discord.js");
 const { status } = require("minecraft-server-util");
 const {
   minecraftServerIp,
-  minecraftServerPort,
+  minecraftServerPort
 } = require("../resources/config.json");
 
 module.exports = {
@@ -27,5 +27,5 @@ module.exports = {
       .catch((e) => {
         console.error(e);
       });
-  },
+  }
 };

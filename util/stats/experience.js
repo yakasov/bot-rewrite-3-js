@@ -4,10 +4,10 @@ const { statsConfig } = require("../../resources/config.json");
 const {
   getRequiredExperience,
   getRequiredExperienceCumulative,
-  getLevelName,
+  getLevelName
 } = require("../common.js");
+const { sendMessage } = require("./messages.js");
 const { DISCORD_ID_LENGTH } = require("../consts.js");
-const { sendMessage } = require("./index.js");
 
 function calculateExperience(userStats) {
   const exp = Math.floor(
@@ -36,16 +36,17 @@ function levelUp(guildId, userId) {
       userId,
       "Level Up",
       `level ${globalThis.stats[guildId][userId].level}`,
-      getLevelName(globalThis.stats[guildId][userId].level),
+      getLevelName(globalThis.stats[guildId][userId].level)
     ]);
   }
 }
 
 function recalculateLevels() {
   for (const [guildId, guildStats] of Object.entries(globalThis.stats)) {
-    const userIds = Object.keys(guildStats).filter(
-      (id) => id.length === DISCORD_ID_LENGTH
-    );
+    const userIds = Object.keys(guildStats)
+      .filter(
+        (id) => id.length === DISCORD_ID_LENGTH
+      );
     for (const userId of userIds) {
       let userStats = globalThis.stats[guildId][userId];
       userStats.level = 0;
@@ -84,5 +85,5 @@ module.exports = {
   calculateExperience,
   levelUp,
   recalculateLevels,
-  updateStatsOnLevelUp,
+  updateStatsOnLevelUp
 };

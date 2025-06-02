@@ -1,8 +1,10 @@
 "use strict";
 
-const { statsConfig } = require("../resources/config.json");
+const { statsConfig } = require("../../resources/config.json");
 const { getTimeInSeconds } = require("../common.js");
-const { initialiseStats, saveStats, updateScores } = require("./index.js");
+const { initialiseStats } = require("./baseStats.js");
+const { saveStats } = require("./persistence.js");
+const { updateScores } = require("./score.js");
 
 function addToStats(details) {
   const { type, userId, guildId, giver } = details;
@@ -11,7 +13,7 @@ function addToStats(details) {
   if (!globalThis.stats[guildId]) {
     globalThis.stats[guildId] = {
       allowResponses: true,
-      rankUpChannel: "",
+      rankUpChannel: ""
     };
   }
 
@@ -19,44 +21,44 @@ function addToStats(details) {
   initialiseStats(guildId, giverId);
 
   switch (type) {
-    case "init":
-      return;
-    case "message":
-      if (
-        getTimeInSeconds() - globalThis.stats[guildId][userId].lastGainTime <
+  case "init":
+    return;
+  case "message":
+    if (
+      getTimeInSeconds() - globalThis.stats[guildId][userId].lastGainTime <
         statsConfig.messageSRGainCooldown
-      ) {
-        return;
-      }
-      globalThis.stats[guildId][userId].lastGainTime = getTimeInSeconds();
-      globalThis.stats[guildId][userId].messages += 1;
-      break;
+    ) {
+      return;
+    }
+    globalThis.stats[guildId][userId].lastGainTime = getTimeInSeconds();
+    globalThis.stats[guildId][userId].messages += 1;
+    break;
 
-    case "joinedVoiceChannel":
+  case "joinedVoiceChannel":
+    globalThis.stats[guildId][userId].joinTime = getTimeInSeconds();
+    break;
+
+  case "inVoiceChannel":
+    if (globalThis.botUptime < 10) {
       globalThis.stats[guildId][userId].joinTime = getTimeInSeconds();
-      break;
-
-    case "inVoiceChannel":
-      if (globalThis.botUptime < 10) {
-        globalThis.stats[guildId][userId].joinTime = getTimeInSeconds();
-      }
-      globalThis.stats[guildId][userId].voiceTime += Math.floor(
-        getTimeInSeconds() -
+    }
+    globalThis.stats[guildId][userId].voiceTime += Math.floor(
+      getTimeInSeconds() -
           (globalThis.stats[guildId][userId].joinTime === 0
             ? getTimeInSeconds()
             : globalThis.stats[guildId][userId].joinTime)
-      );
-      globalThis.stats[guildId][userId].joinTime = getTimeInSeconds();
-      break;
+    );
+    globalThis.stats[guildId][userId].joinTime = getTimeInSeconds();
+    break;
 
-    case "leftVoiceChannel":
-      globalThis.stats[guildId][userId].voiceTime += Math.floor(
-        getTimeInSeconds() - globalThis.stats[guildId][userId].joinTime
-      );
-      break;
+  case "leftVoiceChannel":
+    globalThis.stats[guildId][userId].voiceTime += Math.floor(
+      getTimeInSeconds() - globalThis.stats[guildId][userId].joinTime
+    );
+    break;
 
-    default:
-      break;
+  default:
+    break;
   }
 
   updateScores();
@@ -64,5 +66,5 @@ function addToStats(details) {
 }
 
 module.exports = {
-  addToStats,
+  addToStats
 };

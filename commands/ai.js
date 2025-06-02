@@ -9,18 +9,18 @@ const {
   AI_MAX_TOKENS,
   AI_MODEL,
   AI_REQUEST_ATTEMPTS,
-  AI_DEFAULT_TEMP,
+  AI_DEFAULT_TEMP
 } = require("../util/consts.js");
 
 const openai = new OpenAI({
-  apiKey: openaiToken,
+  apiKey: openaiToken
 });
 const initialMessage = {
   content: `You are a casual Discord chatting bot chatting in my personal 
   Discord server. Your name is 'outputbot'. Others may ask for you to act or 
   roleplay as something else, and you should try and carry out that request 
   if you can! Feel free to respond to any request.`,
-  role: "system",
+  role: "system"
 };
 let conversation = [initialMessage];
 
@@ -55,15 +55,13 @@ module.exports = {
       opt
         .setName("prompt")
         .setDescription("The prompt to give ChatGPT")
-        .setRequired(true)
-    )
+        .setRequired(true))
     .addNumberOption((opt) =>
       opt
         .setName("temperature")
         .setDescription("Optional temperature parameter")
         .setMinValue(0)
-        .setMaxValue(2)
-    ),
+        .setMaxValue(2)),
   async execute(interaction) {
     if (!openai.apiKey || !aiChannels.includes(`${interaction.channelId}`)) {
       return;
@@ -87,7 +85,7 @@ module.exports = {
 
     conversation = conversation.concat({
       content: prompt,
-      role: "user",
+      role: "user"
     });
 
     while (attempts < AI_REQUEST_ATTEMPTS + 1 && !res) {
@@ -97,7 +95,7 @@ module.exports = {
           max_tokens: AI_MAX_TOKENS,
           messages: conversation,
           model: AI_MODEL,
-          temperature,
+          temperature
         });
       } catch (err) {
         handleAIError(err, interaction, attempts, timestamp);
@@ -117,5 +115,5 @@ module.exports = {
         "Failed after 3 attempts, please try again - your conversation shouldn't be affected!"
       );
     }
-  },
+  }
 };

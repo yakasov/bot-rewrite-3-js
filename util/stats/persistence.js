@@ -20,5 +20,5 @@ function backupStats(stats) {
 
 module.exports = {
   backupStats,
-  saveStats,
+  saveStats
 };

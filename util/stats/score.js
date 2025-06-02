@@ -3,10 +3,10 @@
 const ranks = require("../../resources/ranks.json");
 const {
   getLevelName,
-  getRequiredExperienceCumulative,
+  getRequiredExperienceCumulative
 } = require("../common.js");
+const { calculateExperience, levelUp } = require("./experience.js");
 const { DISCORD_ID_LENGTH } = require("../consts.js");
-const { addToStats, calculateExperience, levelUp } = require("./index.js");
 
 function updateScoreValue(guildId, userId) {
   const userStats = calculateExperience(globalThis.stats[guildId][userId]);
@@ -32,15 +32,23 @@ function updateScoreValue(guildId, userId) {
 }
 
 function updateScores() {
+
+  /*
+   * This fixes a circular dependency
+   * I really don't like this fix
+   */
+  const { addToStats } = require("./stats.js");
+
   for (const [guildId, guildStats] of Object.entries(globalThis.stats)) {
-    const userIds = Object.keys(guildStats).filter(
-      (id) => id.length === DISCORD_ID_LENGTH
-    );
+    const userIds = Object.keys(guildStats)
+      .filter(
+        (id) => id.length === DISCORD_ID_LENGTH
+      );
     for (const userId of userIds) {
       addToStats({
         guildId,
         type: "init",
-        userId,
+        userId
       });
 
       updateScoreValue(guildId, userId);
@@ -57,5 +65,5 @@ function updateScores() {
 
 module.exports = {
   updateScoreValue,
-  updateScores,
+  updateScores
 };

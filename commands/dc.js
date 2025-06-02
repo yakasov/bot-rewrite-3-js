@@ -12,5 +12,5 @@ module.exports = {
     if (conn) {
       conn.destroy();
     }
-  },
+  }
 };

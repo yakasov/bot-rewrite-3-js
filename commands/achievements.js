@@ -45,5 +45,5 @@ module.exports = {
     const message = formatAchievementsMessage(unlocks, achievements);
 
     await interaction.reply(message);
-  },
+  }
 };

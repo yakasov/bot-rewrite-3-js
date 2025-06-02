@@ -16,7 +16,7 @@ const baseStats = {
   previousVoiceTime: 0,
   totalExperience: 0,
   unlockedNames: [],
-  voiceTime: 0,
+  voiceTime: 0
 };
 
 function initialiseStats(guildId, userId) {
@@ -25,21 +25,23 @@ function initialiseStats(guildId, userId) {
     return null;
   }
 
-  Object.entries(baseStats).forEach(([k, v]) => {
-    if (globalThis.stats[guildId][userId][k] === undefined) {
-      globalThis.stats[guildId][userId][k] = v;
-    }
-  });
+  Object.entries(baseStats)
+    .forEach(([k, v]) => {
+      if (globalThis.stats[guildId][userId][k] === undefined) {
+        globalThis.stats[guildId][userId][k] = v;
+      }
+    });
 
-  Object.keys(globalThis.stats[guildId][userId]).forEach((k) => {
-    if (baseStats[k] === undefined) {
-      delete globalThis.stats[guildId][userId][k];
-    }
-  });
+  Object.keys(globalThis.stats[guildId][userId])
+    .forEach((k) => {
+      if (baseStats[k] === undefined) {
+        delete globalThis.stats[guildId][userId][k];
+      }
+    });
   return null;
 }
 
 module.exports = {
   baseStats,
-  initialiseStats,
+  initialiseStats
 };

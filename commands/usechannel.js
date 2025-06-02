@@ -22,7 +22,7 @@ module.exports = {
 
     return interaction.reply({
       content: "You are not an admin user!",
-      ephemeral: true,
+      ephemeral: true
     });
-  },
+  }
 };

@@ -8,8 +8,7 @@ async function checkMessageResponse(msg) {
   // Swap Twitter/X URLs for proper embedding ones
   if (
     ["https://x.com/", "https://twitter.com/"].find((l) =>
-      msg.content.includes(l)
-    ) &&
+      msg.content.includes(l)) &&
     msg.content.includes("status")
   ) {
     const content = `${getNicknameMsg(msg)} sent:\n${msg.content
@@ -25,7 +24,8 @@ async function checkMessageResponse(msg) {
       msg.channel.send(content);
     }
 
-    await msg.delete().catch(console.error);
+    await msg.delete()
+      .catch(console.error);
     return;
   }
 
@@ -33,7 +33,8 @@ async function checkMessageResponse(msg) {
   // Swap steamcommunity links for openable ones
   if (steamLinkRegex.test(msg.content)) {
     const steamLink =
-      msg.content.split(" ").find((m) => steamLinkRegex.test(m)) ?? msg.content;
+      msg.content.split(" ")
+        .find((m) => steamLinkRegex.test(m)) ?? msg.content;
     msg.channel.send(
       /* eslint-disable-next-line max-len */
       `Embedded link: https://yakasov.github.io/pages/miscellaneous/steam_direct.html?page=${encodeURIComponent(steamLink)}`
@@ -49,17 +50,23 @@ async function checkMessageResponse(msg) {
     if (res.includes("{FOLLOWING}")) {
       let lastMsg = "";
       if (
-        msg.content.toLowerCase().trim() === k ||
-        msg.content.toLowerCase().trim().endsWith(k)
+        msg.content.toLowerCase()
+          .trim() === k ||
+        msg.content.toLowerCase()
+          .trim()
+          .endsWith(k)
       ) {
         lastMsg = await msg.channel.messages
           .fetch({
-            limit: 2,
+            limit: 2
           })
           .then((c) => getNicknameMsg([...c.values()].pop()));
       }
 
-      const following = msg.content.toLowerCase().split(k).slice(1).join(k);
+      const following = msg.content.toLowerCase()
+        .split(k)
+        .slice(1)
+        .join(k);
       res = res.replace(
         "{FOLLOWING}",
         lastMsg || !following.trim()
@@ -75,7 +82,7 @@ async function checkMessageResponse(msg) {
       );
       if (sticker.size) {
         return msg.channel.send({
-          stickers: sticker,
+          stickers: sticker
         });
       }
       return null;
@@ -88,7 +95,6 @@ async function checkMessageResponse(msg) {
   for (let i = 0; i < entries.length; i++) {
     const [k, v] = entries[i];
     if (` ${msg.content.toLowerCase()} `.includes(` ${k} `)) {
-      /* eslint-disable-next-line consistent-return */
       return f(k, v);
     }
   }
@@ -106,10 +112,11 @@ async function checkMessageReactions(msg) {
   const initialRoll = Math.random() * 100;
 
   if (initialRoll < (botResponseChance ?? 0)) {
-    Object.values(globalThis.rollTable).some((response) => {
-      if (roll < response.chance) {
-        try {
-          switch (response.type) {
+    Object.values(globalThis.rollTable)
+      .some((response) => {
+        if (roll < response.chance) {
+          try {
+            switch (response.type) {
             case "message":
               msg.reply(response.string);
               break;
@@ -120,21 +127,21 @@ async function checkMessageReactions(msg) {
 
             default:
               break;
+            }
+
+            return true;
+          } catch (e) {
+            console.error(e);
+            return false;
           }
-
-          return true;
-        } catch (e) {
-          console.error(e);
-          return false;
         }
-      }
 
-      return false;
-    });
+        return false;
+      });
   }
 }
 
 module.exports = {
   checkMessageReactions,
-  checkMessageResponse,
+  checkMessageResponse
 };

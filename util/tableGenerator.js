@@ -14,8 +14,7 @@ function generateTable(data) {
         const value = row[header];
         return value || value === 0 ? value.toString().length : 0;
       })
-    )
-  );
+    ));
 
   let tableString = `${headers
     .map((header, index) => {

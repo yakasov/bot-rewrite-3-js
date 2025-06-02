@@ -20,7 +20,7 @@ module.exports = {
   async execute(interaction) {
     const splash = getRandomSplash();
     await interaction.client.user.setPresence({
-      activities: [{ name: splash, type: ActivityType.Watching }],
+      activities: [{ name: splash, type: ActivityType.Watching }]
     });
     await interaction.reply(`Set splash to: ${splash}`);
     return splash;
@@ -28,8 +28,8 @@ module.exports = {
   run: ([client]) => {
     const splash = getRandomSplash();
     client.user.setPresence({
-      activities: [{ name: splash, type: ActivityType.Watching }],
+      activities: [{ name: splash, type: ActivityType.Watching }]
     });
     return splash;
-  },
+  }
 };

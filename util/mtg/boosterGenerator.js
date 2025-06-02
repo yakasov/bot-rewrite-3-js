@@ -9,7 +9,7 @@ function boosterGetConnected(set) {
     { chance: 87.5, common: 3, uncommon: 3 },
     { chance: 94.5, common: 2, uncommon: 4 },
     { chance: 98, common: 1, uncommon: 5 },
-    { chance: 100, common: 0, uncommon: 6 },
+    { chance: 100, common: 0, uncommon: 6 }
   ];
   const roll = Math.random() * 100;
   let cardsToPull = chances.find(({ chance }) => roll < chance);
@@ -19,12 +19,8 @@ function boosterGetConnected(set) {
     cardsToPull = { common: 1, uncommon: 5 };
   }
 
-  const commonCards = setFilter(set.code, [
-    { k: "rarity", t: "is", v: "common" },
-  ]);
-  const uncommonCards = setFilter(set.code, [
-    { k: "rarity", t: "is", v: "uncommon" },
-  ]);
+  const commonCards = setFilter(set.code, [{ k: "rarity", t: "is", v: "common" }]);
+  const uncommonCards = setFilter(set.code, [{ k: "rarity", t: "is", v: "uncommon" }]);
   const cards = [];
 
   for (let c = 0; c < cardsToPull.common; c++) {
@@ -46,9 +42,7 @@ function boosterGetFoil(set) {
 }
 
 function boosterGetHeadTurning(set) {
-  const cards = setFilter(set.code, [
-    { k: "frameEffects", t: "includes", v: "showcase" },
-  ]);
+  const cards = setFilter(set.code, [{ k: "frameEffects", t: "includes", v: "showcase" }]);
   const card = getRandom(cards.length === 0 ? setFilter(set.code, []) : cards);
 
   return card;
@@ -56,9 +50,7 @@ function boosterGetHeadTurning(set) {
 
 function boosterGetLand(set) {
   const isFoil = lucky(15);
-  const cards = setFilter(set.code, [
-    { k: "type_line", t: "includes", v: "Land" },
-  ]);
+  const cards = setFilter(set.code, [{ k: "type_line", t: "includes", v: "Land" }]);
   const card = getRandom(cards);
   card.foil = isFoil;
 
@@ -67,9 +59,7 @@ function boosterGetLand(set) {
 
 function boosterGetRareOrMythic(set) {
   const isMythic = lucky(13.5);
-  const cards = setFilter(set.code, [
-    { k: "rarity", t: "is", v: isMythic ? "mythic" : "rare" },
-  ]);
+  const cards = setFilter(set.code, [{ k: "rarity", t: "is", v: isMythic ? "mythic" : "rare" }]);
   const card = getRandom(cards);
 
   return card;
@@ -82,7 +72,7 @@ function boosterGetWildCard(set) {
     { chance: 91, common: 1, rare: 1, uncommon: 0 },
     { chance: 94.1, common: 0, rare: 0, uncommon: 2 },
     { chance: 98.4, common: 0, rare: 1, uncommon: 1 },
-    { chance: 100, common: 0, rare: 2, uncommon: 0 },
+    { chance: 100, common: 0, rare: 2, uncommon: 0 }
   ];
 
   // SLD has 1 common outside of lands
@@ -94,12 +84,8 @@ function boosterGetWildCard(set) {
   const cardsToPull = chances.find(({ chance }) => roll < chance);
   const cards = [];
 
-  const commonCards = setFilter(set.code, [
-    { k: "rarity", t: "is", v: "common" },
-  ]);
-  const uncommonCards = setFilter(set.code, [
-    { k: "rarity", t: "is", v: "uncommon" },
-  ]);
+  const commonCards = setFilter(set.code, [{ k: "rarity", t: "is", v: "common" }]);
+  const uncommonCards = setFilter(set.code, [{ k: "rarity", t: "is", v: "uncommon" }]);
 
   for (let c = 0; c < cardsToPull.common; c++) {
     cards.push(getRandom(commonCards));
@@ -120,5 +106,5 @@ module.exports = {
   boosterGetHeadTurning,
   boosterGetLand,
   boosterGetRareOrMythic,
-  boosterGetWildCard,
+  boosterGetWildCard
 };

@@ -15,5 +15,5 @@ module.exports = {
   ...persistence,
   ...score,
   ...stats,
-  ...voice,
+  ...voice
 };
