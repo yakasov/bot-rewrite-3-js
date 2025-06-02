@@ -1,7 +1,7 @@
 "use strict";
 
 const { SlashCommandBuilder } = require("discord.js");
-const { baseStats } = require("../util/stats.js");
+const { baseStats } = require("../util/stats");
 
 module.exports = {
   data: new SlashCommandBuilder()

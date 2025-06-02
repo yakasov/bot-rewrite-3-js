@@ -1,6 +1,6 @@
 "use strict";
 
-const { addToStats } = require("../util/stats.js");
+const { addToStats } = require("../util/stats");
 
 module.exports = function handleVoiceStateUpdate(oldState, newState) {
   if (newState.member.bot) {

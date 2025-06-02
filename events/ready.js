@@ -7,8 +7,12 @@ const {
   getNewSplash,
   getTime,
 } = require("../util/scheduledTasks.js");
-const { checkVoiceChannels } = require("../util/stats.js");
-const { backupStats, saveStats, updateScores } = require("../util/stats.js");
+const {
+  backupStats,
+  checkVoiceChannels,
+  saveStats,
+  updateScores,
+} = require("../util/stats");
 
 module.exports = async function handleClientReady(c) {
   console.log(

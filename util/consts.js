@@ -1,0 +1,4 @@
+module.exports = {
+  DISCORD_ID_LENGTH: 18,
+  DISCORD_VOICE_CHANNEL_TYPE: 2,
+};
