@@ -134,7 +134,9 @@ module.exports = {
 
   initialiseStats: (guildId, userId) => {
     if (!globalThis.stats[guildId][userId]) {
-      globalThis.stats[guildId][userId] = module.exports.baseStats;
+      globalThis.stats[guildId][userId] = structuredClone(
+        module.exports.baseStats
+      );
       return null;
     }
 
