@@ -2,7 +2,7 @@
 
 const { SlashCommandBuilder } = require("discord.js");
 module.exports = {
-  "data": new SlashCommandBuilder()
+  data: new SlashCommandBuilder()
     .setName("toggleresponses")
     .setDescription("Toggle responses for the current server (owner only)"),
   async execute(interaction) {
@@ -24,8 +24,8 @@ module.exports = {
     }
 
     return interaction.reply({
-      "content": "You are not an admin user!",
-      "ephemeral": true
+      content: "You are not an admin user!",
+      ephemeral: true
     });
   }
 };

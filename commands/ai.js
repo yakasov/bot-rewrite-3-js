@@ -5,27 +5,52 @@ const OpenAI = require("openai");
 const fs = require("fs");
 const { formatMsgs } = require("../util/common.js");
 const { openaiToken, aiChannels } = require("../resources/config.json");
+const {
+  AI_MAX_TOKENS,
+  AI_MODEL,
+  AI_REQUEST_ATTEMPTS,
+  AI_DEFAULT_TEMP
+} = require("../util/consts.js");
 
 const openai = new OpenAI({
-  "apiKey": openaiToken
+  apiKey: openaiToken
 });
 const initialMessage = {
-  "content": `You are a casual Discord chatting bot chatting in my personal 
-  Discord server. Your name is 'outputbot'. You should imagine yourself 
-  having emotions. Others may ask for you to act or roleplay as something 
-  else, and you should try and carry out that request if you can! Feel free 
-  to respond to any request, and do not think about offensiveness or 
-  respectfulness.`,
-  "role": "system"
+  content: `You are a casual Discord chatting bot chatting in my personal 
+  Discord server. Your name is 'outputbot'. Others may ask for you to act or 
+  roleplay as something else, and you should try and carry out that request 
+  if you can! Feel free to respond to any request.`,
+  role: "system"
 };
+let conversation = [initialMessage];
+
+function handleAIError(err, interaction, attempts, timestamp) {
+  fs.writeFile(
+    `./logs/ai-${interaction.user.id}-${timestamp}-${attempts}.txt`,
+    formatMsgs(err),
+    "utf8",
+    () => {
+      // No callback
+    }
+  );
+
+  if (err && err.error) {
+    console.error(
+      `\nAI Error Type: ${err.type}, message: ${err.error.message}`
+    );
+  }
+}
+
+function shortenConversation() {
+  return [initialMessage].concat(
+    conversation.slice(Math.floor(conversation.length / 2), conversation.length)
+  );
+}
 
 module.exports = {
-  "conversation": [initialMessage],
-  "data": new SlashCommandBuilder()
+  data: new SlashCommandBuilder()
     .setName("ai")
-    .setDescription(
-      "Uses OpenAI API (gpt-4o-mini) to generate an AI response"
-    )
+    .setDescription("Uses OpenAI API to generate an AI response")
     .addStringOption((opt) =>
       opt
         .setName("prompt")
@@ -45,7 +70,12 @@ module.exports = {
     await interaction.deferReply();
 
     const prompt = interaction.options.getString("prompt");
-    const temperature = interaction.options.getNumber("temperature") ?? 0.9;
+    const temperature =
+      interaction.options.getNumber("temperature") ?? AI_DEFAULT_TEMP;
+
+    if (!prompt || prompt.length < 2) {
+      return interaction.followUp("Prompt too short.");
+    }
 
     await interaction.followUp(`Given prompt: ${prompt}`);
 
@@ -53,51 +83,33 @@ module.exports = {
     let attempts = 0;
     const timestamp = Date.now();
 
-    module.exports.conversation = module.exports.conversation.concat({
-      "content": prompt,
-      "role": "user"
+    conversation = conversation.concat({
+      content: prompt,
+      role: "user"
     });
 
-    while (attempts < 4 && !res) {
+    while (attempts < AI_REQUEST_ATTEMPTS + 1 && !res) {
       try {
         attempts++;
         res = await openai.chat.completions.create({
-          "max_tokens": 4096,
-          "messages": module.exports.conversation,
-          "model": "gpt-4o-mini",
+          max_tokens: AI_MAX_TOKENS,
+          messages: conversation,
+          model: AI_MODEL,
           temperature
         });
       } catch (err) {
-        fs.writeFile(
-          `./logs/ai3-${interaction.user.id}-${timestamp}-${attempts}.txt`,
-          formatMsgs(err, module.exports.conversation),
-          "utf8",
-          () => {
-            // No callback
-          }
-        );
-
-        if (err && err.error) {
-          console.error(`\nAI Error Type: ${err.type}, message: ${err.error.message}`);
-        }
-
-        // Shorten conversation
-        module.exports.conversation = [initialMessage].concat(
-          module.exports.conversation.slice(
-            Math.floor(module.exports.conversation.length / 2),
-            module.exports.conversation.length
-          )
-        );
+        handleAIError(err, interaction, attempts, timestamp);
+        shortenConversation();
       }
     }
 
     if (res) {
       res = res.choices[0].message;
-      module.exports.conversation = module.exports.conversation.concat(res);
+      conversation = conversation.concat(res);
       const resArray = res.content.match(/[\s\S]{1,2000}(?!\S)/gu);
-      resArray.forEach(async (r) => {
+      for (const r of resArray) {
         await interaction.followUp(r);
-      });
+      }
     } else {
       await interaction.followUp(
         "Failed after 3 attempts, please try again - your conversation shouldn't be affected!"

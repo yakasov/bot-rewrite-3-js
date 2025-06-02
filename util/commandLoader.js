@@ -3,7 +3,7 @@
 const fs = require("fs");
 const path = require("node:path");
 
-module.exports = function loadCommands(client) {
+function loadCommands(client) {
   client.commands ||= new (require("discord.js").Collection)();
 
   // __dirname is undefined if using ES but this is a CommonJS module
@@ -25,4 +25,6 @@ module.exports = function loadCommands(client) {
       );
     }
   }
-};
+}
+
+module.exports = { loadCommands };

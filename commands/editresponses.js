@@ -6,16 +6,16 @@ const { generateRollTable } = require("../util/rollTableGenerator.js");
 const chanceResponses = require("../resources/chanceResponses.json");
 
 module.exports = {
-  "data": new SlashCommandBuilder()
+  data: new SlashCommandBuilder()
     .setName("editresponses")
     .setDescription("Edit the chance responses table")
     .addStringOption((opt) =>
-      opt.setName("key")
+      opt
+        .setName("key")
         .setDescription("The response to edit")
         .setRequired(true))
     .addStringOption((opt) =>
-      opt
-        .setName("string")
+      opt.setName("string")
         .setDescription("The string to reply with"))
     .addNumberOption((opt) =>
       opt
@@ -38,15 +38,15 @@ module.exports = {
       try {
         if (!chanceResponses[key] && !(string && chance && type)) {
           return interaction.reply({
-            "content": "Key does not exist and not enough values provided.",
-            "ephemeral": true
+            content: "Key does not exist and not enough values provided.",
+            ephemeral: true
           });
         }
 
         chanceResponses[key] = {
-          "chance": chance ?? chanceResponses[key].chance,
-          "string": string ?? chanceResponses[key].string,
-          "type": type ?? chanceResponses[key].type
+          chance: chance ?? chanceResponses[key].chance,
+          string: string ?? chanceResponses[key].string,
+          type: type ?? chanceResponses[key].type
         };
 
         globalThis.rollTable = generateRollTable(chanceResponses);
@@ -57,15 +57,14 @@ module.exports = {
         );
 
         return interaction.reply(`Updated ${key}.`);
-
       } catch (e) {
         return interaction.reply(e.message);
       }
     }
 
     return interaction.reply({
-      "content": "You are not an admin user!",
-      "ephemeral": true
+      content: "You are not an admin user!",
+      ephemeral: true
     });
   }
 };

@@ -4,7 +4,7 @@ const { SlashCommandBuilder } = require("discord.js");
 const chanceResponses = require("../resources/chanceResponses.json");
 
 module.exports = {
-  "data": new SlashCommandBuilder()
+  data: new SlashCommandBuilder()
     .setName("viewresponses")
     .setDescription("View the current responses roll table.")
     .addStringOption((opt) =>
@@ -12,19 +12,32 @@ module.exports = {
         .setName("key")
         .setDescription("The response to view. Leave blank to see all keys")),
   async execute(interaction) {
-    await interaction.deferReply({ "ephemeral": true });
+    await interaction.deferReply({ ephemeral: true });
 
     const key = interaction.options.getString("key") ?? "";
 
-    if (key && chanceResponses[key]) {
-      return interaction.followUp(
-        JSON.stringify(chanceResponses[key], null, 4)
-      );
+    if (key) {
+      if (chanceResponses[key]) {
+        return interaction.followUp({
+          content: `\`\`\`json\n${JSON.stringify(chanceResponses[key], null, 2)}\n\`\`\``,
+          ephemeral: true
+        });
+      }
+      return interaction.followUp({
+        content: `Key "${key}" not found. Valid keys: ${Object.keys(
+          chanceResponses
+        )
+          .join(", ")}`,
+        ephemeral: true
+      });
     }
 
-    return interaction.followUp(
-      `Valid keys: ${Object.keys(chanceResponses)
-        .join(", ")}`
-    );
+    return interaction.followUp({
+      content: `Valid keys:\n\`\`\`\n${Object.keys(chanceResponses)
+        .join(
+          ", "
+        )}\n\`\`\``,
+      ephemeral: true
+    });
   }
 };

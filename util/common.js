@@ -4,7 +4,7 @@ const ranks = require("../resources/ranks.json");
 const { statsConfig } = require("../resources/config.json");
 
 module.exports = {
-  "formatMsgs": (e, ms) => {
+  formatMsgs: (e, ms) => {
     // Used for AI logging
     let s = `${e}\n\n`;
     ms.forEach((m) => {
@@ -13,7 +13,7 @@ module.exports = {
     return s;
   },
 
-  "formatTime": (seconds) => {
+  formatTime: (seconds) => {
 
     /*
      * Note: this will only work up to 30d 23h 59m 59s
@@ -31,19 +31,17 @@ module.exports = {
     }h ${unitArray[2]}m ${unitArray[3]}s`;
   },
 
-  "getLevelName": (level) => {
+  getLevelName: (level) => {
     const nameLevel = Math.floor(level / 10) + 1;
     return `${ranks[nameLevel]}\u001b[0m`;
   },
 
-  "getNicknameInteraction": (interaction, id = null, sanitize = false) => {
+  getNicknameInteraction: (interaction, id = null, sanitize = false) => {
     // Used for fetching nickname from interaction
     const member = interaction.guild.members.cache
       .filter((m) => m.id === (id ?? interaction.user.id))
       .first();
-    let name = member
-      ? member.displayName
-      : "???";
+    let name = member ? member.displayName : "???";
     if (sanitize) {
       /* eslint-disable-next-line no-control-regex */
       name = name.replace(/[^\x00-\x7F]/gu, "");
@@ -51,23 +49,22 @@ module.exports = {
     return name;
   },
 
-  "getNicknameMsg": (msg) => {
+  getNicknameMsg: (msg) => {
     // Used for fetching nickname from message
     const member = msg.guild.members.cache
       .filter((m) => m.id === msg.author.id)
       .first();
-    return `${member
-      ? member.displayName
-      : "???"}`;
+    return `${member ? member.displayName : "???"}`;
   },
 
-  "getRequiredExperience": (level) => level * statsConfig.xpPerLevel,
+  getRequiredExperience: (level) => level * statsConfig.xpPerLevel,
 
-  "getRequiredExperienceCumulative": (level) => (level * ((level + 1) * statsConfig.xpPerLevel) / 2),
+  getRequiredExperienceCumulative: (level) =>
+    (level * ((level + 1) * statsConfig.xpPerLevel)) / 2,
 
-  "getTimeInSeconds": () => Math.floor(Date.now() / 1000),
+  getTimeInSeconds: () => Math.floor(Date.now() / 1000),
 
-  "getTitle": (stats) => {
+  getTitle: (stats) => {
     if (!stats.name) {
       stats.name = stats.unlockedNames[0] ?? "HUH";
     }

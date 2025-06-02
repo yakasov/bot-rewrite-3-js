@@ -1,6 +1,6 @@
 "use strict";
 
-const { getRandom, lucky, setFilter } = require("./mtgBoosterHelper");
+const { getRandom, lucky, setFilter } = require("./boosterHelper");
 
 function boosterGetConnected(set) {
   const chances = [
