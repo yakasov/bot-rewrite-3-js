@@ -2,7 +2,7 @@
 
 const { addToStats } = require("../util/stats");
 
-module.exports = function handleVoiceStateUpdate(oldState, newState) {
+function handleVoiceStateUpdate(oldState, newState) {
   if (newState.member.bot) {
     return;
   }
@@ -20,4 +20,6 @@ module.exports = function handleVoiceStateUpdate(oldState, newState) {
       userId: newState.member.id,
     });
   }
-};
+}
+
+module.exports = { handleVoiceStateUpdate };

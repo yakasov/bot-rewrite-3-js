@@ -3,6 +3,7 @@ const {
   getLevelName,
   getRequiredExperienceCumulative,
 } = require("../common.js");
+const { DISCORD_ID_LENGTH } = require("../consts.js");
 const { addToStats, calculateExperience, levelUp } = require("./index.js");
 
 function updateScoreValue(guildId, userId) {

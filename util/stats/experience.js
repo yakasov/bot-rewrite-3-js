@@ -4,6 +4,7 @@ const {
   getRequiredExperienceCumulative,
   getLevelName,
 } = require("../common.js");
+const { DISCORD_ID_LENGTH } = require("../consts.js");
 const { sendMessage } = require("./index.js");
 
 function calculateExperience(userStats) {

@@ -10,7 +10,7 @@ const {
 } = require("../util/messageHandlers.js");
 const { addToStats } = require("../util/stats");
 
-module.exports = async function handleMessageCreate(message) {
+async function handleMessageCreate(message) {
   // Check if Scryfall has given a stupid response
   if (
     message.author.id === "268547439714238465" &&
@@ -66,4 +66,6 @@ module.exports = async function handleMessageCreate(message) {
   });
 
   checkAchievements.run(message);
-};
+}
+
+module.exports = { handleMessageCreate };

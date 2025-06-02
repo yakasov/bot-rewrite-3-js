@@ -14,7 +14,7 @@ const {
   updateScores,
 } = require("../util/stats");
 
-module.exports = async function handleClientReady(c) {
+async function handleClientReady(c) {
   console.log(
     "Connected and ready to go!\n" +
       `Current date is ${globalThis.currentDate}, ` +
@@ -45,4 +45,6 @@ module.exports = async function handleClientReady(c) {
   setInterval(backupStats, getTime(0, 15)); // 15 minutes
   setInterval(updateScores, getTime(30)); // 30 seconds
   /* eslint-enable line-comment-position */
-};
+}
+
+module.exports = { handleClientReady };

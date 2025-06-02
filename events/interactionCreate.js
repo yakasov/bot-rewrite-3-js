@@ -5,7 +5,7 @@ const reply = {
   ephemeral: true,
 };
 
-module.exports = async function handleInteractionCreate(interaction) {
+async function handleInteractionCreate(interaction) {
   if (!interaction.isChatInputCommand()) {
     return;
   }
@@ -27,4 +27,6 @@ module.exports = async function handleInteractionCreate(interaction) {
       await interaction.reply(reply);
     }
   }
-};
+}
+
+module.exports = { handleInteractionCreate };

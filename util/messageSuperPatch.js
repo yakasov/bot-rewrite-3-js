@@ -6,7 +6,7 @@ const { Message } = require("discord.js");
  * This exists to overwrite the Message.prototype methods
  * to handle errors and keeping running rather than just crashing out
  */
-module.exports = function messageSuperPatch() {
+function messageSuperPatch() {
   const superReply = Message.prototype.reply;
 
   Message.prototype.reply = function (s) {
@@ -29,4 +29,6 @@ module.exports = function messageSuperPatch() {
       return console.error(e.message);
     }
   };
-};
+}
+
+module.exports = { messageSuperPatch };

@@ -1,17 +1,9 @@
 "use strict";
 
 const fs = require("fs");
-const basicJsonFiles = [
-  "./resources/birthdays.json",
-  "./resources/chanceResponses.json",
-  "./resources/mtg/mtgCache.json",
-  "./resources/mtg/mtgCards.json",
-  "./resources/stats.json",
-  "./resources/ranks.json",
-  "./resources/roles.json",
-];
+const { BASIC_JSON_FILES } = require("./consts");
 
-module.exports = function initialSetup() {
+function initialSetup() {
   // Check that config.json exists
   if (!fs.existsSync("./resources/config.json")) {
     if (!fs.existsSync("./resources/config.json.template")) {
@@ -33,7 +25,7 @@ Please obtain the config.json.template from the GitHub page.`);
     fs.mkdirSync("./resources/mtg/images");
   }
 
-  basicJsonFiles.forEach((file) => {
+  BASIC_JSON_FILES.forEach((file) => {
     if (!fs.existsSync(file)) {
       fs.writeFileSync(file, JSON.stringify({}, null, 4), (err) => {
         if (err) {
@@ -44,4 +36,6 @@ Please obtain the config.json.template from the GitHub page.`);
       });
     }
   });
-};
+}
+
+module.exports = { initialSetup };
