@@ -37,9 +37,21 @@ module.exports = {
     ) {
       try {
         const newVal = /^-?\d+$/u.test(value) ? parseInt(value, 10) : value;
-        globalThis.stats[interaction.guild.id][user][attribute] = add
-          ? globalThis.stats[interaction.guild.id][user][attribute] + newVal
-          : newVal;
+        if (add) {
+          if (
+            typeof globalThis.stats[interaction.guild.id][user][attribute] !==
+              "number" ||
+            typeof newVal !== "number"
+          ) {
+            return interaction.reply({
+              content: `Cannot add non-numeric values to attribute "${attribute}".`,
+              ephemeral: true,
+            });
+          }
+          globalThis.stats[interaction.guild.id][user][attribute] += newVal;
+        } else {
+          globalThis.stats[interaction.guild.id][user][attribute] = newVal;
+        }
 
         return interaction.reply(
           `Set user ${user} attribute ${attribute} to value ${

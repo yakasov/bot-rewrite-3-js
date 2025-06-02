@@ -3,6 +3,35 @@
 const { SlashCommandBuilder } = require("discord.js");
 const achievements = require("../resources/achievements.json");
 
+function formatAchievementLine(achievement, unlocked) {
+  const color = unlocked ? 32 : 31;
+  return `• \u001b[1;${color}m ${achievement.name}\u001b[0m\u001b[2;${color}m - ${achievement.desc}\u001b[0m`;
+}
+
+function formatAchievementsMessage(unlocks, allAchievements) {
+  const secretAchievements = Object.entries(allAchievements)
+    .filter(([, v]) => unlocks.includes(v.key) && v.secret)
+    .map(([, v]) => v.name);
+
+  const allNormalAchievements = Object.entries(allAchievements)
+    .filter(([, v]) => !v.secret)
+    .map(([k, v]) => ({ ...v, key: k }));
+
+  const normalLines = allNormalAchievements
+    .map((a) => formatAchievementLine(a, unlocks.includes(a.key)))
+    .join("\n");
+
+  const secretLines = secretAchievements
+    .map((a) => `• \u001b[1;32m ${a}\u001b[0m`)
+    .join("\n");
+
+  return `\`\`\`ansi\n===== Achievements =====\n
+    ${normalLines}
+    \n\n===== Secret Achievements =====\n"
+    ${secretLines}
+    \`\`\``;
+}
+
 module.exports = {
   data: new SlashCommandBuilder()
     .setName("achievements")
@@ -10,26 +39,11 @@ module.exports = {
   async execute(interaction) {
     const guildId = interaction.guild.id;
     const userId = interaction.user.id;
-    const unlocks = globalThis.stats[guildId][userId].achievements;
+    const stats = globalThis.stats[guildId]?.[userId];
 
-    const secretAchievements = Object.entries(achievements)
-      .filter((a) => unlocks.includes(a[0]) && a[1].secret)
-      .map(([, v]) => v.name);
-    const allNormalAchievements = Object.entries(achievements)
-      .filter((a) => !a[1].secret)
-      .map(([k, v]) => ({ desc: v.desc, key: k, name: v.name }));
+    const unlocks = stats.achievements;
+    const message = formatAchievementsMessage(unlocks, achievements);
 
-    await interaction.reply(
-      `\`\`\`ansi\n===== Achievements =====\n${allNormalAchievements
-        .map(
-          (a) =>
-            `• \u001b[1;${unlocks.includes(a.key) ? 32 : 31}m ${a.name}\u001b[0m\u001b[2;${
-              unlocks.includes(a.key) ? 32 : 31
-            }m - ${a.desc}\u001b[0m`
-        )
-        .join("\n")}\n\n===== Secret Achievements =====\n${secretAchievements
-        .map((a) => `• \u001b[1;32m ${a}\u001b[0m`)
-        .join("\n")}\`\`\``
-    );
+    await interaction.reply(message);
   },
 };

@@ -1,3 +1,5 @@
+"use strict";
+
 const baseStats = require("./baseStats");
 const experience = require("./experience");
 const messages = require("./messages");

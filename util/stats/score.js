@@ -1,3 +1,5 @@
+"use strict";
+
 const ranks = require("../../resources/ranks.json");
 const {
   getLevelName,

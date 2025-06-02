@@ -1,3 +1,5 @@
+"use strict";
+
 function saveStats(stats) {
   try {
     const task = require("../../tasks/saveStats.js");
@@ -17,6 +19,6 @@ function backupStats(stats) {
 }
 
 module.exports = {
-  saveStats,
   backupStats,
+  saveStats,
 };

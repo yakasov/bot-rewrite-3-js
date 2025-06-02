@@ -46,6 +46,7 @@
     ],
     "max-lines": "off",
     "max-lines-per-function": ["warn", 200],
+    "max-params": ["warn", 5],
     "max-statements": "off",
     "multiline-ternary": ["warn", "always-multiline"],
     "newline-per-chained-call": ["warn", { "ignoreChainWithDepth": 1 }],

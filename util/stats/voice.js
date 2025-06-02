@@ -1,3 +1,5 @@
+"use strict";
+
 const { DISCORD_VOICE_CHANNEL_TYPE } = require("../consts.js");
 const { addToStats } = require("./index.js");
 

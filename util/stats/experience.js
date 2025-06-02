@@ -1,3 +1,5 @@
+"use strict";
+
 const { statsConfig } = require("../../resources/config.json");
 const {
   getRequiredExperience,
@@ -80,7 +82,7 @@ function updateStatsOnLevelUp(userStats) {
 
 module.exports = {
   calculateExperience,
-  recalculateLevels,
   levelUp,
+  recalculateLevels,
   updateStatsOnLevelUp,
 };

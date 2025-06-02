@@ -1,3 +1,6 @@
+"use strict";
+
+const { statsConfig } = require("../resources/config.json");
 const { getTimeInSeconds } = require("../common.js");
 const { initialiseStats, saveStats, updateScores } = require("./index.js");
 

@@ -134,7 +134,7 @@ function downloadImage(card, i, filePath) {
 async function deleteFiles(filePaths) {
   // For deleting merge image parts
   await Promise.all(
-    filePaths.map((filePath) => {
+    filePaths.forEach((filePath) => {
       try {
         fs.unlink(filePath);
       } catch (err) {

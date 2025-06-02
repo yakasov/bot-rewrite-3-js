@@ -2,6 +2,32 @@
 
 const { SlashCommandBuilder } = require("discord.js");
 const { mainGuildId, bdayRoleId } = require("../resources/config.json");
+const { BOT_CHANNEL_ID, SPAM_CHANNEL_ID } = require("../util/consts");
+
+function isBirthdayUser(interaction) {
+  const role = interaction.guild.roles.cache.get(bdayRoleId);
+  if (!role) {
+    return false;
+  }
+  const isRoleMember = role.members.has(interaction.user.id);
+  const isOwner =
+    interaction.user.id === interaction.client.application.owner.id;
+  return isRoleMember || isOwner;
+}
+
+async function setBotNickname(interaction, value) {
+  const botMember = await interaction.guild.members.fetch(
+    interaction.client.user.id
+  );
+  await botMember.setNickname(value);
+}
+
+async function setChannelName(interaction, channelId, value) {
+  const channel = await interaction.guild.channels.fetch(channelId);
+  if (channel) {
+    await channel.setName(value);
+  }
+}
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -30,74 +56,42 @@ module.exports = {
         .setMaxLength(32)
     ),
   async execute(interaction) {
-    await interaction.client.application.fetch();
-
-    const option = interaction.options.getString("type");
-    const value = interaction.options.getString("value");
-    const botChannel = "1087133384758792272";
-    const spamChannel = "485003783399669762";
-
     if (interaction.guild.id !== mainGuildId) {
-      return interaction.reply({
-        content: "Incorrect guild!",
-        ephemeral: true,
-      });
+      return;
     }
 
-    const roleMembers = Array.from(
-      interaction.guild.roles.cache
-        .find((r) => r.id === bdayRoleId)
-        .members.keys()
-    );
-
-    if (
-      !roleMembers.includes(interaction.user.id) &&
-      interaction.user !== interaction.client.application.owner
-    ) {
+    if (!isBirthdayUser(interaction)) {
       return interaction.reply({
         content: "It is not your birthday!",
         ephemeral: true,
       });
     }
 
+    const option = interaction.options.getString("type");
+    const value = interaction.options.getString("value");
+
     try {
       switch (option) {
         case "bot":
-          // Surely there is a better way?
-          await interaction.guild.members.fetch().then((members) =>
-            members
-              .filter((m) => m.id === interaction.client.user.id)
-              .first()
-              .setNickname(value)
-          );
-          await interaction.guild.channels.fetch().then((channels) =>
-            channels
-              .filter((c) => c.id === botChannel)
-              .first()
-              .setName(`chat-with-${value}`)
+          await setBotNickname(interaction, value);
+          await setChannelName(
+            interaction,
+            BOT_CHANNEL_ID,
+            `chat-with-${value}`
           );
           break;
-
         case "server":
           await interaction.guild.setName(value);
           break;
-
         case "owner":
           return interaction.reply({
-            content: `Due to Discord limitations, this is not possible :(
-\nPlease message me instead!`,
+            content:
+              "Due to Discord limitations, this is not possible :(\nPlease message me instead!",
             ephemeral: true,
           });
-
         case "channel":
-          await interaction.guild.channels.fetch().then((channels) =>
-            channels
-              .filter((c) => c.id === spamChannel)
-              .first()
-              .setName(value)
-          );
+          await setChannelName(interaction, SPAM_CHANNEL_ID, value);
           break;
-
         default:
           return interaction.reply({
             content: "Not implemented yet...",
@@ -110,7 +104,10 @@ module.exports = {
         ephemeral: true,
       });
     } catch (e) {
-      return interaction.reply(e.message);
+      return interaction.reply({
+        content: `Error: ${e.message}`,
+        ephemeral: true,
+      });
     }
   },
 };

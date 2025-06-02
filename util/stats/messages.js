@@ -1,3 +1,5 @@
+"use strict";
+
 async function sendMessage(messageArgs) {
   const [guildId, userId, subject, accolade, title] = messageArgs;
   const guildObject = await globalThis.client.guilds.fetch(guildId);

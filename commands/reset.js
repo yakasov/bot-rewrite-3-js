@@ -2,6 +2,7 @@
 
 const { SlashCommandBuilder } = require("discord.js");
 const { baseStats } = require("../util/stats");
+const { DISCORD_ID_LENGTH } = require("../util/consts");
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -17,7 +18,7 @@ module.exports = {
         .filter(([k]) => k === interaction.guild.id)
         .forEach(([guildId, guildStats]) => {
           Object.keys(guildStats)
-            .filter((k) => k.length === 18)
+            .filter((k) => k.length === DISCORD_ID_LENGTH)
             .forEach((userId) => {
               const previousMessages =
                 globalThis.stats[guildId][userId].previousMessages +
