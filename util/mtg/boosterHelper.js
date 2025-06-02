@@ -100,7 +100,7 @@ async function combineImages(card) {
   const img = await joinImages(filePaths, { direction: "horizontal" });
   await img.toFile(`${baseFilePath}.jpg`);
 
-  deleteFiles(filePaths);
+  await deleteFiles(filePaths);
   return baseFilePath;
 }
 
@@ -131,15 +131,17 @@ function downloadImage(card, i, filePath) {
   });
 }
 
-function deleteFiles(filePaths) {
+async function deleteFiles(filePaths) {
   // For deleting merge image parts
-  filePaths.forEach((filePath) => {
-    fs.unlink(filePath, (err) => {
-      if (err) {
+  await Promise.all(
+    filePaths.map((filePath) => {
+      try {
+        fs.unlink(filePath);
+      } catch (err) {
         console.error(`Failed to delete ${filePath}:`, err);
       }
-    });
-  });
+    })
+  );
 }
 
 function getRandom(arr) {

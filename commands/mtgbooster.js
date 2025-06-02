@@ -13,7 +13,7 @@ const {
   getFullSet,
   getRandom,
   setFilter,
-} = require("../util/mtgBoosterHelper.js");
+} = require("../util/mtg/boosterHelper.js");
 const {
   boosterGetConnected,
   boosterGetFoil,
@@ -21,7 +21,7 @@ const {
   boosterGetLand,
   boosterGetRareOrMythic,
   boosterGetWildCard,
-} = require("../util/mtgBoosterGenerator.js");
+} = require("../util/mtg/boosterGenerator.js");
 const { allSets } = require("../resources/mtg/mtgSets.js");
 const cache = require("../resources/mtg/mtgCache.json");
 const cardCache = require("../resources/mtg/mtgCards.json");

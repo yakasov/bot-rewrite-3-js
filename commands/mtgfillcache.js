@@ -2,7 +2,7 @@
 
 const { Sets } = require("scryfall-api");
 const { SlashCommandBuilder } = require("discord.js");
-const { getFullSet } = require("../util/mtgBoosterHelper.js");
+const { getFullSet } = require("../util/mtg/boosterHelper.js");
 
 module.exports = {
   data: new SlashCommandBuilder()
