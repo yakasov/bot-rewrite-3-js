@@ -24,6 +24,7 @@ async function handleClientReady(c) {
   checkVoiceChannels();
   await checkBirthdays(true);
   await checkMinecraftServer();
+  // eslint-disable-next-line require-atomic-updates
   globalThis.splash = getNewSplash();
   backupStats();
 
