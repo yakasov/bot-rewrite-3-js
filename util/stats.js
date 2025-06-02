@@ -4,7 +4,7 @@ const {
   getLevelName,
   getTimeInSeconds,
   getRequiredExperience,
-  getRequiredExperienceCumulative
+  getRequiredExperienceCumulative,
 } = require("./common.js");
 const { statsConfig } = require("../resources/config.json");
 const ranks = require("../resources/ranks.json");
@@ -17,7 +17,7 @@ module.exports = {
     if (!globalThis.stats[guildId]) {
       globalThis.stats[guildId] = {
         allowResponses: true,
-        rankUpChannel: ""
+        rankUpChannel: "",
       };
     }
 
@@ -25,44 +25,44 @@ module.exports = {
     module.exports.initialiseStats(guildId, giverId);
 
     switch (type) {
-    case "init":
-      return;
-    case "message":
-      if (
-        getTimeInSeconds() - globalThis.stats[guildId][userId].lastGainTime <
-          statsConfig.messageSRGainCooldown
-      ) {
+      case "init":
         return;
-      }
-      globalThis.stats[guildId][userId].lastGainTime = getTimeInSeconds();
-      globalThis.stats[guildId][userId].messages += 1;
-      break;
+      case "message":
+        if (
+          getTimeInSeconds() - globalThis.stats[guildId][userId].lastGainTime <
+          statsConfig.messageSRGainCooldown
+        ) {
+          return;
+        }
+        globalThis.stats[guildId][userId].lastGainTime = getTimeInSeconds();
+        globalThis.stats[guildId][userId].messages += 1;
+        break;
 
-    case "joinedVoiceChannel":
-      globalThis.stats[guildId][userId].joinTime = getTimeInSeconds();
-      break;
-
-    case "inVoiceChannel":
-      if (globalThis.botUptime < 10) {
+      case "joinedVoiceChannel":
         globalThis.stats[guildId][userId].joinTime = getTimeInSeconds();
-      }
-      globalThis.stats[guildId][userId].voiceTime += Math.floor(
-        getTimeInSeconds() -
+        break;
+
+      case "inVoiceChannel":
+        if (globalThis.botUptime < 10) {
+          globalThis.stats[guildId][userId].joinTime = getTimeInSeconds();
+        }
+        globalThis.stats[guildId][userId].voiceTime += Math.floor(
+          getTimeInSeconds() -
             (globalThis.stats[guildId][userId].joinTime === 0
               ? getTimeInSeconds()
               : globalThis.stats[guildId][userId].joinTime)
-      );
-      globalThis.stats[guildId][userId].joinTime = getTimeInSeconds();
-      break;
+        );
+        globalThis.stats[guildId][userId].joinTime = getTimeInSeconds();
+        break;
 
-    case "leftVoiceChannel":
-      globalThis.stats[guildId][userId].voiceTime += Math.floor(
-        getTimeInSeconds() - globalThis.stats[guildId][userId].joinTime
-      );
-      break;
+      case "leftVoiceChannel":
+        globalThis.stats[guildId][userId].voiceTime += Math.floor(
+          getTimeInSeconds() - globalThis.stats[guildId][userId].joinTime
+        );
+        break;
 
-    default:
-      break;
+      default:
+        break;
     }
 
     module.exports.updateScores();
@@ -94,7 +94,7 @@ module.exports = {
     previousVoiceTime: 0,
     totalExperience: 0,
     unlockedNames: [],
-    voiceTime: 0
+    voiceTime: 0,
   },
 
   calculateExperience: (s) => {
@@ -125,7 +125,7 @@ module.exports = {
           module.exports.addToStats({
             guildId: member.guild.id,
             type: "inVoiceChannel",
-            userId: member.user.id
+            userId: member.user.id,
           });
         });
       });
@@ -138,19 +138,17 @@ module.exports = {
       return null;
     }
 
-    Object.entries(module.exports.baseStats)
-      .forEach(([k, v]) => {
-        if (globalThis.stats[guildId][userId][k] === undefined) {
-          globalThis.stats[guildId][userId][k] = v;
-        }
-      });
+    Object.entries(module.exports.baseStats).forEach(([k, v]) => {
+      if (globalThis.stats[guildId][userId][k] === undefined) {
+        globalThis.stats[guildId][userId][k] = v;
+      }
+    });
 
-    Object.keys(globalThis.stats[guildId][userId])
-      .forEach((k) => {
-        if (module.exports.baseStats[k] === undefined) {
-          delete globalThis.stats[guildId][userId][k];
-        }
-      });
+    Object.keys(globalThis.stats[guildId][userId]).forEach((k) => {
+      if (module.exports.baseStats[k] === undefined) {
+        delete globalThis.stats[guildId][userId][k];
+      }
+    });
 
     return null;
   },
@@ -166,34 +164,33 @@ module.exports = {
         userId,
         "Level Up",
         `level ${globalThis.stats[guildId][userId].level}`,
-        getLevelName(globalThis.stats[guildId][userId].level)
+        getLevelName(globalThis.stats[guildId][userId].level),
       ]);
     }
   },
 
   recalculateLevels: () => {
-    Object.entries(globalThis.stats)
-      .forEach(([guildId, guildStats]) => {
-        Object.keys(guildStats)
-          .filter((k) => k.length === 18)
-          .forEach((userId) => {
-            let s = globalThis.stats[guildId][userId];
-            s.level = 0;
-            s.levelExperience = 0;
-            s.totalExperience = 0;
-            s = module.exports.calculateExperience(
-              globalThis.stats[guildId][userId]
-            );
+    Object.entries(globalThis.stats).forEach(([guildId, guildStats]) => {
+      Object.keys(guildStats)
+        .filter((k) => k.length === 18)
+        .forEach((userId) => {
+          let s = globalThis.stats[guildId][userId];
+          s.level = 0;
+          s.levelExperience = 0;
+          s.totalExperience = 0;
+          s = module.exports.calculateExperience(
+            globalThis.stats[guildId][userId]
+          );
 
-            while (s.totalExperience > getRequiredExperienceCumulative(s.level)) {
-              s.level++;
-            }
+          while (s.totalExperience > getRequiredExperienceCumulative(s.level)) {
+            s.level++;
+          }
 
-            if (!s.customSetName) {
-              s.name = getLevelName(s.level);
-            }
-          });
-      });
+          if (!s.customSetName) {
+            s.name = getLevelName(s.level);
+          }
+        });
+    });
   },
 
   saveStats: () => {
@@ -206,13 +203,7 @@ module.exports = {
   },
 
   sendMessage: async (messageArgs) => {
-    const [
-      guildId,
-      userId,
-      subject,
-      accolade,
-      title
-    ] = messageArgs;
+    const [guildId, userId, subject, accolade, title] = messageArgs;
     const guildObject = await globalThis.client.guilds.fetch(guildId);
     const userObject = guildObject.members.cache
       .filter((m) => m.id === userId)
@@ -274,29 +265,28 @@ module.exports = {
   },
 
   updateScores: () => {
-    Object.entries(globalThis.stats)
-      .forEach(([guildId, guildStats]) => {
-        Object.keys(guildStats)
-          .filter((k) => k.length === 18)
-          .forEach((userId) => {
-            module.exports.addToStats({
-              guildId,
-              type: "init",
-              userId
-            });
+    Object.entries(globalThis.stats).forEach(([guildId, guildStats]) => {
+      Object.keys(guildStats)
+        .filter((k) => k.length === 18)
+        .forEach((userId) => {
+          module.exports.addToStats({
+            guildId,
+            type: "init",
+            userId,
+          });
 
-            module.exports.updateScoreValue(guildId, userId);
+          module.exports.updateScoreValue(guildId, userId);
 
-            if (
-              globalThis.stats[guildId][userId].totalExperience >=
+          if (
+            globalThis.stats[guildId][userId].totalExperience >=
             getRequiredExperienceCumulative(
               globalThis.stats[guildId][userId].level
             )
-            ) {
-              module.exports.levelUp(guildId, userId);
-            }
-          });
-      });
+          ) {
+            module.exports.levelUp(guildId, userId);
+          }
+        });
+    });
   },
 
   updateStatsOnLevelUp: (userStats) => {
@@ -310,5 +300,5 @@ module.exports = {
     }
 
     return userStats;
-  }
+  },
 };

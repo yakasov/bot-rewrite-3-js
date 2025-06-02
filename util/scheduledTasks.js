@@ -7,18 +7,18 @@ function getTime(seconds = 0, minutes = 0, hours = 0) {
 }
 
 function checkBirthdays(force = false) {
-  require("../tasks/birthdays.js")
-    .run(globalThis.client, force);
+  require("../tasks/birthdays.js").run(globalThis.client, force);
 }
 
 function checkFortniteShop() {
-  require("../tasks/fortnite.js")
-    .run(globalThis.client);
+  require("../tasks/fortnite.js").run(globalThis.client);
 }
 
 async function checkMinecraftServer() {
-  await require("../tasks/minecraft.js")
-    .run(globalThis.client, globalThis.splash);
+  await require("../tasks/minecraft.js").run(
+    globalThis.client,
+    globalThis.splash
+  );
 }
 
 function getNewSplash() {
@@ -30,5 +30,5 @@ module.exports = {
   checkFortniteShop,
   checkMinecraftServer,
   getNewSplash,
-  getTime
+  getTime,
 };

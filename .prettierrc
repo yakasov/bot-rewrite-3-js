@@ -1,0 +1,13 @@
+{
+  "tabWidth": 2,
+  "useTabs": false,
+  "singleQuote": false,
+  "semi": true,
+  "bracketSpacing": true,
+  "printWidth": 80,
+  "arrowParens": "always",
+  "trailingComma": "es5",
+  "quoteProps": "as-needed",
+  "proseWrap": "preserve",
+  "spaceBeforeFunctionParen": true
+}

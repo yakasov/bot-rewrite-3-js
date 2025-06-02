@@ -8,7 +8,7 @@ const basicJsonFiles = [
   "./resources/mtg/mtgCards.json",
   "./resources/stats.json",
   "./resources/ranks.json",
-  "./resources/roles.json"
+  "./resources/roles.json",
 ];
 
 module.exports = function initialSetup() {

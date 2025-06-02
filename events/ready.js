@@ -5,7 +5,7 @@ const {
   checkFortniteShop,
   checkMinecraftServer,
   getNewSplash,
-  getTime
+  getTime,
 } = require("../util/scheduledTasks.js");
 const { checkVoiceChannels } = require("../util/stats.js");
 const { backupStats, saveStats, updateScores } = require("../util/stats.js");

@@ -24,8 +24,7 @@ process.on("unhandledRejection", (error) => {
 });
 
 globalThis.botUptime = 0;
-globalThis.currentDate = moment()
-  .tz("Europe/London");
+globalThis.currentDate = moment().tz("Europe/London");
 globalThis.fetch = fetch;
 globalThis.firstRun = { birthdays: true, minecraft: 1 };
 globalThis.rollTable = generateRollTable(chanceResponses);
@@ -35,7 +34,7 @@ globalThis.stats = loadedStats;
 globalThis.client = new Client({
   allowedMentions: {
     parse: ["users", "roles"],
-    repliedUser: true
+    repliedUser: true,
   },
   intents: [
     GatewayIntentBits.Guilds,
@@ -44,8 +43,8 @@ globalThis.client = new Client({
     GatewayIntentBits.GuildMessageReactions,
     GatewayIntentBits.GuildPresences,
     GatewayIntentBits.GuildVoiceStates,
-    GatewayIntentBits.MessageContent
-  ]
+    GatewayIntentBits.MessageContent,
+  ],
 });
 
 process.on("unhandledRejection", (error) => {

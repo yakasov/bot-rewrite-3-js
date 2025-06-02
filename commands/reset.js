@@ -4,16 +4,15 @@ const { SlashCommandBuilder } = require("discord.js");
 const { baseStats } = require("../util/stats.js");
 
 module.exports = {
-  "data": new SlashCommandBuilder()
+  data: new SlashCommandBuilder()
     .setName("reset")
     .setDescription("Reset all guild stats. Owner only"),
-  "execute": async (interaction) => {
+  execute: async (interaction) => {
     await interaction.client.application.fetch();
     if (
       interaction.user === interaction.client.application.owner ||
       interaction.user.id === (await interaction.guild.fetchOwner()).user.id
     ) {
-
       Object.entries(globalThis.stats)
         .filter(([k]) => k === interaction.guild.id)
         .forEach(([guildId, guildStats]) => {
@@ -36,6 +35,8 @@ module.exports = {
         });
     }
 
-    return interaction.reply(`Reset all guild stats for guild ${interaction.guild.id}.`);
-  }
+    return interaction.reply(
+      `Reset all guild stats for guild ${interaction.guild.id}.`
+    );
+  },
 };

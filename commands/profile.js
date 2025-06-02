@@ -6,21 +6,21 @@ const {
   getLevelName,
   getNicknameInteraction,
   getRequiredExperience,
-  getTitle
+  getTitle,
 } = require("../util/common.js");
 
 module.exports = {
-  "data": new SlashCommandBuilder()
+  data: new SlashCommandBuilder()
     .setName("profile")
     .setDescription("Shows personal statistics")
     .addUserOption((opt) =>
-      opt.setName("user")
-        .setDescription("The user to get the profile of"))
+      opt.setName("user").setDescription("The user to get the profile of")
+    )
     .addBooleanOption((opt) =>
-      opt.setName("debug")
-        .setDescription("Whether to print the raw statistics")),
+      opt.setName("debug").setDescription("Whether to print the raw statistics")
+    ),
   async execute(interaction) {
-    await interaction.deferReply({ "ephemeral": true });
+    await interaction.deferReply({ ephemeral: true });
 
     let user = interaction.options.getUser("user") ?? null;
     if (user) {
@@ -41,16 +41,9 @@ module.exports = {
 
     const userStats = Object.entries(guildStats)
       .filter(([k]) => k.length === 18)
-      .map(([k, v]) => [
-        k,
-        v.totalExperience
-      ])
+      .map(([k, v]) => [k, v.totalExperience])
       .sort(([, f], [, s]) => s - f)
-      .map(([k, v], i) => [
-        k,
-        v,
-        i
-      ])
+      .map(([k, v], i) => [k, v, i])
       .find(([k, ,]) => k === (user ?? interaction.user.id));
 
     const allUserStats = guildStats[userStats[0]];
@@ -71,9 +64,9 @@ module.exports = {
       allUserStats.messages
     }\n    Voice Time: ${formatTime(
       allUserStats.voiceTime
-    )}\n\n    Level: ${allUserStats.level} (${allUserStats.levelExperience}/${
-      getRequiredExperience(allUserStats.level)
-    })\n    Title: ${getTitle(
+    )}\n\n    Level: ${allUserStats.level} (${allUserStats.levelExperience}/${getRequiredExperience(
+      allUserStats.level
+    )})\n    Title: ${getTitle(
       allUserStats
     )}\n    Ranking: ${getLevelName(allUserStats.level)} (${
       allUserStats.totalExperience
@@ -88,10 +81,10 @@ module.exports = {
     const outputArray = outputMessage.match(/[\s\S]{1,1980}(?!\S)/gu);
     outputArray.forEach(async (r) => {
       await interaction.followUp({
-        "content": `\`\`\`ansi\n${r}\n\`\`\``,
-        "ephemeral": false
+        content: `\`\`\`ansi\n${r}\n\`\`\``,
+        ephemeral: false,
       });
     });
     return null;
-  }
+  },
 };

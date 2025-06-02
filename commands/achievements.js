@@ -4,7 +4,7 @@ const { SlashCommandBuilder } = require("discord.js");
 const achievements = require("../resources/achievements.json");
 
 module.exports = {
-  "data": new SlashCommandBuilder()
+  data: new SlashCommandBuilder()
     .setName("achievements")
     .setDescription("See your achievements"),
   async execute(interaction) {
@@ -17,27 +17,19 @@ module.exports = {
       .map(([, v]) => v.name);
     const allNormalAchievements = Object.entries(achievements)
       .filter((a) => !a[1].secret)
-      .map(([k, v]) => ({ "desc": v.desc,
-        "key": k,
-        "name": v.name }));
+      .map(([k, v]) => ({ desc: v.desc, key: k, name: v.name }));
 
     await interaction.reply(
       `\`\`\`ansi\n===== Achievements =====\n${allNormalAchievements
         .map(
           (a) =>
-            `• \u001b[1;${
-              unlocks.includes(a.key)
-                ? 32
-                : 31
-            }m ${a.name}\u001b[0m\u001b[2;${
-              unlocks.includes(a.key)
-                ? 32
-                : 31
+            `• \u001b[1;${unlocks.includes(a.key) ? 32 : 31}m ${a.name}\u001b[0m\u001b[2;${
+              unlocks.includes(a.key) ? 32 : 31
             }m - ${a.desc}\u001b[0m`
         )
         .join("\n")}\n\n===== Secret Achievements =====\n${secretAchievements
         .map((a) => `• \u001b[1;32m ${a}\u001b[0m`)
         .join("\n")}\`\`\``
     );
-  }
+  },
 };

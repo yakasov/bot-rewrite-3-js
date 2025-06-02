@@ -4,22 +4,23 @@ const {
   ActionRowBuilder,
   ButtonBuilder,
   ButtonStyle,
-  SlashCommandBuilder
+  SlashCommandBuilder,
 } = require("discord.js");
 const roles = require("../resources/roles.json");
 
 module.exports = {
-  "data": new SlashCommandBuilder()
+  data: new SlashCommandBuilder()
     .setName("claim")
     .setDescription("Claim (or remove) public roles (e.g for games)")
     .addStringOption((opt) =>
       opt
         .setName("role")
         .setDescription("The role to claim")
-        .addChoices(...roles)),
+        .addChoices(...roles)
+    ),
   async execute(interaction) {
     await interaction.deferReply({
-      "ephemeral": true
+      ephemeral: true,
     });
     const roleID = interaction.options.getString("role");
     const role = interaction.guild.roles.cache.get(roleID);
@@ -35,39 +36,38 @@ module.exports = {
         .setLabel("No")
         .setStyle(ButtonStyle.Danger);
 
-      const row = new ActionRowBuilder()
-        .addComponents(confirm, cancel);
+      const row = new ActionRowBuilder().addComponents(confirm, cancel);
 
       const response = await interaction.editReply({
-        "components": [row],
-        "content": "You already have this role. Remove it?"
+        components: [row],
+        content: "You already have this role. Remove it?",
       });
 
       const collectorFilter = (i) => i.user.id === interaction.user.id;
 
       try {
         const confirmation = await response.awaitMessageComponent({
-          "filter": collectorFilter,
-          "time": 60_000
+          filter: collectorFilter,
+          time: 60_000,
         });
 
         if (confirmation.customId === "y") {
           await interaction.member.roles.remove(role);
           return confirmation.update({
-            "components": [],
-            "content": `You have removed the role ${role.name}.`,
-            "ephemeral": true
+            components: [],
+            content: `You have removed the role ${role.name}.`,
+            ephemeral: true,
           });
         }
         return confirmation.update({
-          "components": [],
-          "content": "Role claim cancelled.",
-          "ephemeral": true
+          components: [],
+          content: "Role claim cancelled.",
+          ephemeral: true,
         });
       } catch (e) {
         return interaction.editReply({
-          "components": [],
-          "content": "Confirmation not received within 1 minute, cancelling"
+          components: [],
+          content: "Confirmation not received within 1 minute, cancelling",
         });
       }
     }
@@ -76,5 +76,5 @@ module.exports = {
     return interaction.editReply(
       `You have successfully claimed the ${role.name} role!`
     );
-  }
+  },
 };

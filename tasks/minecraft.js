@@ -3,11 +3,10 @@
 const { ActivityType } = require("discord.js");
 const {
   minecraftServerIp,
-  minecraftServerPort
+  minecraftServerPort,
 } = require("../resources/config.json");
 
 exports.run = async (client, splash) => {
-
   /*
    * 0 - Minecraft has been run at least once
    * 1 - Minecraft has not yet been run (is on first run)
@@ -34,9 +33,7 @@ exports.run = async (client, splash) => {
 
   if (globalThis.firstRun.minecraft === 1) {
     console.log(
-      `Using ${
-        minecraftServerIp
-      }:${
+      `Using ${minecraftServerIp}:${
         minecraftServerPort
       } for Minecraft query...\n`
     );
@@ -85,10 +82,7 @@ exports.run = async (client, splash) => {
       }
 
       client.user.setPresence({
-        "activities": [
-          { "name": activityString,
-            "type": ActivityType.Watching }
-        ]
+        activities: [{ name: activityString, type: ActivityType.Watching }],
       });
     })
     .catch((e) => {

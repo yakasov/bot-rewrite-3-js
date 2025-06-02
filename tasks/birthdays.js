@@ -5,12 +5,11 @@ const birthdays = require("../resources/birthdays.json");
 const {
   mainGuildId,
   bdayChannelId,
-  bdayRoleId
+  bdayRoleId,
 } = require("../resources/config.json");
 
 exports.run = async (client, force = false) => {
-  const today = moment()
-    .tz("Europe/London");
+  const today = moment().tz("Europe/London");
 
   if (!today.isSame(globalThis.currentDate, "day") || force) {
     globalThis.currentDate = moment();
@@ -25,12 +24,11 @@ exports.run = async (client, force = false) => {
 
     // Check for members not in server anymore
     if (globalThis.firstRun.birthdays) {
-      Object.keys(birthdays)
-        .forEach((id) => {
-          if (!guildMembers.some((gm) => gm.id === id)) {
-            console.warn(`${id} is not present in the server!`);
-          }
-        });
+      Object.keys(birthdays).forEach((id) => {
+        if (!guildMembers.some((gm) => gm.id === id)) {
+          console.warn(`${id} is not present in the server!`);
+        }
+      });
 
       globalThis.firstRun.birthdays = false;
     }
@@ -46,8 +44,7 @@ exports.run = async (client, force = false) => {
     guildMembers.forEach((m) => {
       if (
         birthdays[m.id] &&
-        birthdays[m.id].date === today.tz("Europe/London")
-          .format("DD/MM") &&
+        birthdays[m.id].date === today.tz("Europe/London").format("DD/MM") &&
         !roleMembers.some((me) => me.user.id === m.id)
       ) {
         m.roles.add(bdayRoleId);

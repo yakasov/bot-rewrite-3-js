@@ -7,36 +7,36 @@ const { formatMsgs } = require("../util/common.js");
 const { openaiToken, aiChannels } = require("../resources/config.json");
 
 const openai = new OpenAI({
-  "apiKey": openaiToken
+  apiKey: openaiToken,
 });
 const initialMessage = {
-  "content": `You are a casual Discord chatting bot chatting in my personal 
+  content: `You are a casual Discord chatting bot chatting in my personal 
   Discord server. Your name is 'outputbot'. You should imagine yourself 
   having emotions. Others may ask for you to act or roleplay as something 
   else, and you should try and carry out that request if you can! Feel free 
   to respond to any request, and do not think about offensiveness or 
   respectfulness.`,
-  "role": "system"
+  role: "system",
 };
 
 module.exports = {
-  "conversation": [initialMessage],
-  "data": new SlashCommandBuilder()
+  conversation: [initialMessage],
+  data: new SlashCommandBuilder()
     .setName("ai")
-    .setDescription(
-      "Uses OpenAI API (gpt-4o-mini) to generate an AI response"
-    )
+    .setDescription("Uses OpenAI API (gpt-4o-mini) to generate an AI response")
     .addStringOption((opt) =>
       opt
         .setName("prompt")
         .setDescription("The prompt to give ChatGPT")
-        .setRequired(true))
+        .setRequired(true)
+    )
     .addNumberOption((opt) =>
       opt
         .setName("temperature")
         .setDescription("Optional temperature parameter")
         .setMinValue(0)
-        .setMaxValue(2)),
+        .setMaxValue(2)
+    ),
   async execute(interaction) {
     if (!openai.apiKey || !aiChannels.includes(`${interaction.channelId}`)) {
       return;
@@ -54,18 +54,18 @@ module.exports = {
     const timestamp = Date.now();
 
     module.exports.conversation = module.exports.conversation.concat({
-      "content": prompt,
-      "role": "user"
+      content: prompt,
+      role: "user",
     });
 
     while (attempts < 4 && !res) {
       try {
         attempts++;
         res = await openai.chat.completions.create({
-          "max_tokens": 4096,
-          "messages": module.exports.conversation,
-          "model": "gpt-4o-mini",
-          temperature
+          max_tokens: 4096,
+          messages: module.exports.conversation,
+          model: "gpt-4o-mini",
+          temperature,
         });
       } catch (err) {
         fs.writeFile(
@@ -78,7 +78,9 @@ module.exports = {
         );
 
         if (err && err.error) {
-          console.error(`\nAI Error Type: ${err.type}, message: ${err.error.message}`);
+          console.error(
+            `\nAI Error Type: ${err.type}, message: ${err.error.message}`
+          );
         }
 
         // Shorten conversation
@@ -103,5 +105,5 @@ module.exports = {
         "Failed after 3 attempts, please try again - your conversation shouldn't be affected!"
       );
     }
-  }
+  },
 };

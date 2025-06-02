@@ -5,20 +5,19 @@ const moment = require("moment-timezone");
 const birthdays = require("../resources/birthdays.json");
 
 module.exports = {
-  "data": new SlashCommandBuilder()
+  data: new SlashCommandBuilder()
     .setName("nextbirthdays")
     .setDescription("See when the next five birthdays are."),
   execute(interaction) {
     const year = globalThis.currentDate.year();
-    let orderedBirthdays = Object.entries(birthdays)
-      .map(([, v]) => [
-        `${v.date}/${year}`,
-        v.name
-      ]);
+    let orderedBirthdays = Object.entries(birthdays).map(([, v]) => [
+      `${v.date}/${year}`,
+      v.name,
+    ]);
     orderedBirthdays = orderedBirthdays.concat(
       orderedBirthdays.map(([date, name]) => [
         date.replace(year, year + 1),
-        name
+        name,
       ])
     );
     let future = 0;
@@ -26,12 +25,10 @@ module.exports = {
 
     orderedBirthdays.forEach(([date, name]) => {
       if (
-        module.exports.f(date)
-          .isAfter(globalThis.currentDate, "day") &&
+        module.exports.f(date).isAfter(globalThis.currentDate, "day") &&
         future < 5
       ) {
-        output += `${module.exports.f(date)
-          .format("MMMM Do")}: ${name}\n`;
+        output += `${module.exports.f(date).format("MMMM Do")}: ${name}\n`;
         future++;
       }
     });
@@ -46,5 +43,5 @@ module.exports = {
 
     return interaction.reply(output);
   },
-  "f": (date) => moment(date, "DD/MM/YYYY")
+  f: (date) => moment(date, "DD/MM/YYYY"),
 };

@@ -46,51 +46,32 @@ exports.run = (msg) => {
     unlockedNames.push(actualAchievements.level250.name);
   }
 
-  if (
-    !achievements.includes("messages500") &&
-    stats.messages === 500
-  ) {
+  if (!achievements.includes("messages500") && stats.messages === 500) {
     achievements.push("messages500");
     unlockedNames.push(actualAchievements.messages500.name);
   }
 
-  if (
-    !achievements.includes("messages1000") &&
-    stats.messages === 1000
-  ) {
+  if (!achievements.includes("messages1000") && stats.messages === 1000) {
     achievements.push("messages1000");
   }
 
-  if (
-    !achievements.includes("messages2500") &&
-    stats.messages === 2500
-  ) {
+  if (!achievements.includes("messages2500") && stats.messages === 2500) {
     achievements.push("messages2500");
     unlockedNames.push(actualAchievements.messages2500.name);
   }
 
   if (
     !achievements.includes("mrbeast") &&
-    [
-      "beast",
-      "breast",
-      "mr beast"
-    ].some((s) => content.includes(s))
+    ["beast", "breast", "mr beast"].some((s) => content.includes(s))
   ) {
     achievements.push("mrbeast");
   }
 
-  if (
-    !achievements.includes("voiceTime1hr") &&
-    stats.voiceTime >= 3600
-  ) {
+  if (!achievements.includes("voiceTime1hr") && stats.voiceTime >= 3600) {
     achievements.push("voiceTime1hr");
   }
 
-  if (
-    !achievements.includes("voiceTime8hrs") &&
-    stats.voiceTime >= 3600 * 8
-  ) {
+  if (!achievements.includes("voiceTime8hrs") && stats.voiceTime >= 3600 * 8) {
     achievements.push("voiceTime8hrs");
     unlockedNames.push(actualAchievements.voiceTime8hrs.name);
   }

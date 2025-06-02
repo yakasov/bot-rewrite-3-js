@@ -4,11 +4,11 @@ const { SlashCommandBuilder } = require("discord.js");
 const { status } = require("minecraft-server-util");
 const {
   minecraftServerIp,
-  minecraftServerPort
+  minecraftServerPort,
 } = require("../resources/config.json");
 
 module.exports = {
-  "data": new SlashCommandBuilder()
+  data: new SlashCommandBuilder()
     .setName("mcstatus")
     .setDescription("Get information about the current Minecraft server"),
   execute(interaction) {
@@ -27,5 +27,5 @@ module.exports = {
       .catch((e) => {
         console.error(e);
       });
-  }
+  },
 };
