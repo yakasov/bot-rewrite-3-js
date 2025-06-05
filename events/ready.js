@@ -7,10 +7,14 @@ const {
   getNewSplash,
   getTime
 } = require("../util/scheduledTasks.js");
-const { checkVoiceChannels } = require("../util/stats.js");
-const { backupStats, saveStats, updateScores } = require("../util/stats.js");
+const {
+  backupStats,
+  checkVoiceChannels,
+  saveStats,
+  updateScores
+} = require("../util/stats");
 
-module.exports = function handleClientReady(c) {
+async function handleClientReady(c) {
   console.log(
     "Connected and ready to go!\n" +
       `Current date is ${globalThis.currentDate}, ` +
@@ -18,9 +22,10 @@ module.exports = function handleClientReady(c) {
   );
 
   checkVoiceChannels();
-  checkBirthdays(true);
-  checkMinecraftServer();
-  getNewSplash();
+  await checkBirthdays(true);
+  await checkMinecraftServer();
+  // eslint-disable-next-line require-atomic-updates
+  globalThis.splash = getNewSplash();
   backupStats();
 
   /* eslint-disable line-comment-position */
@@ -30,10 +35,17 @@ module.exports = function handleClientReady(c) {
   setInterval(checkBirthdays, getTime(0, 15)); // 15 minutes
   setInterval(checkFortniteShop, getTime(0, 15)); // 15 minutes
   setInterval(checkMinecraftServer, getTime(5)); // 5 seconds
-  setInterval(getNewSplash, getTime(0, 0, 1)); // 1 hour
+  setInterval(
+    () => {
+      globalThis.splash = getNewSplash();
+    },
+    getTime(0, 30)
+  ); // 30 minutes
   setInterval(checkVoiceChannels, getTime(15)); // 15 seconds
   setInterval(saveStats, getTime(0, 3)); // 3 minutes
   setInterval(backupStats, getTime(0, 15)); // 15 minutes
   setInterval(updateScores, getTime(30)); // 30 seconds
   /* eslint-enable line-comment-position */
-};
+}
+
+module.exports = { handleClientReady };

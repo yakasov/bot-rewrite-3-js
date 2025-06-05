@@ -2,7 +2,7 @@
 
 const chanceResponses = require("../resources/chanceResponses.json");
 
-module.exports = function generateRollTable() {
+function generateRollTable() {
   let totalChance = 0;
   let cumChance = 0;
   let tempRollTable = [];
@@ -18,17 +18,19 @@ module.exports = function generateRollTable() {
 
   tempRollTable = tempRollTable.map((response) => ({
     ...response,
-    "chance": response.chance * multiplier
+    chance: response.chance * multiplier
   }));
 
   tempRollTable.forEach((response) => {
     rollTable.push({
       ...response,
-      "chance": response.chance + cumChance
+      chance: response.chance + cumChance
     });
 
     cumChance += response.chance;
   });
 
   return rollTable;
-};
+}
+
+module.exports = { generateRollTable };

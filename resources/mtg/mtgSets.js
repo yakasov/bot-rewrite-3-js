@@ -18,18 +18,8 @@ module.exports = {
     { code: "wot", count: 103, name: "Wilds of Eldraine: Enchanting Tales", price: 5 },
     { code: "woe", count: 381, name: "Wilds of Eldraine", price: 28 },
     { code: "cmm", count: 1067, name: "Commander Masters", price: 50 },
-    {
-      code: "ltr",
-      count: 856,
-      name: "The Lord of the Rings: Tales of Middle-earth",
-      price: 5
-    },
-    {
-      code: "mat",
-      count: 230,
-      name: "March of the Machine: The Aftermath",
-      price: 21
-    },
+    { code: "ltr", count: 856, name: "The Lord of the Rings: Tales of Middle-earth", price: 5 },
+    { code: "mat", count: 230, name: "March of the Machine: The Aftermath", price: 21 },
     { code: "mom", count: 387, name: "March of the Machine", price: 25 },
     { code: "mul", count: 261, name: "Multiverse Legends", price: 5 },
     { code: "sir", count: 294, name: "Shadows over Innistrad Remastered", price: 5 },
@@ -43,24 +33,14 @@ module.exports = {
     { code: "dmu", count: 453, name: "Dominaria United", price: 23 },
     { code: "2x2", count: 579, name: "Double Masters 2022", price: 20 },
     { code: "hbg", count: 436, name: "Alchemy Horizons: Baldur's Gate", price: 10 },
-    {
-      code: "clb",
-      count: 936,
-      name: "Commander Legends: Battle for Baldur's Gate",
-      price: 26
-    },
+    { code: "clb", count: 936, name: "Commander Legends: Battle for Baldur's Gate", price: 26 },
     { code: "snc", count: 513, name: "Streets of New Capenna", price: 25 },
     { code: "neo", count: 531, name: "Kamigawa: Neon Dynasty", price: 27 },
     { code: "dbl", count: 535, name: "Innistrad: Double Feature", price: 5 },
     { code: "vow", count: 423, name: "Innistrad: Crimson Vow", price: 22 },
     { code: "mid", count: 400, name: "Innistrad: Midnight Hunt", price: 9 },
     { code: "j21", count: 389, name: "Jumpstart: Historic Horizons", price: 10 },
-    {
-      code: "afr",
-      count: 424,
-      name: "Adventures in the Forgotten Realms",
-      price: 12
-    },
+    { code: "afr", count: 424, name: "Adventures in the Forgotten Realms", price: 12 },
     { code: "mh2", count: 494, name: "Modern Horizons 2", price: 26 },
     { code: "sta", count: 126, name: "Strixhaven Mystical Archive", price: 5 },
     { code: "stx", count: 393, name: "Strixhaven: School of Mages", price: 20 },

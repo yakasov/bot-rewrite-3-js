@@ -4,7 +4,7 @@ const fs = require("fs");
 const { Cards } = require("scryfall-api");
 const https = require("https");
 const { joinImages } = require("join-images");
-const cache = require("../resources/mtg/mtgCache.json");
+const cache = require("../../resources/mtg/mtgCache.json");
 
 async function getFullSet(set) {
   if (cache[set] && Object.keys(cache[set]).length > 0) {
@@ -79,7 +79,7 @@ async function convertForCache(card) {
     number: card.collector_number,
     oracle_text: card.oracle_text ?? card.card_faces[0].mana_cost,
     power: card.power,
-    price: (card.prices.usd ?? card.prices.usd_foil) ?? 0,
+    price: card.prices.usd ?? card.prices.usd_foil ?? 0,
     price_foil: card.prices.usd_foil,
     rarity: card.rarity,
     set: card.set,
@@ -100,7 +100,7 @@ async function combineImages(card) {
   const img = await joinImages(filePaths, { direction: "horizontal" });
   await img.toFile(`${baseFilePath}.jpg`);
 
-  deleteFiles(filePaths);
+  await deleteFiles(filePaths);
   return baseFilePath;
 }
 
@@ -132,15 +132,17 @@ function downloadImage(card, i, filePath) {
   });
 }
 
-function deleteFiles(filePaths) {
+async function deleteFiles(filePaths) {
   // For deleting merge image parts
-  filePaths.forEach((filePath) => {
-    fs.unlink(filePath, (err) => {
-      if (err) {
+  await Promise.all(
+    filePaths.forEach((filePath) => {
+      try {
+        fs.unlink(filePath);
+      } catch (err) {
         console.error(`Failed to delete ${filePath}:`, err);
       }
-    });
-  });
+    })
+  );
 }
 
 function getRandom(arr) {

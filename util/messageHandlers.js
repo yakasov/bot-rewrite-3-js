@@ -70,7 +70,7 @@ async function checkMessageResponse(msg) {
       res = res.replace(
         "{FOLLOWING}",
         lastMsg || !following.trim()
-          ? lastMsg ?? getNicknameMsg(msg)
+          ? (lastMsg ?? getNicknameMsg(msg))
           : following.trim()
       );
     }
@@ -95,7 +95,6 @@ async function checkMessageResponse(msg) {
   for (let i = 0; i < entries.length; i++) {
     const [k, v] = entries[i];
     if (` ${msg.content.toLowerCase()} `.includes(` ${k} `)) {
-      /* eslint-disable-next-line consistent-return */
       return f(k, v);
     }
   }
