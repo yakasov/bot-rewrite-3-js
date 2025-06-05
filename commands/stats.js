@@ -13,8 +13,7 @@ const { DISCORD_ID_LENGTH, TOP_SCORES_N } = require("../util/consts.js");
 
 function getRankedUsers(guildStats, guild) {
   return Object.entries(guildStats)
-    .filter(([k]) => k.length === DISCORD_ID_LENGTH)
-    .filter(([k]) => guild.members.cache.has(k))
+    .filter(([k]) => k.length === DISCORD_ID_LENGTH && guild.members.cache.has(k))
     .map(([k, v]) => [k, v.totalExperience])
     .sort(([, f], [, s]) => s - f);
 }
