@@ -37,7 +37,7 @@ async function handleClientReady(c) {
   setInterval(checkMinecraftServer, getTime(5)); // 5 seconds
   setInterval(
     () => {
-      globalThis.splash = getNewSplash;
+      globalThis.splash = getNewSplash();
     },
     getTime(0, 30)
   ); // 30 minutes
