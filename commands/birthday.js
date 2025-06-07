@@ -1,6 +1,6 @@
 "use strict";
 
-const { SlashCommandBuilder } = require("discord.js");
+const { MessageFlags, SlashCommandBuilder } = require("discord.js");
 const { mainGuildId, bdayRoleId } = require("../resources/config.json");
 const { BOT_CHANNEL_ID, SPAM_CHANNEL_ID } = require("../util/consts");
 
@@ -61,7 +61,7 @@ module.exports = {
     if (!isBirthdayUser(interaction)) {
       return interaction.reply({
         content: "It is not your birthday!",
-        ephemeral: true
+        flags: MessageFlags.Ephemeral
       });
     }
 
@@ -85,7 +85,7 @@ module.exports = {
         return interaction.reply({
           content:
               "Due to Discord limitations, this is not possible :(\nPlease message me instead!",
-          ephemeral: true
+          flags: MessageFlags.Ephemeral
         });
       case "channel":
         await setChannelName(interaction, SPAM_CHANNEL_ID, value);
@@ -93,18 +93,18 @@ module.exports = {
       default:
         return interaction.reply({
           content: "Not implemented yet...",
-          ephemeral: true
+          flags: MessageFlags.Ephemeral
         });
       }
 
       return interaction.reply({
         content: `Set ${option} name successfully!`,
-        ephemeral: true
+        flags: MessageFlags.Ephemeral
       });
     } catch (e) {
       return interaction.reply({
         content: `Error: ${e.message}`,
-        ephemeral: true
+        flags: MessageFlags.Ephemeral
       });
     }
   }

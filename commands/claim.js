@@ -4,6 +4,7 @@ const {
   ActionRowBuilder,
   ButtonBuilder,
   ButtonStyle,
+  MessageFlags,
   SlashCommandBuilder
 } = require("discord.js");
 const roles = require("../resources/roles.json");
@@ -19,7 +20,7 @@ module.exports = {
         .addChoices(...roles)),
   async execute(interaction) {
     await interaction.deferReply({
-      ephemeral: true
+      flags: MessageFlags.Ephemeral
     });
     const roleID = interaction.options.getString("role");
     const role = interaction.guild.roles.cache.get(roleID);
@@ -56,13 +57,13 @@ module.exports = {
           return confirmation.update({
             components: [],
             content: `You have removed the role ${role.name}.`,
-            ephemeral: true
+            flags: MessageFlags.Ephemeral
           });
         }
         return confirmation.update({
           components: [],
           content: "Role claim cancelled.",
-          ephemeral: true
+          flags: MessageFlags.Ephemeral
         });
       } catch (e) {
         return interaction.editReply({

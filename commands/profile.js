@@ -1,6 +1,6 @@
 "use strict";
 
-const { SlashCommandBuilder } = require("discord.js");
+const { MessageFlags, SlashCommandBuilder } = require("discord.js");
 const {
   formatTime,
   getLevelName,
@@ -48,7 +48,7 @@ module.exports = {
       opt.setName("debug")
         .setDescription("Whether to print the raw statistics")),
   async execute(interaction) {
-    await interaction.deferReply({ ephemeral: true });
+    await interaction.deferReply({ flags: MessageFlags.Ephemeral });
 
     let user = interaction.options.getUser("user") ?? null;
     if (user) {

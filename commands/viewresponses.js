@@ -1,6 +1,6 @@
 "use strict";
 
-const { SlashCommandBuilder } = require("discord.js");
+const { MessageFlags, SlashCommandBuilder } = require("discord.js");
 const chanceResponses = require("../resources/chanceResponses.json");
 
 module.exports = {
@@ -12,7 +12,7 @@ module.exports = {
         .setName("key")
         .setDescription("The response to view. Leave blank to see all keys")),
   async execute(interaction) {
-    await interaction.deferReply({ ephemeral: true });
+    await interaction.deferReply({ flags: MessageFlags.Ephemeral });
 
     const key = interaction.options.getString("key") ?? "";
 
@@ -20,7 +20,7 @@ module.exports = {
       if (chanceResponses[key]) {
         return interaction.followUp({
           content: `\`\`\`json\n${JSON.stringify(chanceResponses[key], null, 2)}\n\`\`\``,
-          ephemeral: true
+          flags: MessageFlags.Ephemeral
         });
       }
       return interaction.followUp({
@@ -28,7 +28,7 @@ module.exports = {
           chanceResponses
         )
           .join(", ")}`,
-        ephemeral: true
+        flags: MessageFlags.Ephemeral
       });
     }
 
@@ -37,7 +37,7 @@ module.exports = {
         .join(
           ", "
         )}\n\`\`\``,
-      ephemeral: true
+      flags: MessageFlags.Ephemeral
     });
   }
 };

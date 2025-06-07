@@ -1,6 +1,6 @@
 "use strict";
 
-const { SlashCommandBuilder } = require("discord.js");
+const { MessageFlags, SlashCommandBuilder } = require("discord.js");
 module.exports = {
   data: new SlashCommandBuilder()
     .setName("toggleresponses")
@@ -25,7 +25,7 @@ module.exports = {
 
     return interaction.reply({
       content: "You are not an admin user!",
-      ephemeral: true
+      flags: MessageFlags.Ephemeral
     });
   }
 };

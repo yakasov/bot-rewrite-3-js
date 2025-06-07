@@ -1,6 +1,6 @@
 "use strict";
 
-const { SlashCommandBuilder } = require("discord.js");
+const { MessageFlags, SlashCommandBuilder } = require("discord.js");
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -44,7 +44,7 @@ module.exports = {
           ) {
             return interaction.reply({
               content: `Cannot add non-numeric values to attribute "${attribute}".`,
-              ephemeral: true
+              flags: MessageFlags.Ephemeral
             });
           }
           globalThis.stats[interaction.guild.id][user][attribute] += newVal;
@@ -64,7 +64,7 @@ module.exports = {
 
     return interaction.reply({
       content: "You are not an admin user!",
-      ephemeral: true
+      flags: MessageFlags.Ephemeral
     });
   }
 };
