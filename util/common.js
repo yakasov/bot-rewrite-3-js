@@ -65,8 +65,9 @@ module.exports = {
   getTimeInSeconds: () => Math.floor(Date.now() / 1000),
 
   getTitle: (stats) => {
-    if (!stats.name) {
-      stats.name = stats.unlockedNames[0] ?? "HUH";
+    if (!stats.name || stats.name.contains("undefined")) {
+      const [lastName] = stats.unlockedNames.slice(-1);
+      stats.name = lastName;
     }
 
     return stats.name;
