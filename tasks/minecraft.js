@@ -25,7 +25,7 @@ exports.run = async (client, splash) => {
 
   if (!(minecraftServerIp && minecraftServerPort)) {
     if (globalThis.firstRun.minecraft === 1) {
-      console.error("No IP and/or Port for Minecraft server query!");
+      console.error("No IP and/or Port for Minecraft server query!\n");
       globalThis.firstRun.minecraft = 2;
     }
 

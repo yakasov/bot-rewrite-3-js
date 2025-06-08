@@ -42,7 +42,7 @@ async function checkMessageResponse(msg) {
     return await swapTwitterLinks(msg);
   }
 
-  if (msg.test(/\b\d+\s*:\s*\d+\b/gu)) {
+  if (msg.content.match(/\b\d+\s*:\s*\d+\b/gu)) {
     return replyWithHypeMessage(msg);
   }
 
@@ -99,6 +99,7 @@ async function checkMessageResponse(msg) {
           stickers: sticker
         });
       }
+      return null;
     }
 
     return msg.channel.send(res);
