@@ -6,6 +6,7 @@ const { botResponseChance } = require("../resources/config.json");
 const chanceResponses = require("../resources/chanceResponses.json");
 const responses = require("../resources/responses.json");
 const { getNicknameMsg } = require("../util/common.js");
+const { THIS_ID_IS_ALWAYS_LATE_TELL_HIM_OFF } = require("./consts.js");
 
 async function swapTwitterLinks(msg) {
   const content = `${getNicknameMsg(msg)} sent:\n${msg.content
@@ -28,7 +29,7 @@ function replyWithHypeMessage(msg) {
     .filter(([key]) =>
       key.includes("hype"));
   const randomEntry =
-        hypeEntries[Math.floor(Math.random() * hypeEntries.length)][1].string;
+    hypeEntries[Math.floor(Math.random() * hypeEntries.length)][1].string;
   return msg.channel.send(randomEntry);
 }
 
@@ -42,7 +43,10 @@ async function checkMessageResponse(msg) {
     return await swapTwitterLinks(msg);
   }
 
-  if (msg.content.match(/\b\d+\s*:\s*\d+\b/gu)) {
+  if (
+    msg.author.id === THIS_ID_IS_ALWAYS_LATE_TELL_HIM_OFF &&
+    msg.content.match(/\b\d+\s*:\s*\d+\b/gu)
+  ) {
     return replyWithHypeMessage(msg);
   }
 
@@ -50,7 +54,7 @@ async function checkMessageResponse(msg) {
    * I don't really like this function method
    * but I have yet to figure out a *better* way
    * of doing this as simply as this
-   * 
+   *
    * I can split each check into different functions
    * but not sure it's worth it, might just make it
    * more verbose
@@ -72,7 +76,7 @@ async function checkMessageResponse(msg) {
       ) {
         lastMsg = await msg.channel.messages
           .fetch({
-            limit: 2
+            limit: 2,
           })
           .then((c) => getNicknameMsg([...c.values()].pop()));
       }
@@ -96,7 +100,7 @@ async function checkMessageResponse(msg) {
       );
       if (sticker.size) {
         return msg.channel.send({
-          stickers: sticker
+          stickers: sticker,
         });
       }
       return null;
@@ -186,7 +190,7 @@ async function checkScryfallMessage(message) {
         .setTitle("Scryfall Cards")
         .addFields({
           name: `Returned ${results.length} cards:`,
-          value: embedString
+          value: embedString,
         });
 
       message.channel.send({ embeds: [embed] });
@@ -197,5 +201,5 @@ async function checkScryfallMessage(message) {
 module.exports = {
   checkMessageReactions,
   checkMessageResponse,
-  checkScryfallMessage
+  checkScryfallMessage,
 };
