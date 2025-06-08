@@ -1,8 +1,27 @@
 "use strict";
 
+const { Cards } = require("scryfall-api");
+const { EmbedBuilder } = require("discord.js");
 const { botResponseChance } = require("../resources/config.json");
+const chanceResponses = require("../resources/chanceResponses.json");
 const responses = require("../resources/responses.json");
 const { getNicknameMsg } = require("../util/common.js");
+
+async function swapTwitterLinks(msg) {
+  const content = `${getNicknameMsg(msg)} sent:\n${msg.content
+    .replace("https://x.com/", "https://fixupx.com/")
+    .replace("https://twitter.com/", "https://fxtwitter.com/")}`;
+
+  if (msg.reference && msg.reference.channelId === msg.channel.id) {
+    const replyMsg = await msg.channel.messages.fetch(msg.reference.messageId);
+    replyMsg.reply(content);
+  } else {
+    msg.channel.send(content);
+  }
+
+  await msg.delete()
+    .catch(console.error);
+}
 
 async function checkMessageResponse(msg) {
   // Swap Twitter/X URLs for proper embedding ones
@@ -11,36 +30,18 @@ async function checkMessageResponse(msg) {
       msg.content.includes(l)) &&
     msg.content.includes("status")
   ) {
-    const content = `${getNicknameMsg(msg)} sent:\n${msg.content
-      .replace("https://x.com/", "https://fixupx.com/")
-      .replace("https://twitter.com/", "https://fxtwitter.com/")}`;
-
-    if (msg.reference && msg.reference.channelId === msg.channel.id) {
-      const replyMsg = await msg.channel.messages.fetch(
-        msg.reference.messageId
-      );
-      replyMsg.reply(content);
-    } else {
-      msg.channel.send(content);
-    }
-
-    await msg.delete()
-      .catch(console.error);
-    return;
+    return await swapTwitterLinks(msg);
   }
 
-  const steamLinkRegex = /https:\/\/steamcommunity\.com\S*/gu;
-  // Swap steamcommunity links for openable ones
-  if (steamLinkRegex.test(msg.content)) {
-    const steamLink =
-      msg.content.split(" ")
-        .find((m) => steamLinkRegex.test(m)) ?? msg.content;
-    msg.channel.send(
-      /* eslint-disable-next-line max-len */
-      `Embedded link: https://yakasov.github.io/pages/miscellaneous/steam_direct.html?page=${encodeURIComponent(steamLink)}`
-    );
-  }
-
+  /*
+   * I don't really like this function method
+   * but I have yet to figure out a *better* way
+   * of doing this as simply as this
+   * 
+   * I can split each check into different functions
+   * but not sure it's worth it, might just make it
+   * more verbose
+   */
   async function f(k, v) {
     let res = v;
     if (res.includes("{AUTHOR}")) {
@@ -70,7 +71,7 @@ async function checkMessageResponse(msg) {
       res = res.replace(
         "{FOLLOWING}",
         lastMsg || !following.trim()
-          ? (lastMsg ?? getNicknameMsg(msg))
+          ? lastMsg ?? getNicknameMsg(msg)
           : following.trim()
       );
     }
@@ -85,7 +86,15 @@ async function checkMessageResponse(msg) {
           stickers: sticker
         });
       }
-      return null;
+    }
+
+    if (res.test(/\b\d+\s*:\s*\d+\b/gu)) {
+      const hypeEntries = Object.entries(chanceResponses)
+        .filter(([key]) =>
+          key.includes("hype"));
+      const randomEntry =
+        hypeEntries[Math.floor(Math.random() * hypeEntries.length)][1].string;
+      return msg.channel.send(randomEntry);
     }
 
     return msg.channel.send(res);
@@ -141,7 +150,47 @@ async function checkMessageReactions(msg) {
   }
 }
 
+async function checkScryfallMessage(message) {
+  // Check if Scryfall has given a stupid response
+  if (
+    message.author.id === "268547439714238465" &&
+    message?.embeds[0]?.data?.description?.includes("Multiple cards match")
+  ) {
+    const cardName = message.embeds[0].data.description.match(
+      /(?<=Multiple cards match “)(?:.*)(?=”, can you be more specific?)/gu
+    )[0];
+
+    if (cardName.length > 1) {
+      const results = await Cards.autoCompleteName(cardName);
+
+      /*
+       * Sometimes this happens with names like 'miku'
+       * I think the Scryfall bot works for all languages
+       * whereas AutoCompleteName only works for one at a time
+       */
+      if (!results.length) {
+        return;
+      }
+
+      let embedString = "";
+      results.forEach((c, i) => {
+        embedString += `${i + 1}. ${c}\n`;
+      });
+
+      const embed = new EmbedBuilder()
+        .setTitle("Scryfall Cards")
+        .addFields({
+          name: `Returned ${results.length} cards:`,
+          value: embedString
+        });
+
+      message.channel.send({ embeds: [embed] });
+    }
+  }
+}
+
 module.exports = {
   checkMessageReactions,
-  checkMessageResponse
+  checkMessageResponse,
+  checkScryfallMessage
 };
