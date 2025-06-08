@@ -23,6 +23,15 @@ async function swapTwitterLinks(msg) {
     .catch(console.error);
 }
 
+function replyWithHypeMessage(msg) {
+  const hypeEntries = Object.entries(chanceResponses)
+    .filter(([key]) =>
+      key.includes("hype"));
+  const randomEntry =
+        hypeEntries[Math.floor(Math.random() * hypeEntries.length)][1].string;
+  return msg.channel.send(randomEntry);
+}
+
 async function checkMessageResponse(msg) {
   // Swap Twitter/X URLs for proper embedding ones
   if (
@@ -31,6 +40,10 @@ async function checkMessageResponse(msg) {
     msg.content.includes("status")
   ) {
     return await swapTwitterLinks(msg);
+  }
+
+  if (msg.test(/\b\d+\s*:\s*\d+\b/gu)) {
+    return replyWithHypeMessage(msg);
   }
 
   /*
@@ -86,15 +99,6 @@ async function checkMessageResponse(msg) {
           stickers: sticker
         });
       }
-    }
-
-    if (res.test(/\b\d+\s*:\s*\d+\b/gu)) {
-      const hypeEntries = Object.entries(chanceResponses)
-        .filter(([key]) =>
-          key.includes("hype"));
-      const randomEntry =
-        hypeEntries[Math.floor(Math.random() * hypeEntries.length)][1].string;
-      return msg.channel.send(randomEntry);
     }
 
     return msg.channel.send(res);
