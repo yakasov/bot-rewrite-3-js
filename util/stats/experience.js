@@ -4,10 +4,11 @@ const { statsConfig } = require("../../resources/config.json");
 const {
   getRequiredExperience,
   getRequiredExperienceCumulative,
-  getLevelName
+  getLevelName,
 } = require("../common.js");
 const { sendMessage } = require("./messages.js");
 const { DISCORD_ID_LENGTH } = require("../consts.js");
+const globals = require("../globals.js");
 
 function calculateExperience(userStats) {
   const exp = Math.floor(
@@ -21,38 +22,36 @@ function calculateExperience(userStats) {
     0
   );
   userStats.totalExperience = Math.max(exp, userStats.totalExperience);
-
-  return userStats;
 }
 
 function levelUp(guildId, userId) {
-  globalThis.stats[guildId][userId] = updateStatsOnLevelUp(
-    globalThis.stats[guildId][userId]
-  );
+  const userStats = globals.get("stats")[guildId][userId];
+  updateStatsOnLevelUp(userStats);
 
-  if (globalThis.stats[guildId][userId].level % 10 === 0) {
+  if (userStats.level % 10 === 0) {
     sendMessage([
       guildId,
       userId,
       "Level Up",
-      `level ${globalThis.stats[guildId][userId].level}`,
-      getLevelName(globalThis.stats[guildId][userId].level)
+      `level ${userStats.level}`,
+      getLevelName(userStats.level),
     ]);
   }
 }
 
 function recalculateLevels() {
-  for (const [guildId, guildStats] of Object.entries(globalThis.stats)) {
+  const stats = globals.get("stats");
+  for (const [guildId, guildStats] of Object.entries(stats)) {
     const userIds = Object.keys(guildStats)
       .filter(
         (id) => id.length === DISCORD_ID_LENGTH
       );
     for (const userId of userIds) {
-      let userStats = globalThis.stats[guildId][userId];
+      const userStats = stats[guildId][userId];
       userStats.level = 0;
       userStats.levelExperience = 0;
       userStats.totalExperience = 0;
-      userStats = calculateExperience(globalThis.stats[guildId][userId]);
+      calculateExperience(userStats);
 
       while (
         userStats.totalExperience >
@@ -77,13 +76,11 @@ function updateStatsOnLevelUp(userStats) {
   if (userStats.levelExperience > getRequiredExperience(userStats.level)) {
     updateStatsOnLevelUp(userStats);
   }
-
-  return userStats;
 }
 
 module.exports = {
   calculateExperience,
   levelUp,
   recalculateLevels,
-  updateStatsOnLevelUp
+  updateStatsOnLevelUp,
 };

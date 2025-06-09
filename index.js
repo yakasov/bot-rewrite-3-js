@@ -10,6 +10,7 @@ const loadedStats = require("./resources/stats.json");
 const { token } = require("./resources/config.json");
 
 const { generateRollTable } = require("./util/rollTableGenerator.js");
+const { globals } = require("./util/globals.js");
 const { initialSetup } = require("./util/setup.js");
 const { loadCommands } = require("./util/commandLoader.js");
 const { messageSuperPatch } = require("./util/messageSuperPatch.js");
@@ -23,19 +24,19 @@ process.on("unhandledRejection", (error) => {
   console.error("Unhandled error:", error);
 });
 
-globalThis.botUptime = 0;
-globalThis.currentDate = moment()
-  .tz("Europe/London");
+globals.set("botUptime", 0);
+globals.set("currentDate", moment()
+  .tz("Europe/London"));
+globals.set("firstRun", { birthdays: true, minecraft: 1 });
+globals.set("rollTable", generateRollTable(chanceResponses));
+globals.set("splash", "");
+globals.set("stats", loadedStats);
 globalThis.fetch = fetch;
-globalThis.firstRun = { birthdays: true, minecraft: 1 };
-globalThis.rollTable = generateRollTable(chanceResponses);
-globalThis.splash = "";
-globalThis.stats = loadedStats;
 
 globalThis.client = new Client({
   allowedMentions: {
     parse: ["users", "roles"],
-    repliedUser: true
+    repliedUser: true,
   },
   intents: [
     GatewayIntentBits.Guilds,
@@ -44,8 +45,8 @@ globalThis.client = new Client({
     GatewayIntentBits.GuildMessageReactions,
     GatewayIntentBits.GuildPresences,
     GatewayIntentBits.GuildVoiceStates,
-    GatewayIntentBits.MessageContent
-  ]
+    GatewayIntentBits.MessageContent,
+  ],
 });
 
 process.on("unhandledRejection", (error) => {

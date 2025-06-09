@@ -1,6 +1,7 @@
 "use strict";
 
 const { MessageFlags, SlashCommandBuilder } = require("discord.js");
+const globals = require("../util/globals");
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -28,6 +29,7 @@ module.exports = {
     const attribute = interaction.options.getString("attribute");
     const value = interaction.options.getString("value");
     const add = interaction.options.getBoolean("add") ?? false;
+    const userStats = globals.get("stats")[interaction.guild.id][user];
 
     await interaction.client.application.fetch();
     if (
@@ -35,26 +37,25 @@ module.exports = {
       interaction.user.id === (await interaction.guild.fetchOwner()).user.id
     ) {
       try {
-        const newVal = (/^-?\d+$/u).test(value) ? parseInt(value, 10) : value;
+        const newVal = /^-?\d+$/u.test(value) ? parseInt(value, 10) : value;
         if (add) {
           if (
-            typeof globalThis.stats[interaction.guild.id][user][attribute] !==
-              "number" ||
+            typeof userStats[attribute] !== "number" ||
             typeof newVal !== "number"
           ) {
             return interaction.reply({
               content: `Cannot add non-numeric values to attribute "${attribute}".`,
-              flags: MessageFlags.Ephemeral
+              flags: MessageFlags.Ephemeral,
             });
           }
-          globalThis.stats[interaction.guild.id][user][attribute] += newVal;
+          userStats[attribute] += newVal;
         } else {
-          globalThis.stats[interaction.guild.id][user][attribute] = newVal;
+          userStats[attribute] = newVal;
         }
 
         return interaction.reply(
           `Set user ${user} attribute ${attribute} to value ${
-            globalThis.stats[interaction.guild.id][user][attribute]
+            userStats[attribute]
           }`
         );
       } catch (e) {
@@ -64,7 +65,7 @@ module.exports = {
 
     return interaction.reply({
       content: "You are not an admin user!",
-      flags: MessageFlags.Ephemeral
+      flags: MessageFlags.Ephemeral,
     });
-  }
+  },
 };

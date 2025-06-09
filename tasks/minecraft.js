@@ -3,10 +3,12 @@
 const { ActivityType } = require("discord.js");
 const {
   minecraftServerIp,
-  minecraftServerPort
+  minecraftServerPort,
 } = require("../resources/config.json");
+const globals = require("../util/globals");
 
 exports.run = async (client, splash) => {
+  const firstRun = globals.get("firstRun");
 
   /*
    * 0 - Minecraft has been run at least once
@@ -14,25 +16,25 @@ exports.run = async (client, splash) => {
    * 2 - Minecraft errored and should not be queried again
    * 3 - Minecraft errored after first query, skip next run
    */
-  if (globalThis.firstRun.minecraft === 2) {
+  if (firstRun.minecraft === 2) {
     return;
   }
 
-  if (globalThis.firstRun.minecraft === 3) {
-    globalThis.firstRun.minecraft = 0;
+  if (firstRun.minecraft === 3) {
+    firstRun.minecraft = 0;
     return;
   }
 
   if (!(minecraftServerIp && minecraftServerPort)) {
-    if (globalThis.firstRun.minecraft === 1) {
+    if (firstRun.minecraft === 1) {
       console.error("No IP and/or Port for Minecraft server query!\n");
-      globalThis.firstRun.minecraft = 2;
+      firstRun.minecraft = 2;
     }
 
     return;
   }
 
-  if (globalThis.firstRun.minecraft === 1) {
+  if (firstRun.minecraft === 1) {
     console.log(
       `Using ${minecraftServerIp}:${
         minecraftServerPort
@@ -48,14 +50,14 @@ exports.run = async (client, splash) => {
           );
         }
 
-        globalThis.firstRun.minecraft = 0;
+        firstRun.minecraft = 0;
       })
       .catch((e) => {
         console.error(`\n${e}`);
-        globalThis.firstRun.minecraft = 2;
+        firstRun.minecraft = 2;
         console.warn(
-          `globalThis.firstRun.minecraft is set to state ${
-            globalThis.firstRun.minecraft
+          `firstRun.minecraft is set to state ${
+            firstRun.minecraft
           }, Minecraft will not be queried again this session`
         );
       });
@@ -83,11 +85,11 @@ exports.run = async (client, splash) => {
       }
 
       client.user.setPresence({
-        activities: [{ name: activityString, type: ActivityType.Watching }]
+        activities: [{ name: activityString, type: ActivityType.Watching }],
       });
     })
     .catch((e) => {
       console.error(`\n${e}`);
-      globalThis.firstRun.minecraft = 3;
+      firstRun.minecraft = 3;
     });
 };

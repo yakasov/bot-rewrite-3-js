@@ -7,13 +7,16 @@ const {
   getNicknameInteraction,
   getRequiredExperience,
   getLevelName,
-  getTitle
+  getTitle,
 } = require("../util/common.js");
 const { DISCORD_ID_LENGTH, TOP_SCORES_N } = require("../util/consts.js");
+const globals = require("../util/globals.js");
 
 function getRankedUsers(guildStats, guild) {
   return Object.entries(guildStats)
-    .filter(([k]) => k.length === DISCORD_ID_LENGTH && guild.members.cache.has(k))
+    .filter(
+      ([k]) => k.length === DISCORD_ID_LENGTH && guild.members.cache.has(k)
+    )
     .map(([k, v]) => [k, v.totalExperience])
     .sort(([, f], [, s]) => s - f);
 }
@@ -27,7 +30,7 @@ function buildTableData(topScores, guildStats, interaction) {
       Level: `${guildStats[a[0]].level} (${guildStats[a[0]].levelExperience}/${getRequiredExperience(guildStats[a[0]].level)} XP)`,
       Msgs: guildStats[a[0]].messages,
       "Voice Time": formatTime(guildStats[a[0]].voiceTime),
-      Title: getTitle(guildStats[a[0]])
+      Title: getTitle(guildStats[a[0]]),
     }));
   /* eslint-enable sort-keys */
 }
@@ -52,7 +55,7 @@ module.exports = {
     .setName("stats")
     .setDescription("Show server statistics"),
   execute(interaction) {
-    const guildStats = globalThis.stats[interaction.guild.id];
+    const guildStats = globals.get("stats")[interaction.guild.id];
     if (!guildStats) {
       return interaction.reply("This server has no statistics yet!");
     }
@@ -64,5 +67,5 @@ module.exports = {
     outputMessage += formatUserRankingLine(topScores, guildStats, interaction);
 
     return interaction.reply(`\`\`\`ansi\n${outputMessage}\n\`\`\``);
-  }
+  },
 };

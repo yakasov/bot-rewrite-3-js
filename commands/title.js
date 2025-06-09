@@ -4,8 +4,9 @@ const {
   ActionRowBuilder,
   StringSelectMenuBuilder,
   StringSelectMenuOptionBuilder,
-  SlashCommandBuilder
+  SlashCommandBuilder,
 } = require("discord.js");
+const globals = require("../util/globals");
 
 /* eslint-disable sort-keys */
 const STANDARD_NAMES = {
@@ -20,7 +21,7 @@ const STANDARD_NAMES = {
   "\u001b[34;1;1mCaked-up\u001b[0m": "Caked-up",
   "\u001b[37;1;1mDiscord Mod\u001b[0m": "Discord Mod",
   "\u001b[35;1;1mLisan al-Gaib\u001b[0m": "Lisan al-Gaib",
-  "\u001b[31;1;4mTrue #1 of Friends\u001b[0m": "True #1 of Friends"
+  "\u001b[31;1;4mTrue #1 of Friends\u001b[0m": "True #1 of Friends",
 };
 /* eslint-enable sort-keys */
 
@@ -50,36 +51,33 @@ module.exports = {
     await interaction.deferReply();
     const guildId = interaction.guild.id;
     const userId = interaction.user.id;
-    const { unlockedNames } = globalThis.stats[guildId][userId];
+    const userStats = globals.get("stats")[guildId][userId];
+    const { unlockedNames } = userStats;
 
     const select = buildSelectMenu(unlockedNames);
 
     const response = await interaction.editReply({
-      components: [
-        new ActionRowBuilder()
-          .addComponents(select)
-      ],
-      content: "Choose a name to use in /stats and /profile!"
+      components: [new ActionRowBuilder()
+        .addComponents(select)],
+      content: "Choose a name to use in /stats and /profile!",
     });
 
     const collectorFilter = (i) => i.user.id === interaction.user.id;
     const collector = response.createMessageComponentCollector({
       filter: collectorFilter,
-      time: 60_000
+      time: 60_000,
     });
 
     collector.on("collect", async (i) => {
       /* eslint-disable-next-line prefer-destructuring */
-      globalThis.stats[guildId][userId].name = i.values[0];
-      globalThis.stats[guildId][userId].customSetName = true;
+      userStats.name = i.values[0];
+      userStats.customSetName = true;
 
       await i.update({
-        components: [
-          new ActionRowBuilder()
-            .addComponents(select)
-        ],
-        content: `Updated name to ${getStandardName(i.values[0])}`
+        components: [new ActionRowBuilder()
+          .addComponents(select)],
+        content: `Updated name to ${getStandardName(i.values[0])}`,
       });
     });
-  }
+  },
 };

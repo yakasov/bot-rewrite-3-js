@@ -1,10 +1,11 @@
 "use strict";
 
 const checkAchievements = require("../util/achievements.js");
+const globals = require("../util/globals.js");
 const {
   checkMessageResponse,
   checkMessageReactions,
-  checkScryfallMessage
+  checkScryfallMessage,
 } = require("../util/messageHandlers.js");
 const { addToStats } = require("../util/stats");
 
@@ -16,17 +17,16 @@ async function handleMessageCreate(message) {
   }
 
   await checkMessageResponse(message);
-  if (
-    globalThis.stats[message.guild.id] &&
-    (globalThis.stats[message.guild.id].allowResponses ?? true)
-  ) {
+
+  const guildStats = globals.get("stats")[message.guild.id];
+  if (guildStats && (guildStats.allowResponses ?? true)) {
     await checkMessageReactions(message);
   }
 
   addToStats({
     guildId: message.guild.id,
     type: "message",
-    userId: message.author.id
+    userId: message.author.id,
   });
 
   checkAchievements.run(message);

@@ -5,15 +5,18 @@ const birthdays = require("../resources/birthdays.json");
 const {
   mainGuildId,
   bdayChannelId,
-  bdayRoleId
+  bdayRoleId,
 } = require("../resources/config.json");
+const globals = require("../util/globals");
 
 exports.run = async (client, force = false) => {
   const today = moment()
     .tz("Europe/London");
 
-  if (!today.isSame(globalThis.currentDate, "day") || force) {
-    globalThis.currentDate = moment();
+  if (!today.isSame(globals.get("currentDate"), "day") || force) {
+    globals.set("currentDate", today);
+    const firstRun = globals.get("firstRun");
+
     const guild = await client.guilds.fetch(mainGuildId);
     const bdayChannel = await guild.channels.fetch(bdayChannelId);
 
@@ -24,7 +27,7 @@ exports.run = async (client, force = false) => {
     const guildMembers = guild.members.cache;
 
     // Check for members not in server anymore
-    if (globalThis.firstRun.birthdays) {
+    if (firstRun.birthdays) {
       Object.keys(birthdays)
         .forEach((id) => {
           if (!guildMembers.some((gm) => gm.id === id)) {
@@ -32,7 +35,7 @@ exports.run = async (client, force = false) => {
           }
         });
 
-      globalThis.firstRun.birthdays = false;
+      firstRun.birthdays = false;
     }
 
     // Remove role if not their birthday anymore

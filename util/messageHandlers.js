@@ -7,6 +7,7 @@ const chanceResponses = require("../resources/chanceResponses.json");
 const responses = require("../resources/responses.json");
 const { getNicknameMsg } = require("../util/common.js");
 const { THIS_ID_IS_ALWAYS_LATE_TELL_HIM_OFF } = require("./consts.js");
+const globals = require("./globals.js");
 
 async function swapTwitterLinks(msg) {
   const content = `${getNicknameMsg(msg)} sent:\n${msg.content
@@ -88,7 +89,7 @@ async function checkMessageResponse(msg) {
       res = res.replace(
         "{FOLLOWING}",
         lastMsg || !following.trim()
-          ? lastMsg ?? getNicknameMsg(msg)
+          ? (lastMsg ?? getNicknameMsg(msg))
           : following.trim()
       );
     }
@@ -130,7 +131,7 @@ async function checkMessageReactions(msg) {
   const initialRoll = Math.random() * 100;
 
   if (initialRoll < (botResponseChance ?? 0)) {
-    Object.values(globalThis.rollTable)
+    Object.values(globals.get("rollTable"))
       .some((response) => {
         if (roll < response.chance) {
           try {

@@ -3,6 +3,7 @@
 const { SlashCommandBuilder } = require("discord.js");
 const { baseStats } = require("../util/stats");
 const { DISCORD_ID_LENGTH } = require("../util/consts");
+const globals = require("../util/globals");
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -14,24 +15,22 @@ module.exports = {
       interaction.user === interaction.client.application.owner ||
       interaction.user.id === (await interaction.guild.fetchOwner()).user.id
     ) {
-      Object.entries(globalThis.stats)
+      const stats = globals.get("stats");
+      Object.entries(stats)
         .filter(([k]) => k === interaction.guild.id)
         .forEach(([guildId, guildStats]) => {
           Object.keys(guildStats)
             .filter((k) => k.length === DISCORD_ID_LENGTH)
             .forEach((userId) => {
+              const userStats = stats[guildId][userId];
               const previousMessages =
-                globalThis.stats[guildId][userId].previousMessages +
-                globalThis.stats[guildId][userId].messages;
+                userStats.previousMessages + userStats.messages;
               const previousVoiceTime =
-                globalThis.stats[guildId][userId].previousVoiceTime +
-                globalThis.stats[guildId][userId].voiceTime;
+                userStats.previousVoiceTime + userStats.voiceTime;
 
-              globalThis.stats[guildId][userId] = structuredClone(baseStats);
-              globalThis.stats[guildId][userId].previousMessages =
-                previousMessages;
-              globalThis.stats[guildId][userId].previousVoiceTime =
-                previousVoiceTime;
+              stats[guildId][userId] = structuredClone(baseStats);
+              stats[guildId][userId].previousMessages = previousMessages;
+              stats[guildId][userId].previousVoiceTime = previousVoiceTime;
             });
         });
     }
@@ -39,5 +38,5 @@ module.exports = {
     return interaction.reply(
       `Reset all guild stats for guild ${interaction.guild.id}.`
     );
-  }
+  },
 };

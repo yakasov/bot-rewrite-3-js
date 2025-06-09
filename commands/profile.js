@@ -6,9 +6,10 @@ const {
   getLevelName,
   getNicknameInteraction,
   getRequiredExperience,
-  getTitle
+  getTitle,
 } = require("../util/common.js");
 const { DISCORD_ID_LENGTH } = require("../util/consts.js");
+const globals = require("../util/globals.js");
 
 function findUserStatsAndRank(guildStats, userId) {
   const ranked = Object.entries(guildStats)
@@ -56,7 +57,7 @@ module.exports = {
     }
     const debug = interaction.options.getBoolean("debug") ?? false;
 
-    const guildStats = globalThis.stats[interaction.guild.id];
+    const guildStats = globals.get("stats")[interaction.guild.id];
     if (!guildStats) {
       return interaction.reply("This server has no statistics yet!");
     }
@@ -100,9 +101,9 @@ module.exports = {
     for (const r of outputArray) {
       await interaction.followUp({
         content: `\`\`\`ansi\n${r}\n\`\`\``,
-        ephemeral: false
+        ephemeral: false,
       });
     }
     return null;
-  }
+  },
 };
