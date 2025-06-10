@@ -70,7 +70,8 @@ module.exports = {
 
     collector.on("collect", async (i) => {
       /* eslint-disable-next-line prefer-destructuring */
-      userStats.name = i.values[0];
+      const [selectedName] = i.values;
+      userStats.name = selectedName;
       userStats.customSetName = true;
 
       await i.update({

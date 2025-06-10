@@ -32,7 +32,10 @@ module.exports = {
   },
 
   getLevelName: (level) => {
-    const nameLevel = Math.floor(level / 10) + 1;
+    let nameLevel = Math.floor(level / 10) + 1;
+    if (!nameLevel) {
+      [nameLevel] = ranks.slice(-1);
+    }
     return `${ranks[nameLevel]}\u001b[0m`;
   },
 
@@ -65,6 +68,8 @@ module.exports = {
   getTimeInSeconds: () => Math.floor(Date.now() / 1000),
 
   getTitle: (stats) => {
+    console.log(stats.name);
+    console.log(stats.name.includes("undefined"));
     if (!stats.name || stats.name.includes("undefined")) {
       const [lastName] = stats.unlockedNames.slice(-1);
       stats.name = lastName;
