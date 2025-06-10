@@ -68,8 +68,6 @@ module.exports = {
   getTimeInSeconds: () => Math.floor(Date.now() / 1000),
 
   getTitle: (stats) => {
-    console.log(stats.name);
-    console.log(stats.name.includes("undefined"));
     if (!stats.name || stats.name.includes("undefined")) {
       const [lastName] = stats.unlockedNames.slice(-1);
       stats.name = lastName;
