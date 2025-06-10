@@ -72,7 +72,6 @@ module.exports = {
   getTitle: (stats) => {
     if (!stats.name || stats.name.includes("undefined")) {
       const [lastName] = stats.unlockedNames.slice(-1);
-      console.log(lastName);
       stats.name = lastName;
     }
 
