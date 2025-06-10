@@ -31,13 +31,20 @@ async function handleClientReady(c) {
 
   /* eslint-disable line-comment-position */
   setInterval(
-    globals.set("botUptime", globals.get("botUptime") + 10),
+    () => {
+      globals.set("botUptime", globals.get("botUptime") + 10);
+    },
     getTime(10) // 10 seconds
   );
   setInterval(checkBirthdays, getTime(0, 15)); // 15 minutes
   setInterval(checkFortniteShop, getTime(0, 15)); // 15 minutes
   setInterval(checkMinecraftServer, getTime(5)); // 5 seconds
-  setInterval(globals.set("splash", getNewSplash()), getTime(0, 30)); // 30 minutes
+  setInterval(
+    () => {
+      globals.set("splash", getNewSplash());
+    },
+    getTime(0, 30)
+  ); // 30 minutes
   setInterval(checkVoiceChannels, getTime(15)); // 15 seconds
   setInterval(saveStats, getTime(0, 3)); // 3 minutes
   setInterval(backupStats, getTime(0, 15)); // 15 minutes

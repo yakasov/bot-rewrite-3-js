@@ -10,7 +10,7 @@ const loadedStats = require("./resources/stats.json");
 const { token } = require("./resources/config.json");
 
 const { generateRollTable } = require("./util/rollTableGenerator.js");
-const { globals } = require("./util/globals.js");
+const globals = require("./util/globals.js");
 const { initialSetup } = require("./util/setup.js");
 const { loadCommands } = require("./util/commandLoader.js");
 const { messageSuperPatch } = require("./util/messageSuperPatch.js");

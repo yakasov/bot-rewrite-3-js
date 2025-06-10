@@ -10,7 +10,8 @@ const { DISCORD_ID_LENGTH } = require("../consts.js");
 const globals = require("../globals.js");
 
 function updateScoreValue(guildId, userId) {
-  const userStats = calculateExperience(globals.get("stats")[guildId][userId]);
+  const userStats = globals.get("stats")[guildId][userId];
+  calculateExperience(userStats);
 
   for (
     let rankIndex = 0;
