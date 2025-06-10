@@ -33,8 +33,10 @@ module.exports = {
 
   getLevelName: (level) => {
     let nameLevel = Math.floor(level / 10) + 1;
-    if (!nameLevel) {
-      [nameLevel] = ranks.slice(-1);
+    const highestKey = Object.keys(ranks)
+      .slice(-1);
+    if (nameLevel > highestKey) {
+      nameLevel = highestKey;
     }
     return `${ranks[nameLevel]}\u001b[0m`;
   },
@@ -70,6 +72,7 @@ module.exports = {
   getTitle: (stats) => {
     if (!stats.name || stats.name.includes("undefined")) {
       const [lastName] = stats.unlockedNames.slice(-1);
+      console.log(lastName);
       stats.name = lastName;
     }
 
