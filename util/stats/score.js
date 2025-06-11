@@ -36,7 +36,7 @@ function updateScoreValue(guildId, userId) {
 function updateScores() {
   /*
    * This fixes a circular dependency
-   * I really don't like this fix
+   * ... not a huge fan, though
    */
   const { addToStats } = require("./stats.js");
 
@@ -46,6 +46,7 @@ function updateScores() {
       .filter(
         (id) => id.length === DISCORD_ID_LENGTH
       );
+      
     for (const userId of userIds) {
       const userStats = stats[guildId][userId];
       addToStats({

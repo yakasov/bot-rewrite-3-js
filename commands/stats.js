@@ -4,7 +4,7 @@ const { SlashCommandBuilder } = require("discord.js");
 const { generateTable } = require("../util/tableGenerator.js");
 const {
   formatTime,
-  getNicknameInteraction,
+  getNicknameFromInteraction,
   getRequiredExperience,
   getLevelName,
   getTitle,
@@ -26,7 +26,7 @@ function buildTableData(topScores, guildStats, interaction) {
   return topScores.slice(0, TOP_SCORES_N)
     .map((a, i) => ({
       "#": i + 1,
-      Name: getNicknameInteraction(interaction, a[0], true),
+      Name: getNicknameFromInteraction(interaction, a[0], true),
       Level: `${guildStats[a[0]].level} (${guildStats[a[0]].levelExperience}/${getRequiredExperience(guildStats[a[0]].level)} XP)`,
       Msgs: guildStats[a[0]].messages,
       "Voice Time": formatTime(guildStats[a[0]].voiceTime),
@@ -42,7 +42,7 @@ function formatUserRankingLine(topScores, guildStats, interaction) {
   if (!userRanking) {
     return "";
   }
-  return `\nYour ranking (${getNicknameInteraction(
+  return `\nYour ranking (${getNicknameFromInteraction(
     interaction,
     userRanking[0]
   )}): #${userRanking[2] + 1} (${getLevelName(
