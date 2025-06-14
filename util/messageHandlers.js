@@ -5,12 +5,12 @@ const { EmbedBuilder } = require("discord.js");
 const { botResponseChance } = require("../resources/config.json");
 const chanceResponses = require("../resources/chanceResponses.json");
 const responses = require("../resources/responses.json");
-const { getNicknameMsg } = require("../util/common.js");
+const { getNicknameFromMessage } = require("../util/common.js");
 const { THIS_ID_IS_ALWAYS_LATE_TELL_HIM_OFF } = require("./consts.js");
 const globals = require("./globals.js");
 
 async function swapTwitterLinks(msg) {
-  const content = `${getNicknameMsg(msg)} sent:\n${msg.content
+  const content = `${getNicknameFromMessage(msg)} sent:\n${msg.content
     .replace("https://x.com/", "https://fixupx.com/")
     .replace("https://twitter.com/", "https://fxtwitter.com/")}`;
 
@@ -63,7 +63,7 @@ async function checkMessageResponse(msg) {
   async function f(k, v) {
     let res = v;
     if (res.includes("{AUTHOR}")) {
-      res = res.replace("{AUTHOR}", getNicknameMsg(msg));
+      res = res.replace("{AUTHOR}", getNicknameFromMessage(msg));
     }
 
     if (res.includes("{FOLLOWING}")) {
@@ -79,7 +79,7 @@ async function checkMessageResponse(msg) {
           .fetch({
             limit: 2,
           })
-          .then((c) => getNicknameMsg([...c.values()].pop()));
+          .then((c) => getNicknameFromMessage([...c.values()].pop()));
       }
 
       const following = msg.content.toLowerCase()
@@ -89,7 +89,7 @@ async function checkMessageResponse(msg) {
       res = res.replace(
         "{FOLLOWING}",
         lastMsg || !following.trim()
-          ? (lastMsg ?? getNicknameMsg(msg))
+          ? (lastMsg ?? getNicknameFromMessage(msg))
           : following.trim()
       );
     }

@@ -4,7 +4,7 @@ const { MessageFlags, SlashCommandBuilder } = require("discord.js");
 const {
   formatTime,
   getLevelName,
-  getNicknameInteraction,
+  getNicknameFromInteraction,
   getRequiredExperience,
   getTitle,
 } = require("../util/common.js");
@@ -22,7 +22,7 @@ function findUserStatsAndRank(guildStats, userId) {
 }
 
 function formatProfileOutput(interaction, userStats, allUserStats, rank) {
-  return `=== Profile for ${getNicknameInteraction(
+  return `=== Profile for ${getNicknameFromInteraction(
     interaction,
     userStats[0]
   )}, #${rank} on server ===\n    Messages: ${
@@ -91,7 +91,7 @@ module.exports = {
     );
 
     await interaction.followUp(
-      `Showing profile for ${getNicknameInteraction(
+      `Showing profile for ${getNicknameFromInteraction(
         interaction,
         userStats[0]
       )}...`

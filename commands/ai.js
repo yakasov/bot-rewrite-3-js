@@ -3,7 +3,7 @@
 const { SlashCommandBuilder } = require("discord.js");
 const OpenAI = require("openai");
 const fs = require("fs");
-const { formatMsgs } = require("../util/common.js");
+const { formatMessages } = require("../util/common.js");
 const { openaiToken, aiChannels } = require("../resources/config.json");
 const {
   AI_MAX_TOKENS,
@@ -27,7 +27,7 @@ let conversation = [initialMessage];
 function handleAIError(err, interaction, attempts, timestamp) {
   fs.writeFile(
     `./logs/ai-${interaction.user.id}-${timestamp}-${attempts}.txt`,
-    formatMsgs(err),
+    formatMessages(err, conversation),
     "utf8",
     () => {
       // No callback
