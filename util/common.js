@@ -3,15 +3,6 @@
 const ranks = require("../resources/ranks.json");
 const { statsConfig } = require("../resources/config.json");
 
-function formatMessages(err, messages) {
-  // Used for AI logging
-  let string = `${err}\n\n`;
-  messages.forEach((message) => {
-    string += `Role: ${message.role}\nContent: ${message.content}\n\n`;
-  });
-  return string;
-}
-
 function formatTime(seconds) {
   const date = new Date(null);
   date.setSeconds(seconds);
@@ -77,7 +68,6 @@ function getTitle(stats) {
 }
 
 module.exports = {
-  formatMessages,
   formatTime,
   getLevelName,
   getNicknameFromInteraction,
