@@ -29,7 +29,6 @@ async function getFullSet(set) {
 }
 
 function setFilter(set, rules) {
-
   /*
    * Rules will be a dictionary
    * e.g.
@@ -45,9 +44,9 @@ function setFilter(set, rules) {
   // This can definitely be improved
   rules.forEach((rule) => {
     returnCache = returnCache.filter((c) =>
-      (c && c[rule.k] && rule.t === "includes"
+      c && c[rule.k] && rule.t === "includes"
         ? filterIncludes(c[rule.k], rule.v)
-        : filterIs(c[rule.k], rule.v)));
+        : filterIs(c[rule.k], rule.v));
   });
 
   return returnCache;
@@ -86,7 +85,7 @@ async function convertForCache(card) {
     set_name: card.set_name,
     toughness: card.toughness,
     type_line: card.type_line ?? card.card_faces[0].type_line,
-    url: card.scryfall_uri
+    url: card.scryfall_uri,
   };
 }
 
@@ -95,7 +94,7 @@ async function combineImages(card) {
 
   const filePaths = await Promise.all([
     downloadImage(card, 0, baseFilePath),
-    downloadImage(card, 1, baseFilePath)
+    downloadImage(card, 1, baseFilePath),
   ]);
   const img = await joinImages(filePaths, { direction: "horizontal" });
   await img.toFile(`${baseFilePath}.jpg`);
@@ -105,7 +104,6 @@ async function combineImages(card) {
 }
 
 function downloadImage(card, i, filePath) {
-
   /*
    * Only required when a card is reversible
    * Then we need to download the cards to merge them
@@ -114,7 +112,7 @@ function downloadImage(card, i, filePath) {
   return new Promise((resolve, reject) => {
     const file = fs.createWriteStream(`${filePath}-part${i}`);
     https
-      .get(card.card_faces[i].image_uris.normal, (res) => {
+      .get(card.card_faces[i].image_uris.large, (res) => {
         res.pipe(file);
 
         file.on("finish", () => {
@@ -135,13 +133,19 @@ function downloadImage(card, i, filePath) {
 async function deleteFiles(filePaths) {
   // For deleting merge image parts
   await Promise.all(
-    filePaths.forEach((filePath) => {
+    filePaths.map((filePath) => new Promise((resolve) => {
       try {
-        fs.unlink(filePath);
+        fs.unlink(filePath, (err) => {
+          if (err) {
+            console.log(err);
+          }
+          resolve();
+        });
       } catch (err) {
         console.error(`Failed to delete ${filePath}:`, err);
+        resolve();
       }
-    })
+    }))
   );
 }
 
@@ -154,8 +158,9 @@ function lucky(i) {
 }
 
 module.exports = {
+  combineImages,
   getFullSet,
   getRandom,
   lucky,
-  setFilter
+  setFilter,
 };
