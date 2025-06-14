@@ -9,6 +9,9 @@ const { getNicknameFromMessage } = require("../util/common.js");
 const { THIS_ID_IS_ALWAYS_LATE_TELL_HIM_OFF } = require("./consts.js");
 const globals = require("./globals.js");
 
+// Move to consts?
+const steamLinkRegex = /https:\/\/steamcommunity\.com\S*/gu;
+
 async function swapTwitterLinks(msg) {
   const content = `${getNicknameFromMessage(msg)} sent:\n${msg.content
     .replace("https://x.com/", "https://fixupx.com/")
@@ -25,6 +28,16 @@ async function swapTwitterLinks(msg) {
     .catch(console.error);
 }
 
+function addSteamDirectLink(msg) {
+  const steamLink =
+      msg.content.split(" ")
+        .find((m) => steamLinkRegex.test(m)) ?? msg.content;
+  msg.channel.send(
+    /* eslint-disable-next-line max-len */
+    `Embedded link: https://yakasov.github.io/pages/miscellaneous/steam_direct.html?page=${encodeURIComponent(steamLink)}`
+  );
+}
+
 function replyWithHypeMessage(msg) {
   const hypeEntries = Object.entries(chanceResponses)
     .filter(([key]) =>
@@ -35,6 +48,10 @@ function replyWithHypeMessage(msg) {
 }
 
 async function checkMessageResponse(msg) {
+  if (steamLinkRegex.test(msg.content)) {
+    addSteamDirectLink(msg);
+  }
+
   // Swap Twitter/X URLs for proper embedding ones
   if (
     ["https://x.com/", "https://twitter.com/"].find((l) =>
