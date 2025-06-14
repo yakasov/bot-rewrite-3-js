@@ -1,9 +1,10 @@
 "use strict";
 
 const fs = require("fs");
-const { SlashCommandBuilder } = require("discord.js");
+const { MessageFlags, SlashCommandBuilder } = require("discord.js");
 const { generateRollTable } = require("../util/rollTableGenerator.js");
 const chanceResponses = require("../resources/chanceResponses.json");
+const globals = require("../util/globals.js");
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -39,17 +40,17 @@ module.exports = {
         if (!chanceResponses[key] && !(string && chance && type)) {
           return interaction.reply({
             content: "Key does not exist and not enough values provided.",
-            ephemeral: true
+            flags: MessageFlags.Ephemeral,
           });
         }
 
         chanceResponses[key] = {
           chance: chance ?? chanceResponses[key].chance,
           string: string ?? chanceResponses[key].string,
-          type: type ?? chanceResponses[key].type
+          type: type ?? chanceResponses[key].type,
         };
 
-        globalThis.rollTable = generateRollTable(chanceResponses);
+        globals.set("rollTable", generateRollTable(chanceResponses));
 
         fs.writeFileSync(
           "./resources/chanceResponses.json",
@@ -64,7 +65,7 @@ module.exports = {
 
     return interaction.reply({
       content: "You are not an admin user!",
-      ephemeral: true
+      flags: MessageFlags.Ephemeral,
     });
-  }
+  },
 };

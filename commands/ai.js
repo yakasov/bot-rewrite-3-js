@@ -3,7 +3,6 @@
 const { SlashCommandBuilder } = require("discord.js");
 const OpenAI = require("openai");
 const fs = require("fs");
-const { formatMsgs } = require("../util/common.js");
 const { openaiToken, aiChannels } = require("../resources/config.json");
 const {
   AI_MAX_TOKENS,
@@ -27,7 +26,7 @@ let conversation = [initialMessage];
 function handleAIError(err, interaction, attempts, timestamp) {
   fs.writeFile(
     `./logs/ai-${interaction.user.id}-${timestamp}-${attempts}.txt`,
-    formatMsgs(err),
+    formatMessages(err, conversation),
     "utf8",
     () => {
       // No callback
@@ -39,6 +38,14 @@ function handleAIError(err, interaction, attempts, timestamp) {
       `\nAI Error Type: ${err.type}, message: ${err.error.message}`
     );
   }
+}
+
+function formatMessages(err, messages) {
+  let string = `${err}\n\n`;
+  messages.forEach((message) => {
+    string += `Role: ${message.role}\nContent: ${message.content}\n\n`;
+  });
+  return string;
 }
 
 function shortenConversation() {

@@ -1,5 +1,7 @@
 "use strict";
 
+const globals = require("../globals");
+
 const baseStats = {
   achievementTracking: {},
   achievements: [],
@@ -16,26 +18,28 @@ const baseStats = {
   previousVoiceTime: 0,
   totalExperience: 0,
   unlockedNames: [],
-  voiceTime: 0
+  voiceTime: 0,
 };
 
 function initialiseStats(guildId, userId) {
-  if (!globalThis.stats[guildId][userId]) {
-    globalThis.stats[guildId][userId] = structuredClone(baseStats);
+  const stats = globals.get("stats");
+  const userStats = stats[guildId][userId];
+  if (!userStats) {
+    stats[guildId][userId] = structuredClone(baseStats);
     return null;
   }
 
   Object.entries(baseStats)
     .forEach(([k, v]) => {
-      if (globalThis.stats[guildId][userId][k] === undefined) {
-        globalThis.stats[guildId][userId][k] = v;
+      if (userStats[k] === undefined) {
+        userStats[k] = v;
       }
     });
 
-  Object.keys(globalThis.stats[guildId][userId])
+  Object.keys(userStats)
     .forEach((k) => {
       if (baseStats[k] === undefined) {
-        delete globalThis.stats[guildId][userId][k];
+        delete userStats[k];
       }
     });
   return null;
@@ -43,5 +47,5 @@ function initialiseStats(guildId, userId) {
 
 module.exports = {
   baseStats,
-  initialiseStats
+  initialiseStats,
 };

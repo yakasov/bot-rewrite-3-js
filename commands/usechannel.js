@@ -1,6 +1,7 @@
 "use strict";
 
-const { SlashCommandBuilder } = require("discord.js");
+const { MessageFlags, SlashCommandBuilder } = require("discord.js");
+const globals = require("../util/globals");
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -12,7 +13,7 @@ module.exports = {
       interaction.user === interaction.client.application.owner ||
       interaction.user.id === (await interaction.guild.fetchOwner()).user.id
     ) {
-      globalThis.stats[interaction.guild.id].rankUpChannel =
+      globals.get("stats")[interaction.guild.id].rankUpChannel =
         interaction.channel.id;
 
       return interaction.reply(
@@ -22,7 +23,7 @@ module.exports = {
 
     return interaction.reply({
       content: "You are not an admin user!",
-      ephemeral: true
+      flags: MessageFlags.Ephemeral,
     });
-  }
+  },
 };

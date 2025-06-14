@@ -3,6 +3,7 @@
 const { SlashCommandBuilder } = require("discord.js");
 const moment = require("moment-timezone");
 const birthdays = require("../resources/birthdays.json");
+const globals = require("../util/globals");
 
 function parseBirthday(date) {
   return moment(date, "DD/MM/YYYY");
@@ -49,7 +50,7 @@ module.exports = {
     .setName("nextbirthdays")
     .setDescription("See when the next five birthdays are."),
   execute(interaction) {
-    const { currentDate } = globalThis;
+    const currentDate = globals.get("currentDate");
     let output = getNextBirthdays(currentDate, 5);
 
     const year = currentDate.year();

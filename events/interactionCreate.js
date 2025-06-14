@@ -1,8 +1,10 @@
 "use strict";
 
+const { MessageFlags } = require("discord.js");
+
 const reply = {
   content: "There was an error while executing this command!",
-  ephemeral: true
+  flags: MessageFlags.Ephemeral
 };
 
 async function handleInteractionCreate(interaction) {

@@ -2,6 +2,7 @@
 
 const { SlashCommandBuilder } = require("discord.js");
 const achievements = require("../resources/achievements.json");
+const globals = require("../util/globals");
 
 function formatAchievementLine(achievement, unlocked) {
   const color = unlocked ? 32 : 31;
@@ -39,11 +40,11 @@ module.exports = {
   async execute(interaction) {
     const guildId = interaction.guild.id;
     const userId = interaction.user.id;
-    const stats = globalThis.stats[guildId]?.[userId];
+    const userStats = globals.get("stats")[guildId]?.[userId];
 
-    const unlocks = stats.achievements;
+    const unlocks = userStats.achievements;
     const message = formatAchievementsMessage(unlocks, achievements);
 
     await interaction.reply(message);
-  }
+  },
 };

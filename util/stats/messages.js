@@ -1,17 +1,18 @@
 "use strict";
 
+const globals = require("../globals");
+
 async function sendMessage(messageArgs) {
-  const [
-    guildId,
+  const [guildId,
     userId,
     subject,
     accolade,
-    title
-  ] = messageArgs;
+    title] = messageArgs;
   const guildObject = await globalThis.client.guilds.fetch(guildId);
   const userObject = guildObject.members.cache
     .filter((m) => m.id === userId)
     .first();
+  const guildStats = globals.get("stats")[guildId];
 
   // Fix for .displayName on empty user object
   if (!userObject) {
@@ -28,9 +29,7 @@ async function sendMessage(messageArgs) {
     return;
   }
 
-  const channel = await guildObject.channels.fetch(
-    globalThis.stats[guildId].rankUpChannel
-  );
+  const channel = await guildObject.channels.fetch(guildStats.rankUpChannel);
 
   /*
    * Channel can be fetched with an undefined snowflake
@@ -41,7 +40,7 @@ async function sendMessage(messageArgs) {
    * Prestiging / ranking up can still happen silently without
    * a rankUpChannel being explicitly set.
    */
-  if (channel && globalThis.stats[guildId].rankUpChannel) {
+  if (channel && guildStats.rankUpChannel) {
     channel.send(
       `## ${subject}!\n\`\`\`ansi\n${userObject.displayName} has reached ${accolade} (${title})!\`\`\``
     );
@@ -49,5 +48,5 @@ async function sendMessage(messageArgs) {
 }
 
 module.exports = {
-  sendMessage
+  sendMessage,
 };

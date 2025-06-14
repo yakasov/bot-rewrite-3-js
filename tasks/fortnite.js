@@ -5,7 +5,7 @@ const { mainGuildId, fortniteChannelId } = require("../resources/config.json");
 let currentSongs = [];
 const emoteFlags = {
   "Bring It Around": false,
-  "Get Griddy": false
+  "Get Griddy": false,
 };
 
 async function getFortniteShop() {
@@ -22,6 +22,10 @@ async function getFortniteShop() {
   }
 }
 
+function sortSongArray(songA, songB) {
+  return songA.split(" - ")[1].localeCompare(songB.split(" - ")[1]);
+};
+
 exports.run = async (client) => {
   const data = await getFortniteShop();
   const songs = data.entries
@@ -37,7 +41,7 @@ exports.run = async (client) => {
   const emoteMessages = {
     "Bring It Around":
       "**The Homer Simpson dance is now in the Fortnite shop!**",
-    "Get Griddy": "**Get Griddy is now in the Fortnite shop!**"
+    "Get Griddy": "**Get Griddy is now in the Fortnite shop!**",
   };
 
   for (const emote in emoteFlags) {
@@ -56,17 +60,21 @@ exports.run = async (client) => {
 
   const newSongs = songs.filter((s) => !currentSongs.includes(s));
   const oldSongs = currentSongs.filter((s) => !songs.includes(s));
+
+  newSongs.sort(sortSongArray);
+  oldSongs.sort(sortSongArray);
+
   if (newSongs.length > 0 || oldSongs.length > 0) {
     currentSongs = songs;
     if (oldSongs.length > 0) {
       fortniteChannel.send(
-        `__Removed Fortnite Jam Tracks:__\n${oldSongs.join("\n")}`
+        `# Removed Fortnite Jam Tracks\n${oldSongs.join("\n")}`
       );
     }
 
     if (newSongs.length > 0) {
       fortniteChannel.send(
-        `__New Fortnite Jam Tracks:__\n${newSongs.join("\n")}`
+        `# New Fortnite Jam Tracks\n${newSongs.join("\n")}`
       );
     }
   }
