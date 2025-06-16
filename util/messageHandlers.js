@@ -234,7 +234,7 @@ async function sendScryfallDoubleSidedCard(message) {
   const cardName = embedData.title;
   const cardDetails = await Cards.byName(cardName);
   
-  if (cardDetails.card_faces.length === 2) {
+  if (cardDetails.card_faces.length === 2 && cardDetails.card_faces[0].image_uris) {
     const filePath = await combineImages(cardDetails);
     const attachment = new AttachmentBuilder(`${filePath}.jpg`);
 
