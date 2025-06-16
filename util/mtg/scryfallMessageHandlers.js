@@ -4,40 +4,39 @@ const { Cards } = require("scryfall-api");
 const { AttachmentBuilder, EmbedBuilder } = require("discord.js");
 const { combineImages } = require("./boosterHelper.js");
 
-const scryfallPattern = /\[\[(?:[^\]]+)\]\]/gu;
+const scryfallPattern = /\[\[(?<card>[^|\]]+?)(?:\|{1,2}(?<set>[^\]]+))?\]\]/gu;
 
 async function checkScryfallMessage(message) {
-  const matches = message.content.match(scryfallPattern);
+  let match = null;
+  while ((match = scryfallPattern.exec(message.content)) !== null) {
+    const isImage = match.groups.card[0] === "!";
+    const cardName = match.groups.card.substring(Number(isImage));
+    const isSpecificSet = match.groups.set;
 
-  if (matches) {
-    for (const match of matches) {
-      const isImage = match.includes("[[!");
-      const cardName = match
-        .substring(0, match.length - 2)
-        .substring(2 + isImage);
+    const results = await Cards.autoCompleteName(cardName);
 
-      const results = await Cards.autoCompleteName(cardName);
-
-      if (!results.length) {
-        scryfallNoCardFound(message, cardName);
-      } else if (results.length === 1) {
-        await scryfallCardFound(message, results[0]);
-      } else {
-        scryfallShowCardList(message, results);
-      }
+    if (!results.length) {
+      scryfallNoCardFound(message, cardName);
+    } else if (results.length === 1) {
+      await scryfallCardFound(message, results[0], isSpecificSet);
+    } else {
+      scryfallShowCardList(message, results);
     }
   }
 }
 
 function scryfallNoCardFound(message, cardName) {
   const embed = new EmbedBuilder()
-    .setDescription(`No card found for "${cardName}"`);
+    .setDescription(
+      `No card found for "${cardName}"`
+    );
 
   message.channel.send({ embeds: [embed] });
 }
 
-async function scryfallCardFound(message, cardName) {
-  const cardDetails = await Cards.byName(cardName);
+async function scryfallCardFound(message, cardName, set) {
+  const cardDetails = await Cards.byName(cardName, set);
+  const lowestHighestData = await getLowestHighestData(cardDetails.oracle_id);
 
   const [isImageLocal, imageUrl] = await getImageUrl(cardDetails);
   const attachment = isImageLocal
@@ -59,7 +58,11 @@ async function scryfallCardFound(message, cardName) {
         ? `attachment://${imageUrl.split("/")
           .pop()}.jpg`
         : imageUrl
-    );
+    )
+    .addFields({
+      name: "Prices",
+      value: `Lowest: ${lowestHighestData.lowestSet} @ $${lowestHighestData.lowestPrice}\nHighest: ${lowestHighestData.highestSet} @ $${lowestHighestData.highestPrice}`,
+    });
 
   message.channel.send({
     content: cardDetails.scryfall_uri.replace("?utm_source=api", ""),
@@ -68,8 +71,46 @@ async function scryfallCardFound(message, cardName) {
   });
 }
 
+async function getLowestHighestData(oracleId) {
+  const oracleData = await fetch(
+    `https://api.scryfall.com/cards/search?order=released&q=oracleid%3A${oracleId}&unique=prints`
+  )
+    .then((r) => r.json());
+  const lowestHighestData = {
+    highestPrice: 0,
+    highestSet: "",
+    lowestPrice: 10000,
+    lowestSet: "",
+  };
+  Object.values(oracleData.data)
+    .forEach((cardData) => {
+      const lowestPrice = Math.min(
+        parseFloat(cardData.prices.usd ?? 10000),
+        parseFloat(cardData.prices.usd_foil ?? 10000)
+      );
+      const highestPrice = Math.max(
+        parseFloat(cardData.prices.usd ?? 0),
+        parseFloat(cardData.prices.usd_foil ?? 0)
+      );
+      if (lowestPrice < lowestHighestData.lowestPrice) {
+        lowestHighestData.lowestPrice = lowestPrice;
+        lowestHighestData.lowestSet = cardData.set;
+      }
+
+      if (highestPrice > lowestHighestData.highestPrice) {
+        lowestHighestData.highestPrice = highestPrice;
+        lowestHighestData.highestSet = cardData.set;
+      }
+    });
+
+  return lowestHighestData;
+}
+
 async function getImageUrl(cardDetails) {
-  if (cardDetails.card_faces?.length === 2 && cardDetails.card_faces[0].image_uris) {
+  if (
+    cardDetails.card_faces?.length === 2 &&
+    cardDetails.card_faces[0].image_uris
+  ) {
     return [true, await combineImages(cardDetails)];
   }
 
