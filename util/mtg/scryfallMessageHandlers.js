@@ -1,27 +1,59 @@
 "use strict";
 
 const { Cards } = require("scryfall-api");
-const { AttachmentBuilder, EmbedBuilder } = require("discord.js");
+const {
+  ActionRowBuilder,
+  AttachmentBuilder,
+  EmbedBuilder,
+  StringSelectMenuBuilder,
+  StringSelectMenuOptionBuilder,
+} = require("discord.js");
 const { combineImages } = require("./boosterHelper.js");
 
 const scryfallPattern = /\[\[(?<card>[^|\]]+?)(?:\|{1,2}(?<set>[^\]]+))?\]\]/gu;
 
 async function checkScryfallMessage(message) {
+  const promises = [];
   let match = null;
+
   while ((match = scryfallPattern.exec(message.content)) !== null) {
     const isImage = match.groups.card[0] === "!";
     const cardName = match.groups.card.substring(Number(isImage));
     const isSpecificSet = match.groups.set;
 
-    const results = await Cards.autoCompleteName(cardName);
+    promises.push(scryfallGetCard(message, cardName, isSpecificSet));
+  }
 
-    if (!results.length) {
-      scryfallNoCardFound(message, cardName);
-    } else if (results.length === 1) {
-      await scryfallCardFound(message, results[0], isSpecificSet);
-    } else {
-      scryfallShowCardList(message, results);
-    }
+  await Promise.all(promises);
+}
+
+async function scryfallGetCard(
+  message,
+  cardName,
+  isSpecificSet = false,
+  fromSelectMenu = false
+) {
+  const results = await Cards.autoCompleteName(cardName);
+
+  /*
+   * An explanation for 'fromSelectMenu':
+   * basically, if we get multiple cards from Scryfall (eg when searching 'pan')
+   * then the user is given a choice of the 20 best matching cards (Scryfall limit).
+   *
+   * When the user picks a choice that is _also_ ambiguous (eg 'pandemonium'),
+   * we don't want to show them another SelectMenu - otherwise they'll
+   * forever loop trying to select the ambiguous card.
+   *
+   * If we call this function from scryfallShowCardList,
+   * _always_ go straight to scryfallCardFound, using the first result if multiple.
+   */
+
+  if (!results.length) {
+    scryfallNoCardFound(message, cardName);
+  } else if (results.length === 1 || fromSelectMenu) {
+    await scryfallCardFound(message, results[0], isSpecificSet);
+  } else {
+    await scryfallShowCardList(message, cardName, results);
   }
 }
 
@@ -44,7 +76,7 @@ async function scryfallCardFound(message, cardName, set) {
     : null;
   const footer = `${
     cardDetails.legalities.commander === "legal" ? "Legal" : "Non-legal"
-  } // $${cardDetails.prices.usd} // ${
+  } // $${cardDetails.prices.usd ?? "???"} // ${
     cardDetails.rarity.charAt(0)
       .toUpperCase() + cardDetails.rarity.slice(1)
   }`;
@@ -117,20 +149,50 @@ async function getImageUrl(cardDetails) {
   return [false, cardDetails.image_uris.large];
 }
 
-function scryfallShowCardList(message, results) {
-  let embedString = "";
-  results.forEach((c, i) => {
-    embedString += `${i + 1}. ${c}\n`;
+async function scryfallShowCardList(message, cardName, results) {
+  const selectMenu = new StringSelectMenuBuilder()
+    .setCustomId("scryfall_list_select")
+    .setPlaceholder("Choose a card")
+    .addOptions(
+      results.map((card, i) =>
+        new StringSelectMenuOptionBuilder()
+          .setLabel(`${i + 1}. ${card}`)
+          .setValue(card))
+    );
+
+  const row = new ActionRowBuilder()
+    .addComponents(selectMenu);
+
+  const multipleCardsMessage = await message.channel.send({
+    components: [row],
+    content: `Multiple cards found for "${cardName}"!`,
   });
 
-  const embed = new EmbedBuilder()
-    .setTitle("Scryfall Cards")
-    .addFields({
-      name: `Returned ${results.length} cards:`,
-      value: embedString,
+  const filter = (interaction) =>
+    interaction.isStringSelectMenu() &&
+    interaction.user.id === message.author.id;
+
+  try {
+    const collected = await multipleCardsMessage.awaitMessageComponent({
+      filter,
+      time: 30_000,
     });
 
-  message.channel.send({ embeds: [embed] });
+    const [selectedValue] = collected.values;
+    await collected.update({
+      components: [],
+      content: `Fetching ${selectedValue}...`,
+    });
+
+    await scryfallGetCard(message, selectedValue, false, true);
+    await multipleCardsMessage.delete()
+      .catch((err) => console.error(err));
+  } catch (err) {
+    await multipleCardsMessage.edit({
+      components: [],
+      content: "No selection made in time.",
+    });
+  }
 }
 
 module.exports = {
