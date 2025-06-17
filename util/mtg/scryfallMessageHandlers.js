@@ -68,7 +68,6 @@ function scryfallNoCardFound(message, cardName) {
 
 async function scryfallCardFound(message, cardName, set) {
   const cardDetails = await Cards.byName(cardName, set);
-  const lowestHighestData = await getLowestHighestData(cardDetails.oracle_id);
 
   const [isImageLocal, imageUrl] = await getImageUrl(cardDetails);
   const attachment = isImageLocal
@@ -90,11 +89,19 @@ async function scryfallCardFound(message, cardName, set) {
         ? `attachment://${imageUrl.split("/")
           .pop()}.jpg`
         : imageUrl
-    )
-    .addFields({
+    );
+    
+
+  const oracleId = cardDetails.oracle_id ?? cardDetails.card_faces[0].oracle_id;
+  if (oracleId) {
+    const lowestHighestData = await getLowestHighestData(oracleId);
+    embed.addFields({
       name: "Prices",
       value: `Lowest: ${lowestHighestData.lowestSet} @ $${lowestHighestData.lowestPrice}\nHighest: ${lowestHighestData.highestSet} @ $${lowestHighestData.highestPrice}`,
     });
+  } else {
+    console.error(`Couldn't find an Oracle ID for card named ${cardDetails.name}, ID ${cardDetails.id}!`);
+  }
 
   message.channel.send({
     content: cardDetails.scryfall_uri.replace("?utm_source=api", ""),
@@ -188,6 +195,7 @@ async function scryfallShowCardList(message, cardName, results) {
     await multipleCardsMessage.delete()
       .catch((err) => console.error(err));
   } catch (err) {
+    console.error(err);
     await multipleCardsMessage.edit({
       components: [],
       content: "No selection made in time.",
