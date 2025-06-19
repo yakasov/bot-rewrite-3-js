@@ -80,9 +80,11 @@ async function scryfallCardFound(message, cardName, set) {
   const attachment = isImageLocal
     ? new AttachmentBuilder(`${imageUrl}.jpg`)
     : null;
+  const foilOnly =
+    cardDetails.prices.usd === null && cardDetails.prices.usd_foil !== null;
   const footer = `${
     cardDetails.legalities.commander === "legal" ? "Legal" : "Non-legal"
-  } // $${cardDetails.prices.usd ?? cardDetails.prices.usd_foil ?? "???"} // ${
+  } // $${cardDetails.prices.usd ?? cardDetails.prices.usd_foil ?? "???"}${foilOnly ? " (F)" : ""} // ${
     cardDetails.rarity.charAt(0)
       .toUpperCase() + cardDetails.rarity.slice(1)
   }`;
