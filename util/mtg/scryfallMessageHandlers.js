@@ -71,7 +71,9 @@ async function scryfallCardFound(message, cardName, set) {
   const cardDetails = await Cards.byName(cardName, set, false);
 
   if (!cardDetails) {
-    return message.channel.send(`Ran into an error fetching ${cardName} for set ${set}!`);
+    return message.channel.send(
+      `Ran into an error fetching ${cardName} for set ${set}!`
+    );
   }
 
   const [isImageLocal, imageUrl] = await getImageUrl(cardDetails);
@@ -80,7 +82,7 @@ async function scryfallCardFound(message, cardName, set) {
     : null;
   const footer = `${
     cardDetails.legalities.commander === "legal" ? "Legal" : "Non-legal"
-  } // $${cardDetails.prices.usd ?? "???"} // ${
+  } // $${cardDetails.prices.usd ?? cardDetails.prices.usd_foil ?? "???"} // ${
     cardDetails.rarity.charAt(0)
       .toUpperCase() + cardDetails.rarity.slice(1)
   }`;
@@ -95,17 +97,23 @@ async function scryfallCardFound(message, cardName, set) {
           .pop()}.jpg`
         : imageUrl
     );
-    
 
   const oracleId = cardDetails.oracle_id ?? cardDetails.card_faces[0].oracle_id;
   if (oracleId) {
     const lowestHighestData = await getLowestHighestData(oracleId);
     embed.addFields({
       name: "Prices",
-      value: `Lowest: ${lowestHighestData.lowestSet} @ $${lowestHighestData.lowestPrice}\nHighest: ${lowestHighestData.highestSet} @ $${lowestHighestData.highestPrice}`,
+      value: `
+Lowest: [${lowestHighestData.lowestSet} @\
+$${lowestHighestData.lowestPrice}](${lowestHighestData.lowestUrl})
+Highest: [${lowestHighestData.highestSet} @\
+$${lowestHighestData.highestPrice}](${lowestHighestData.highestUrl})
+`,
     });
   } else {
-    console.error(`Couldn't find an Oracle ID for card named ${cardDetails.name}, ID ${cardDetails.id}!`);
+    console.error(
+      `Couldn't find an Oracle ID for card named ${cardDetails.name}, ID ${cardDetails.id}!`
+    );
   }
 
   message.channel.send({
@@ -123,8 +131,10 @@ async function getLowestHighestData(oracleId) {
   const lowestHighestData = {
     highestPrice: 0,
     highestSet: "",
+    highestUrl: "",
     lowestPrice: 10000,
     lowestSet: "",
+    lowestUrl: "",
   };
   Object.values(oracleData.data)
     .forEach((cardData) => {
@@ -139,11 +149,19 @@ async function getLowestHighestData(oracleId) {
       if (lowestPrice < lowestHighestData.lowestPrice) {
         lowestHighestData.lowestPrice = lowestPrice;
         lowestHighestData.lowestSet = cardData.set;
+        lowestHighestData.lowestUrl = cardData.scryfall_uri?.replace(
+          "?utm_source=api",
+          ""
+        );
       }
 
       if (highestPrice > lowestHighestData.highestPrice) {
         lowestHighestData.highestPrice = highestPrice;
         lowestHighestData.highestSet = cardData.set;
+        lowestHighestData.highestUrl = cardData.scryfall_uri?.replace(
+          "?utm_source=api",
+          ""
+        );
       }
     });
 
