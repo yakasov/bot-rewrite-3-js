@@ -18,8 +18,9 @@ async function checkScryfallMessage(message) {
 
   while ((match = scryfallPattern.exec(message.content)) !== null) {
     const isImage = match.groups.card[0] === "!";
-    const cardName = match.groups.card.substring(Number(isImage));
-    const isSpecificSet = match.groups.set;
+    const cardName = match.groups.card.substring(Number(isImage))
+      .trim();
+    const isSpecificSet = match.groups.set?.trim();
 
     promises.push(scryfallGetCard(message, cardName, isSpecificSet));
   }
@@ -67,7 +68,11 @@ function scryfallNoCardFound(message, cardName) {
 }
 
 async function scryfallCardFound(message, cardName, set) {
-  const cardDetails = await Cards.byName(cardName, set);
+  const cardDetails = await Cards.byName(cardName, set, false);
+
+  if (!cardDetails) {
+    return message.channel.send(`Ran into an error fetching ${cardName} for set ${set}!`);
+  }
 
   const [isImageLocal, imageUrl] = await getImageUrl(cardDetails);
   const attachment = isImageLocal
