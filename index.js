@@ -1,8 +1,5 @@
 "use strict";
 
-const { initialSetup } = require("./util/setup.js");
-initialSetup();
-
 const { Client, Events, GatewayIntentBits } = require("discord.js");
 const fetch = require("node-fetch");
 const moment = require("moment-timezone");
