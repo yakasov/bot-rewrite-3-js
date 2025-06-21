@@ -8,7 +8,7 @@
   "elevatedPermsAiChannels": ["542034119274790912"],
   "_elevatedPermsAiChannels": "Channel IDs for DALLE and AI4 to run in.",
 
-  "applicationId: "",
+  "applicationId": "",
   "_applicationId": "The application ID of your bot.",
   "mainGuildId": "271300005990296576",
   "bdayChannelId": "500009139853885440",

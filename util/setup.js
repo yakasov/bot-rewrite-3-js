@@ -14,7 +14,7 @@ Please obtain the config.json.template from the GitHub page.`);
     }
 
     console.warn("config.json not found, copying from template...");
-    fs.copyFile("./resources/config.json.template", "./resources/config.json");
+    fs.copyFile("./resources/config.json.template", "./resources/config.json", (err) => console.error(err));
   }
 
   if (!fs.existsSync("./resources/mtg")) {
@@ -38,4 +38,4 @@ Please obtain the config.json.template from the GitHub page.`);
   });
 }
 
-module.exports = { initialSetup };
+initialSetup();

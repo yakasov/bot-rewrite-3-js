@@ -77,7 +77,7 @@ exports.run = async (client, splash) => {
         activityString = `(${players.length}) ${players.join(", ")}`;
       } else {
         // If nobody is online and the splash is already set, don't set it again
-        if (client.user.presence.activities[0].name === splash) {
+        if (client.user.presence.activities[0]?.name === splash) {
           return;
         }
 

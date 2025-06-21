@@ -5,12 +5,14 @@ const globals = require("../util/globals.js");
 const {
   checkMessageResponse,
   checkMessageReactions,
-  checkScryfallMessage,
 } = require("../util/messageHandlers.js");
+const { checkScryfallMessage } = require("../util/mtg/scryfallMessageHandlers");
 const { addToStats } = require("../util/stats");
 
 async function handleMessageCreate(message) {
-  await checkScryfallMessage(message);
+  if (!message.author.bot) {
+    await checkScryfallMessage(message);
+  }
 
   if (message.author.bot || !message.guild) {
     return;

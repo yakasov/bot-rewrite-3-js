@@ -1,14 +1,11 @@
 "use strict";
 
-const { Cards } = require("scryfall-api");
-const { AttachmentBuilder, EmbedBuilder } = require("discord.js");
 const { botResponseChance } = require("../resources/config.json");
 const chanceResponses = require("../resources/chanceResponses.json");
 const responses = require("../resources/responses.json");
 const { getNicknameFromMessage } = require("../util/common.js");
 const { THIS_ID_IS_ALWAYS_LATE_TELL_HIM_OFF } = require("./consts.js");
 const globals = require("./globals.js");
-const { combineImages } = require("./mtg/boosterHelper.js");
 
 // Move to consts?
 const steamLinkRegex = /https:\/\/steamcommunity\.com\S*/gu;
@@ -178,80 +175,7 @@ async function checkMessageReactions(msg) {
   }
 }
 
-async function checkScryfallMessage(message) {
-  if (message.author.id === "268547439714238465") {
-    if (message?.embeds[0]?.data?.description?.includes("Multiple cards match")) {
-      await sendScryfallCardList(message);
-    }
-
-    if (message?.embeds[0]?.data?.title?.includes(" // ")) {
-      await sendScryfallDoubleSidedCard(message);
-    }
-  }
-}
-
-async function sendScryfallCardList(message) {
-  // Check if Scryfall has given a stupid response
-  if (
-    message.author.id === "268547439714238465" &&
-    message?.embeds[0]?.data?.description?.includes("Multiple cards match")
-  ) {
-    const cardName = message.embeds[0].data.description.match(
-      /(?<=Multiple cards match “)(?:.*)(?=”, can you be more specific?)/gu
-    )[0];
-
-    if (cardName.length > 1) {
-      const results = await Cards.autoCompleteName(cardName);
-
-      /*
-       * Sometimes this happens with names like 'miku'
-       * I think the Scryfall bot works for all languages
-       * whereas AutoCompleteName only works for one at a time
-       */
-      if (!results.length) {
-        return;
-      }
-
-      let embedString = "";
-      results.forEach((c, i) => {
-        embedString += `${i + 1}. ${c}\n`;
-      });
-
-      const embed = new EmbedBuilder()
-        .setTitle("Scryfall Cards")
-        .addFields({
-          name: `Returned ${results.length} cards:`,
-          value: embedString,
-        });
-
-      message.channel.send({ embeds: [embed] });
-    }
-  }
-}
-
-async function sendScryfallDoubleSidedCard(message) {
-  const embedData = message.embeds[0].data;
-  const cardName = embedData.title;
-  const cardDetails = await Cards.byName(cardName);
-  
-  if (cardDetails.card_faces.length === 2 && cardDetails.card_faces[0].image_uris) {
-    const filePath = await combineImages(cardDetails);
-    const attachment = new AttachmentBuilder(`${filePath}.jpg`);
-
-    const embed = new EmbedBuilder()
-      .setTitle(cardName)
-      .setURL(embedData.url)
-      .setImage(`attachment://${filePath.split("/")
-        .pop()}.jpg`);
-
-    await message.delete()
-      .catch(console.error);
-    message.channel.send({ embeds: [embed], files: [attachment]  });
-  }
-}
-
 module.exports = {
   checkMessageReactions,
   checkMessageResponse,
-  checkScryfallMessage,
 };
