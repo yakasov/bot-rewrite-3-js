@@ -27,9 +27,11 @@ function formatAchievementsMessage(unlocks, allAchievements) {
     .join("\n");
 
   return `\`\`\`ansi\n===== Achievements =====\n
-    ${normalLines}
-    \n\n===== Secret Achievements =====\n"
-    ${secretLines}
+${normalLines}
+    ${secretLines
+    ? `\n===== Secret Achievements =====\n
+${secretLines}`
+    : ""}
     \`\`\``;
 }
 

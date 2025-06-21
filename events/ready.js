@@ -17,9 +17,9 @@ const {
 
 async function handleClientReady(c) {
   console.log(
-    "Connected and ready to go!\n" +
-      `Current date is ${globals.get("currentDate")}, ` +
-      `logged in as ${c.user.tag}\n`
+    `Current date and time is ${globals.get("currentDate")}, ` +
+      `logged in as ${c.user.tag}\n` +
+      "Connected and ready to go!\n"
   );
 
   checkVoiceChannels();
