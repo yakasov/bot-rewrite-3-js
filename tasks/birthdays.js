@@ -28,12 +28,21 @@ exports.run = async (client, force = false) => {
 
     // Check for members not in server anymore
     if (firstRun.birthdays) {
-      Object.keys(birthdays)
-        .forEach((id) => {
-          if (!guildMembers.some((gm) => gm.id === id)) {
-            console.warn(`${id} is not present in the server!`);
-          }
-        });
+      const promises = [];
+
+      for (const id of Object.keys(birthdays)) {
+        if (!guildMembers.some((gm) => gm.id === id)) {
+          promises.push(client.users.fetch(id)
+            .then((user) => {
+              console.warn(`${id} (${user?.tag || "unknown user"})`);
+            }));
+        }
+      }
+
+      if (promises.length) {
+        console.log(`The following birthday IDs are not present in guild ${guild.id} (${guild.name}):`);
+        await Promise.all(promises);
+      }
 
       firstRun.birthdays = false;
     }

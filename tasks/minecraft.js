@@ -36,7 +36,7 @@ exports.run = async (client, splash) => {
 
   if (firstRun.minecraft === 1) {
     console.log(
-      `Using ${minecraftServerIp}:${
+      `\nUsing ${minecraftServerIp}:${
         minecraftServerPort
       } for Minecraft query...\n`
     );
