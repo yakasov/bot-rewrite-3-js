@@ -8,6 +8,8 @@ Discord bot written in Node.js.
 - contains a full ranking system for users to gauge their activity in the guild
 - ability to talk to the ChatGPT API
 - ability to query Minecraft servers
+- improved Scryfall card searching functionality
+- automatic Fortnite store querying
 - additional basic bot features such as /say, /claim for roles, etc
 
 ## Running
