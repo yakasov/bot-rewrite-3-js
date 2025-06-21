@@ -24,8 +24,8 @@ module.exports = {
           `\`\`\`\n${JSON.stringify(res, null, 4)}\n\`\`\``
         );
       })
-      .catch((e) => {
-        console.error(e);
+      .catch((err) => {
+        console.error(err);
       });
   }
 };

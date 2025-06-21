@@ -1,0 +1,5 @@
+- Refactor commands/profile.js -> findUserStatsAndRank
+- Fix commands/sing.js
+- Either fix or remove commands/title.js
+- Either improve or remove achievements as a whole
+- Move a lot of ``` messages to Embeds

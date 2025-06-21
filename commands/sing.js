@@ -55,8 +55,8 @@ module.exports = {
       player.play(res);
 
       await interaction.editReply("Now playing!");
-    } catch (e) {
-      await interaction.editReply(`Error: ${e.message}`);
+    } catch (err) {
+      await interaction.editReply(`Error: ${err.message}`);
     }
   }
 };

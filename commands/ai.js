@@ -86,7 +86,7 @@ module.exports = {
 
     await interaction.followUp(`Given prompt: ${prompt}`);
 
-    let res = "";
+    let response = "";
     let attempts = 0;
     const timestamp = Date.now();
 
@@ -95,10 +95,10 @@ module.exports = {
       role: "user"
     });
 
-    while (attempts < AI_REQUEST_ATTEMPTS + 1 && !res) {
+    while (attempts < AI_REQUEST_ATTEMPTS + 1 && !response) {
       try {
         attempts++;
-        res = await openai.chat.completions.create({
+        response = await openai.chat.completions.create({
           max_tokens: AI_MAX_TOKENS,
           messages: conversation,
           model: AI_MODEL,
@@ -110,11 +110,11 @@ module.exports = {
       }
     }
 
-    if (res) {
-      res = res.choices[0].message;
-      conversation = conversation.concat(res);
-      const resArray = res.content.match(/[\s\S]{1,2000}(?!\S)/gu);
-      for (const r of resArray) {
+    if (response) {
+      response = response.choices[0].message;
+      conversation = conversation.concat(response);
+      const responseArray = response.content.match(/[\s\S]{1,2000}(?!\S)/gu);
+      for (const r of responseArray) {
         await interaction.followUp(r);
       }
     } else {

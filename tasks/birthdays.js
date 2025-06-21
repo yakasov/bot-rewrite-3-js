@@ -4,8 +4,8 @@ const moment = require("moment-timezone");
 const birthdays = require("../resources/birthdays.json");
 const {
   mainGuildId,
-  bdayChannelId,
-  bdayRoleId,
+  birthdayChannelId,
+  birthdayRoleId,
 } = require("../resources/config.json");
 const globals = require("../util/globals");
 
@@ -18,11 +18,11 @@ exports.run = async (client, force = false) => {
     const firstRun = globals.get("firstRun");
 
     const guild = await client.guilds.fetch(mainGuildId);
-    const bdayChannel = await guild.channels.fetch(bdayChannelId);
+    const bdayChannel = await guild.channels.fetch(birthdayChannelId);
 
     // Get all members with birthday role
     const roleMembers = guild.roles.cache.find(
-      (r) => r.id === bdayRoleId
+      (r) => r.id === birthdayRoleId
     ).members;
     const guildMembers = guild.members.cache;
 
@@ -50,7 +50,7 @@ exports.run = async (client, force = false) => {
     // Remove role if not their birthday anymore
     roleMembers.forEach((m) => {
       if (birthdays[m.id] && birthdays[m.id].date !== today.format("DD/MM")) {
-        m.roles.remove(bdayRoleId);
+        m.roles.remove(birthdayRoleId);
       }
     });
 
@@ -62,7 +62,7 @@ exports.run = async (client, force = false) => {
           .format("DD/MM") &&
         !roleMembers.some((me) => me.user.id === m.id)
       ) {
-        m.roles.add(bdayRoleId);
+        m.roles.add(birthdayRoleId);
         bdayChannel.send(
           `Happy Birthday, ${birthdays[m.id].name}! (<@${m.id}>)`
         );

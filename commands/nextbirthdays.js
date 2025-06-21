@@ -12,10 +12,10 @@ function parseBirthday(date) {
 function getNextBirthdays(currentDate, count = 5) {
   const year = currentDate.year();
 
-  let orderedBirthdays = Object.entries(birthdays)
-    .map(([, v]) => [
-      `${v.date}/${year}`,
-      v.name
+  let orderedBirthdays = Object.values(birthdays)
+    .map((birthday) => [
+      `${birthday.date}/${year}`,
+      birthday.name
     ]);
   orderedBirthdays = orderedBirthdays.concat(
     orderedBirthdays.map(([date, name]) => [date.replace(year, year + 1), name])

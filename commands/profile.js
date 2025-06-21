@@ -12,13 +12,24 @@ const { DISCORD_ID_LENGTH } = require("../util/consts.js");
 const globals = require("../util/globals.js");
 
 function findUserStatsAndRank(guildStats, userId) {
+  /*
+   * This is a complicated chain
+   * Essentially, find all user stats by matching keys to DISCORD_ID_LENGTH,
+   * map those stats to be [id, totalExperience],
+   * order all those stats using totalExperience,
+   * and then map the ordered stats to [id, totalExperience, rankPosition].
+   * 
+   * After, find the entry matching the user ID and return it.
+   * 
+   * TODO: There is _definitely_ a better way to do this.
+   */
   const ranked = Object.entries(guildStats)
     .filter(([k]) => k.length === DISCORD_ID_LENGTH)
     .map(([k, v]) => [k, v.totalExperience])
     .sort(([, f], [, s]) => s - f)
-    .map(([k, v], i) => [k, v, i]);
+    .map(([k], i) => [k, i]);
   const found = ranked.find(([k]) => k === userId);
-  return found ? { rank: found[2] + 1, userStats: found } : null;
+  return found ? { rank: found[1] + 1, userStats: found } : null;
 }
 
 function formatProfileOutput(interaction, userStats, allUserStats, rank) {

@@ -13,13 +13,13 @@ module.exports = {
       },
       method: "GET"
     })
-      .then((r) => r.json())
-      .then((j) => j.data);
+      .then((response) => response.json())
+      .then((json) => json.data);
 
     let output = "";
     Object.entries(rules)
-      .forEach(([k, v]) => {
-        output += `**Rule ${k}**: ${v}.\n`;
+      .forEach(([ruleId, ruleValue]) => {
+        output += `**Rule ${ruleId}**: ${ruleValue}.\n`;
       });
     interaction.reply(output);
   }

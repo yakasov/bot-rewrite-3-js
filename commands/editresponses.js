@@ -58,8 +58,8 @@ module.exports = {
         );
 
         return interaction.reply(`Updated ${key}.`);
-      } catch (e) {
-        return interaction.reply(e.message);
+      } catch (err) {
+        return interaction.reply(err.message);
       }
     }
 
