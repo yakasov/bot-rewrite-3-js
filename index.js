@@ -11,7 +11,6 @@ const { token } = require("./resources/config.json");
 
 const { generateRollTable } = require("./util/rollTableGenerator.js");
 const globals = require("./util/globals.js");
-const { initialSetup } = require("./util/setup.js");
 const { loadCommands } = require("./util/commandLoader.js");
 const { messageSuperPatch } = require("./util/messageSuperPatch.js");
 
@@ -53,7 +52,6 @@ process.on("unhandledRejection", (error) => {
   console.error("Unhandled error:", error);
 });
 
-initialSetup();
 messageSuperPatch();
 loadCommands(globalThis.client);
 
