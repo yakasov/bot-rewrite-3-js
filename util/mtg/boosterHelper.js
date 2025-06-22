@@ -15,13 +15,15 @@ async function getFullSet(set) {
   const result = await Promise.all(
     await Cards.search(`set:${set} unique:prints`)
       .all()
-      .then((res) => res.map(async (c) => await convertForCache(c)))
+      .then((response) => response.map(async (c) => await convertForCache(c)))
   );
 
-  result.forEach((c) => {
+  result.forEach((card, i) => {
     // Investigate why c would be null
-    if (c && !c.type_line.includes("Token")) {
-      cache[set][c.number] = c;
+    if (card && !card.type_line.includes("Token")) {
+      cache[set][card.number] = card;
+    } else if (!card) {
+      console.error(`${set} lead to a null card in position ${i}!`);
     }
   });
 
@@ -32,21 +34,21 @@ function setFilter(set, rules) {
   /*
    * Rules will be a dictionary
    * e.g.
-   * { k: "type", t: "includes", v: "land" },
-   * { k: "is", t: "is", v: isFoil ? "foil" : "nonfoil" },
+   * { key: "type", filter: "includes", value: "land" },
+   * { key: "is", filter: "is", value: isFoil ? "foil" : "nonfoil" },
    * where all rules will be iterated through
    */
-  const filterIncludes = (k, v) => k.includes(v);
-  const filterIs = (k, v) => k === v;
+  const filterIncludes = (key, value) => key.includes(value);
+  const filterIs = (key, value) => key === value;
 
   let returnCache = Object.values(cache[set]);
 
   // This can definitely be improved
   rules.forEach((rule) => {
-    returnCache = returnCache.filter((c) =>
-      c && c[rule.k] && rule.t === "includes"
-        ? filterIncludes(c[rule.k], rule.v)
-        : filterIs(c[rule.k], rule.v));
+    returnCache = returnCache.filter((card) =>
+      card && card[rule.key] && rule.filter === "includes"
+        ? filterIncludes(card[rule.key], rule.value)
+        : filterIs(card[rule.key], rule.value));
   });
 
   return returnCache;
@@ -62,9 +64,11 @@ async function convertForCache(card) {
     local = true;
   }
 
+  const firstFace = card.card_faces?.[0] ?? {};
+
   return {
     canBeFoil: card.foil,
-    colours: card.colors ?? card.card_faces[0].colors,
+    colours: card.colors ?? firstFace.colors,
     flavour_text: card.flavor_text,
     foil: false,
     frameEffects: card.frame_effects,
@@ -73,10 +77,10 @@ async function convertForCache(card) {
     keywords: card.keywords,
     legal: card.legalities.commander === "legal",
     local,
-    mana_cost: card.mana_cost ?? card.card_faces[0].mana_cost,
-    name: card.name ?? card.card_faces[0].name,
+    mana_cost: card.mana_cost ?? firstFace.mana_cost,
+    name: card.name ?? firstFace.name,
     number: card.collector_number,
-    oracle_text: card.oracle_text ?? card.card_faces[0].mana_cost,
+    oracle_text: card.oracle_text ?? firstFace.oracle_text,
     power: card.power,
     price: card.prices.usd ?? card.prices.usd_foil ?? 0,
     price_foil: card.prices.usd_foil,
@@ -84,7 +88,7 @@ async function convertForCache(card) {
     set: card.set,
     set_name: card.set_name,
     toughness: card.toughness,
-    type_line: card.type_line ?? card.card_faces[0].type_line,
+    type_line: card.type_line ?? firstFace.type_line,
     url: card.scryfall_uri,
   };
 }
@@ -112,8 +116,8 @@ function downloadImage(card, i, filePath) {
   return new Promise((resolve, reject) => {
     const file = fs.createWriteStream(`${filePath}-part${i}`);
     https
-      .get(card.card_faces[i].image_uris.large, (res) => {
-        res.pipe(file);
+      .get(card.card_faces[i].image_uris.large, (response) => {
+        response.pipe(file);
 
         file.on("finish", () => {
           file.close(() => resolve(`${filePath}-part${i}`));
@@ -133,19 +137,22 @@ function downloadImage(card, i, filePath) {
 async function deleteFiles(filePaths) {
   // For deleting merge image parts
   await Promise.all(
-    filePaths.map((filePath) => new Promise((resolve) => {
-      try {
-        fs.unlink(filePath, (err) => {
-          if (err) {
-            console.log(err);
+    filePaths.map(
+      (filePath) =>
+        new Promise((resolve) => {
+          try {
+            fs.unlink(filePath, (err) => {
+              if (err) {
+                console.log(err);
+              }
+              resolve();
+            });
+          } catch (err) {
+            console.error(`Failed to delete ${filePath}:`, err);
+            resolve();
           }
-          resolve();
-        });
-      } catch (err) {
-        console.error(`Failed to delete ${filePath}:`, err);
-        resolve();
-      }
-    }))
+        })
+    )
   );
 }
 

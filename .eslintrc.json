@@ -105,6 +105,7 @@
       }
     ],
     "semi": ["warn", "always"],
+    "sort-keys": "off",
     "space-before-function-paren": [
       "error",
       {

@@ -7,26 +7,13 @@ const {
   getNicknameFromInteraction,
   getRequiredExperience,
   getTitle,
+  wrapCodeBlockString,
 } = require("../util/common.js");
-const { DISCORD_ID_LENGTH } = require("../util/consts.js");
 const globals = require("../util/globals.js");
+const { orderStatsByRank } = require("../util/stats/stats.js");
 
-function findUserStatsAndRank(guildStats, userId) {
-  /*
-   * This is a complicated chain
-   * Essentially, find all user stats by matching keys to DISCORD_ID_LENGTH,
-   * map those stats to be [id, totalExperience],
-   * order all those stats using totalExperience,
-   * and then map the ordered stats to [id, totalExperience, rankPosition].
-   * 
-   * After, find the entry matching the user ID and return it.
-   * 
-   * TODO: There is _definitely_ a better way to do this.
-   */
-  const ranked = Object.entries(guildStats)
-    .filter(([k]) => k.length === DISCORD_ID_LENGTH)
-    .map(([k, v]) => [k, v.totalExperience])
-    .sort(([, f], [, s]) => s - f)
+function findUserStatsAndRank(guildStats, guild, userId) {
+  const ranked = orderStatsByRank(guildStats, guild)
     .map(([k], i) => [k, i]);
   const found = ranked.find(([k]) => k === userId);
   return found ? { rank: found[1] + 1, userStats: found } : null;
@@ -78,7 +65,7 @@ module.exports = {
       return interaction.reply("This user has no statistics yet!");
     }
 
-    const found = findUserStatsAndRank(guildStats, userId);
+    const found = findUserStatsAndRank(guildStats, interaction.guild, userId);
     if (!found) {
       return interaction.reply("Could not find user stats.");
     }
@@ -89,7 +76,7 @@ module.exports = {
       const outputMessage = JSON.stringify(allUserStats, null, 4);
       const outputArray = outputMessage.match(/[\s\S]{1,1980}(?!\S)/gu);
       for (const r of outputArray) {
-        await interaction.followUp(`\`\`\`json\n${r}\n\`\`\``);
+        await interaction.followUp(wrapCodeBlockString(r, "json"));
       }
       return null;
     }
@@ -111,7 +98,7 @@ module.exports = {
     const outputArray = outputMessage.match(/[\s\S]{1,1980}(?!\S)/gu);
     for (const r of outputArray) {
       await interaction.followUp({
-        content: `\`\`\`ansi\n${r}\n\`\`\``,
+        content: wrapCodeBlockString(r, "ansi"),
         ephemeral: false,
       });
     }

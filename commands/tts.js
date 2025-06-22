@@ -30,7 +30,7 @@ module.exports = {
     })
       .subscribe(player);
 
-    const response = await fetch(
+    await fetch(
       "https://tiktok-tts.weilnet.workers.dev/api/generation",
       {
         body: JSON.stringify({
@@ -40,16 +40,15 @@ module.exports = {
         headers: { "Content-Type": "application/json" },
         method: "post"
       }
-    );
-
-    await response.json()
-      .then(async (r) => {
-        if (r.data) {
-          fs.writeFileSync("resources/tts.mp3", r.data, { encoding: "base64" });
+    )
+      .then((response) => response.json())
+      .then(async (response) => {
+        if (response.data) {
+          fs.writeFileSync("resources/tts.mp3", response.data, { encoding: "base64" });
           const res = createAudioResource("resources/tts.mp3");
           player.play(res);
         } else {
-          await interaction.reply(r.error);
+          await interaction.reply(response.error);
         }
       });
   }

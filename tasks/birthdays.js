@@ -18,11 +18,11 @@ exports.run = async (client, force = false) => {
     const firstRun = globals.get("firstRun");
 
     const guild = await client.guilds.fetch(mainGuildId);
-    const bdayChannel = await guild.channels.fetch(birthdayChannelId);
+    const birthdayChannel = await guild.channels.fetch(birthdayChannelId);
 
     // Get all members with birthday role
     const roleMembers = guild.roles.cache.find(
-      (r) => r.id === birthdayRoleId
+      (role) => role.id === birthdayRoleId
     ).members;
     const guildMembers = guild.members.cache;
 
@@ -31,7 +31,7 @@ exports.run = async (client, force = false) => {
       const promises = [];
 
       for (const id of Object.keys(birthdays)) {
-        if (!guildMembers.some((gm) => gm.id === id)) {
+        if (!guildMembers.some((member) => member.id === id)) {
           promises.push(client.users.fetch(id)
             .then((user) => {
               console.warn(`${id} (${user?.tag || "unknown user"})`);
@@ -48,23 +48,23 @@ exports.run = async (client, force = false) => {
     }
 
     // Remove role if not their birthday anymore
-    roleMembers.forEach((m) => {
-      if (birthdays[m.id] && birthdays[m.id].date !== today.format("DD/MM")) {
-        m.roles.remove(birthdayRoleId);
+    roleMembers.forEach((member) => {
+      if (birthdays[member.id] && birthdays[member.id].date !== today.format("DD/MM")) {
+        member.roles.remove(birthdayRoleId);
       }
     });
 
     // Wish happy birthdays
-    guildMembers.forEach((m) => {
+    guildMembers.forEach((member) => {
       if (
-        birthdays[m.id] &&
-        birthdays[m.id].date === today.tz("Europe/London")
+        birthdays[member.id] &&
+        birthdays[member.id].date === today.tz("Europe/London")
           .format("DD/MM") &&
-        !roleMembers.some((me) => me.user.id === m.id)
+        !roleMembers.some((me) => me.user.id === member.id)
       ) {
-        m.roles.add(birthdayRoleId);
-        bdayChannel.send(
-          `Happy Birthday, ${birthdays[m.id].name}! (<@${m.id}>)`
+        member.roles.add(birthdayRoleId);
+        birthdayChannel.send(
+          `Happy Birthday, ${birthdays[member.id].name}! (<@${member.id}>)`
         );
       }
     });

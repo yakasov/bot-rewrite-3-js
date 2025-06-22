@@ -3,7 +3,8 @@
 const npFile = require("../commands/np.js");
 const globals = require("./globals.js");
 
-function getTime(seconds = 0, minutes = 0, hours = 0) {
+function getTime(units) {
+  const { seconds = 0, minutes = 0, hours = 0 } = units;
   return 1000 * seconds + 1000 * 60 * minutes + 1000 * 60 * 60 * hours;
 }
 

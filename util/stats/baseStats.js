@@ -7,11 +7,9 @@ const baseStats = {
   achievements: [],
   customSetName: false,
   joinTime: 0,
-  lastDailyTime: 0,
   lastGainTime: 0,
   level: 0,
   levelExperience: 0,
-  luckHandicap: 0,
   messages: 0,
   name: "",
   previousMessages: 0,
@@ -30,16 +28,16 @@ function initialiseStats(guildId, userId) {
   }
 
   Object.entries(baseStats)
-    .forEach(([k, v]) => {
-      if (userStats[k] === undefined) {
-        userStats[k] = v;
+    .forEach(([stat, value]) => {
+      if (userStats[stat] === undefined) {
+        userStats[stat] = value;
       }
     });
 
   Object.keys(userStats)
-    .forEach((k) => {
-      if (baseStats[k] === undefined) {
-        delete userStats[k];
+    .forEach((stat) => {
+      if (baseStats[stat] === undefined) {
+        delete userStats[stat];
       }
     });
   return null;

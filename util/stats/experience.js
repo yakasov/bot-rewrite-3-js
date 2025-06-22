@@ -11,17 +11,16 @@ const { DISCORD_ID_LENGTH } = require("../consts.js");
 const globals = require("../globals.js");
 
 function calculateExperience(userStats) {
-  const exp = Math.floor(
+  const experience = Math.floor(
     userStats.voiceTime * statsConfig.voiceChatSRGain +
-      userStats.messages * statsConfig.messageSRGain +
-      userStats.luckHandicap
+      userStats.messages * statsConfig.messageSRGain
   );
 
   userStats.levelExperience = Math.max(
-    exp - getRequiredExperienceCumulative(userStats.level - 1),
+    experience - getRequiredExperienceCumulative(userStats.level - 1),
     0
   );
-  userStats.totalExperience = Math.max(exp, userStats.totalExperience);
+  userStats.totalExperience = Math.max(experience, userStats.totalExperience);
 }
 
 function levelUp(guildId, userId) {

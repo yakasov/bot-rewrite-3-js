@@ -16,11 +16,9 @@ module.exports = {
       .then((response) => response.json())
       .then((json) => json.data);
 
-    let output = "";
-    Object.entries(rules)
-      .forEach(([ruleId, ruleValue]) => {
-        output += `**Rule ${ruleId}**: ${ruleValue}.\n`;
-      });
+    const output = Object.entries(rules)
+      .map(([ruleId, ruleValue]) => `**Rule ${ruleId}**: ${ruleValue}.`)
+      .join("\n");
     interaction.reply(output);
   }
 };
