@@ -24,13 +24,13 @@ const {
 const interactions = {};
 
 async function generateBoosterPack(interaction, chosenSet = null) {
-  if (chosenSet && !allSets.find((s) => s.code === chosenSet)) {
+  if (chosenSet && !allSets.find((set) => set.code === chosenSet)) {
     return true;
   }
 
   const { id } = interaction.user;
   const setToUse =
-    allSets.find((s) => s.code === chosenSet) ||
+    allSets.find((set) => set.code === chosenSet) ||
     allSets[Math.floor(Math.random() * allSets.length)];
 
   if (!cache[setToUse.code]) {
@@ -75,8 +75,8 @@ async function generateBoosterPack(interaction, chosenSet = null) {
 
   interactions[id].overallPrice = Math.round(
     (interactions[id].cards.reduce(
-      (partial, ca) =>
-        partial + parseFloat((ca.foil ? ca.price_foil : ca.price) ?? 0),
+      (partial, card) =>
+        partial + parseFloat((card.foil ? card.price_foil : card.price) ?? 0),
       0
     ) *
       100) /

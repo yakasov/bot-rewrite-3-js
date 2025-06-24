@@ -29,11 +29,11 @@ function sortSongArray(songA, songB) {
 exports.run = async (client) => {
   const data = await getFortniteShop();
   const songs = data.entries
-    .filter((e) => e.layout.name === "Jam Tracks")
-    .map((e) => `${e.tracks[0].title} - ${e.tracks[0].artist}`);
+    .filter((entry) => entry.layout.name === "Jam Tracks")
+    .map((entry) => `${entry.tracks[0].title} - ${entry.tracks[0].artist}`);
   const emotes = data.entries
-    .filter((e) => e.brItems && e.brItems[0].type.value === "emote")
-    .map((e) => e.brItems[0].name);
+    .filter((entry) => entry.brItems && entry.brItems[0].type.value === "emote")
+    .map((entry) => entry.brItems[0].name);
 
   const guild = await client.guilds.fetch(mainGuildId);
   const fortniteChannel = await guild.channels.fetch(fortniteChannelId);
@@ -58,8 +58,8 @@ exports.run = async (client) => {
     return;
   }
 
-  const newSongs = songs.filter((s) => !currentSongs.includes(s));
-  const oldSongs = currentSongs.filter((s) => !songs.includes(s));
+  const newSongs = songs.filter((song) => !currentSongs.includes(song));
+  const oldSongs = currentSongs.filter((song) => !songs.includes(song));
 
   newSongs.sort(sortSongArray);
   oldSongs.sort(sortSongArray);

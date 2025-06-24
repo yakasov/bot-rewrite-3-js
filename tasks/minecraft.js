@@ -7,36 +7,45 @@ const {
 } = require("../resources/config.json");
 const globals = require("../util/globals");
 
+/* eslint-disable sort-keys */
+/*
+ * 0 - Minecraft has been run at least once
+ * 1 - Minecraft has not yet been run (is on first run)
+ * 2 - Minecraft errored and should not be queried again
+ * 3 - Minecraft errored after first query, skip next run
+ */
+const QueryStates = {
+  NORMAL: 0,
+  FIRST_RUN: 1,
+  ERROR_STOP: 2,
+  ERROR_RETRY: 3
+};
+/* eslint-enable sort-keys */
+
 exports.run = async (client, splash) => {
   const firstRun = globals.get("firstRun");
 
-  /*
-   * 0 - Minecraft has been run at least once
-   * 1 - Minecraft has not yet been run (is on first run)
-   * 2 - Minecraft errored and should not be queried again
-   * 3 - Minecraft errored after first query, skip next run
-   */
-  if (firstRun.minecraft === 2) {
+  if (firstRun.minecraft === QueryStates.ERROR_STOP) {
     return;
   }
 
-  if (firstRun.minecraft === 3) {
-    firstRun.minecraft = 0;
+  if (firstRun.minecraft === QueryStates.ERROR_RETRY) {
+    firstRun.minecraft = QueryStates.NORMAL;
     return;
   }
 
   if (!(minecraftServerIp && minecraftServerPort)) {
-    if (firstRun.minecraft === 1) {
-      console.error("No IP and/or Port for Minecraft server query!\n");
-      firstRun.minecraft = 2;
+    if (firstRun.minecraft === QueryStates.FIRST_RUN) {
+      console.error("\nNo IP and/or Port for Minecraft server query!\n");
+      firstRun.minecraft = QueryStates.ERROR_STOP;
     }
 
     return;
   }
 
-  if (firstRun.minecraft === 1) {
+  if (firstRun.minecraft === QueryStates.FIRST_RUN) {
     console.log(
-      `Using ${minecraftServerIp}:${
+      `\nUsing ${minecraftServerIp}:${
         minecraftServerPort
       } for Minecraft query...\n`
     );
@@ -50,11 +59,11 @@ exports.run = async (client, splash) => {
           );
         }
 
-        firstRun.minecraft = 0;
+        firstRun.minecraft = QueryStates.NORMAL;
       })
-      .catch((e) => {
-        console.error(`\n${e}`);
-        firstRun.minecraft = 2;
+      .catch((err) => {
+        console.error(`\n${err}`);
+        firstRun.minecraft = QueryStates.ERROR_STOP;
         console.warn(
           `firstRun.minecraft is set to state ${
             firstRun.minecraft
@@ -88,8 +97,8 @@ exports.run = async (client, splash) => {
         activities: [{ name: activityString, type: ActivityType.Watching }],
       });
     })
-    .catch((e) => {
-      console.error(`\n${e}`);
-      firstRun.minecraft = 3;
+    .catch((err) => {
+      console.error(`\n${err}`);
+      firstRun.minecraft = QueryStates.ERROR_RETRY;
     });
 };

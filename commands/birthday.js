@@ -1,11 +1,11 @@
 "use strict";
 
 const { MessageFlags, SlashCommandBuilder } = require("discord.js");
-const { mainGuildId, bdayRoleId } = require("../resources/config.json");
+const { mainGuildId, birthdayRoleId } = require("../resources/config.json");
 const { BOT_CHANNEL_ID, SPAM_CHANNEL_ID } = require("../util/consts");
 
 function isBirthdayUser(interaction) {
-  const role = interaction.guild.roles.cache.get(bdayRoleId);
+  const role = interaction.guild.roles.cache.get(birthdayRoleId);
   if (!role) {
     return false;
   }
@@ -101,9 +101,9 @@ module.exports = {
         content: `Set ${option} name successfully!`,
         flags: MessageFlags.Ephemeral
       });
-    } catch (e) {
+    } catch (err) {
       return interaction.reply({
-        content: `Error: ${e.message}`,
+        content: `Error: ${err.message}`,
         flags: MessageFlags.Ephemeral
       });
     }

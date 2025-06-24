@@ -22,8 +22,8 @@ module.exports = {
         .setImage(avatar)
         .setAuthor({ name: interaction.member.displayName });
       await interaction.reply({ embeds: [embed] });
-    } catch (e) {
-      await interaction.reply(e.message);
+    } catch (err) {
+      await interaction.reply(err.message);
     }
   }
 };

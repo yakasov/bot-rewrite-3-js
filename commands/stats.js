@@ -8,16 +8,14 @@ const {
   getRequiredExperience,
   getLevelName,
   getTitle,
+  wrapCodeBlockString,
 } = require("../util/common.js");
-const { DISCORD_ID_LENGTH, TOP_SCORES_N } = require("../util/consts.js");
+const { TOP_SCORES_N } = require("../util/consts.js");
 const globals = require("../util/globals.js");
+const { orderStatsByRank } = require("../util/stats/stats.js");
 
 function getRankedUsers(guildStats, guild) {
-  return Object.entries(guildStats)
-    .filter(
-      ([k]) => k.length === DISCORD_ID_LENGTH && guild.members.cache.has(k)
-    )
-    .map(([k, v]) => [k, v.totalExperience])
+  return orderStatsByRank(guildStats, guild)
     .sort(([, f], [, s]) => s - f);
 }
 
@@ -66,6 +64,6 @@ module.exports = {
     let outputMessage = generateTable(data);
     outputMessage += formatUserRankingLine(topScores, guildStats, interaction);
 
-    return interaction.reply(`\`\`\`ansi\n${outputMessage}\n\`\`\``);
+    return interaction.reply(wrapCodeBlockString(outputMessage, "ansi"));
   },
 };

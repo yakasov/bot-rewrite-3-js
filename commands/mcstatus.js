@@ -4,8 +4,9 @@ const { SlashCommandBuilder } = require("discord.js");
 const { status } = require("minecraft-server-util");
 const {
   minecraftServerIp,
-  minecraftServerPort
+  minecraftServerPort,
 } = require("../resources/config.json");
+const { wrapCodeBlockString } = require("../util/common");
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -21,11 +22,11 @@ module.exports = {
         // Favicon is a base64 encoded image, remove it
         res.favicon = null;
         await interaction.reply(
-          `\`\`\`\n${JSON.stringify(res, null, 4)}\n\`\`\``
+          wrapCodeBlockString(JSON.stringify(res, null, 4))
         );
       })
-      .catch((e) => {
-        console.error(e);
+      .catch((err) => {
+        console.error(err);
       });
-  }
+  },
 };

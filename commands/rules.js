@@ -13,14 +13,12 @@ module.exports = {
       },
       method: "GET"
     })
-      .then((r) => r.json())
-      .then((j) => j.data);
+      .then((response) => response.json())
+      .then((json) => json.data);
 
-    let output = "";
-    Object.entries(rules)
-      .forEach(([k, v]) => {
-        output += `**Rule ${k}**: ${v}.\n`;
-      });
+    const output = Object.entries(rules)
+      .map(([ruleId, ruleValue]) => `**Rule ${ruleId}**: ${ruleValue}.`)
+      .join("\n");
     interaction.reply(output);
   }
 };

@@ -1,9 +1,10 @@
 "use strict";
 
-const npFile = require("../commands/np.js");
+const newPresenceFile = require("../commands/np.js");
 const globals = require("./globals.js");
 
-function getTime(seconds = 0, minutes = 0, hours = 0) {
+function getTime(units) {
+  const { seconds = 0, minutes = 0, hours = 0 } = units;
   return 1000 * seconds + 1000 * 60 * minutes + 1000 * 60 * 60 * hours;
 }
 
@@ -26,7 +27,7 @@ async function checkMinecraftServer() {
 }
 
 function getNewSplash() {
-  return npFile.run([globalThis.client]);
+  return newPresenceFile.run([globalThis.client]);
 }
 
 module.exports = {

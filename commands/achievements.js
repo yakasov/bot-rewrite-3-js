@@ -3,6 +3,7 @@
 const { SlashCommandBuilder } = require("discord.js");
 const achievements = require("../resources/achievements.json");
 const globals = require("../util/globals");
+const { wrapCodeBlockString } = require("../util/common");
 
 function formatAchievementLine(achievement, unlocked) {
   const color = unlocked ? 32 : 31;
@@ -10,10 +11,6 @@ function formatAchievementLine(achievement, unlocked) {
 }
 
 function formatAchievementsMessage(unlocks, allAchievements) {
-  const secretAchievements = Object.entries(allAchievements)
-    .filter(([, v]) => unlocks.includes(v.key) && v.secret)
-    .map(([, v]) => v.name);
-
   const allNormalAchievements = Object.entries(allAchievements)
     .filter(([, v]) => !v.secret)
     .map(([k, v]) => ({ ...v, key: k }));
@@ -22,15 +19,23 @@ function formatAchievementsMessage(unlocks, allAchievements) {
     .map((a) => formatAchievementLine(a, unlocks.includes(a.key)))
     .join("\n");
 
+  const secretAchievements = Object.entries(allAchievements)
+    .filter(([, v]) => unlocks.includes(v.key) && v.secret)
+    .map(([, v]) => v.name);
+
   const secretLines = secretAchievements
     .map((a) => `• \u001b[1;32m ${a}\u001b[0m`)
     .join("\n");
 
-  return `\`\`\`ansi\n===== Achievements =====\n
-    ${normalLines}
-    \n\n===== Secret Achievements =====\n"
-    ${secretLines}
-    \`\`\``;
+  const outputMessage = `===== Achievements =====\n${normalLines}\n${
+    secretLines
+      ? `\n===== Secret Achievements =====\n${
+        secretLines
+      }`
+      : ""
+  }`;
+
+  return wrapCodeBlockString(outputMessage, "ansi");
 }
 
 module.exports = {

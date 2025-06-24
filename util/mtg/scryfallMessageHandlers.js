@@ -9,14 +9,13 @@ const {
   StringSelectMenuOptionBuilder,
 } = require("discord.js");
 const { combineImages } = require("./boosterHelper.js");
-
-const scryfallPattern = /\[\[(?<card>[^|\]]+?)(?:\|{1,2}(?<set>[^\]]+))?\]\]/gu;
+const { REGEX_SCRYFALL_PATTERN } = require("../consts.js");
 
 async function checkScryfallMessage(message) {
   const promises = [];
   let match = null;
 
-  while ((match = scryfallPattern.exec(message.content)) !== null) {
+  while ((match = REGEX_SCRYFALL_PATTERN.exec(message.content)) !== null) {
     const isImage = match.groups.card[0] === "!";
     const cardName = match.groups.card.substring(Number(isImage))
       .trim();

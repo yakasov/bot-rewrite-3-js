@@ -2,6 +2,7 @@
 
 const ranks = require("../resources/ranks.json");
 const { statsConfig } = require("../resources/config.json");
+const { REGEX_SANITIZE_STRING } = require("./consts");
 
 function formatTime(seconds) {
   const date = new Date(null);
@@ -32,8 +33,7 @@ function getNicknameFromInteraction(interaction, id = null, sanitize = null) {
     .first();
   let name = member ? member.displayName : "???";
   if (sanitize) {
-    /* eslint-disable-next-line no-control-regex */
-    name = name.replace(/[^\x00-\x7F]/gu, "");
+    name = name.replace(REGEX_SANITIZE_STRING, "");
   }
   return name;
 }
@@ -54,7 +54,7 @@ function getRequiredExperienceCumulative(level) {
   return (level * ((level + 1) * statsConfig.xpPerLevel)) / 2;
 }
 
-function getTimeInSeconds() {
+function getDateNowInSeconds() {
   return Math.floor(Date.now() / 1000);
 }
 
@@ -67,13 +67,18 @@ function getTitle(stats) {
   return stats.name;
 }
 
+function wrapCodeBlockString(string, syntax = "") {
+  return `\`\`\`${syntax}\n${string}\n\`\`\``;
+}
+
 module.exports = {
   formatTime,
+  getDateNowInSeconds,
   getLevelName,
   getNicknameFromInteraction,
   getNicknameFromMessage,
   getRequiredExperience,
   getRequiredExperienceCumulative,
-  getTimeInSeconds,
   getTitle,
+  wrapCodeBlockString
 };

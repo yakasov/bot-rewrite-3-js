@@ -34,10 +34,7 @@ function updateScoreValue(guildId, userId) {
 }
 
 function updateScores() {
-  /*
-   * This fixes a circular dependency
-   * ... not a huge fan, though
-   */
+  // Fix for circular dependency (only importing when required)
   const { addToStats } = require("./stats.js");
 
   const stats = globals.get("stats");

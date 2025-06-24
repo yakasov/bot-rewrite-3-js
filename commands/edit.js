@@ -37,20 +37,20 @@ module.exports = {
       interaction.user.id === (await interaction.guild.fetchOwner()).user.id
     ) {
       try {
-        const newVal = /^-?\d+$/u.test(value) ? parseInt(value, 10) : value;
+        const newValue = /^-?\d+$/u.test(value) ? parseInt(value, 10) : value;
         if (add) {
           if (
             typeof userStats[attribute] !== "number" ||
-            typeof newVal !== "number"
+            typeof newValue !== "number"
           ) {
             return interaction.reply({
               content: `Cannot add non-numeric values to attribute "${attribute}".`,
               flags: MessageFlags.Ephemeral,
             });
           }
-          userStats[attribute] += newVal;
+          userStats[attribute] += newValue;
         } else {
-          userStats[attribute] = newVal;
+          userStats[attribute] = newValue;
         }
 
         return interaction.reply(
@@ -58,8 +58,8 @@ module.exports = {
             userStats[attribute]
           }`
         );
-      } catch (e) {
-        return interaction.reply(e.message);
+      } catch (err) {
+        return interaction.reply(err.message);
       }
     }
 

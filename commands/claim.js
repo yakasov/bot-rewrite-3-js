@@ -65,7 +65,7 @@ module.exports = {
           content: "Role claim cancelled.",
           flags: MessageFlags.Ephemeral
         });
-      } catch (e) {
+      } catch (err) {
         return interaction.editReply({
           components: [],
           content: "Confirmation not received within 1 minute, cancelling"

@@ -1,7 +1,8 @@
 "use strict";
 
 const { statsConfig } = require("../../resources/config.json");
-const { getTimeInSeconds } = require("../common.js");
+const { getDateNowInSeconds } = require("../common.js");
+const { DISCORD_ID_LENGTH } = require("../consts.js");
 const globals = require("../globals.js");
 const { initialiseStats } = require("./baseStats.js");
 const { saveStats } = require("./persistence.js");
@@ -29,33 +30,33 @@ function addToStats(details) {
     return;
   case "message":
     if (
-      getTimeInSeconds() - userStats.lastGainTime <
+      getDateNowInSeconds() - userStats.lastGainTime <
         statsConfig.messageSRGainCooldown
     ) {
       return;
     }
-    userStats.lastGainTime = getTimeInSeconds();
+    userStats.lastGainTime = getDateNowInSeconds();
     userStats.messages += 1;
     break;
 
   case "joinedVoiceChannel":
-    userStats.joinTime = getTimeInSeconds();
+    userStats.joinTime = getDateNowInSeconds();
     break;
 
   case "inVoiceChannel":
     if (globals.set("botUptime") < 10) {
-      userStats.joinTime = getTimeInSeconds();
+      userStats.joinTime = getDateNowInSeconds();
     }
     userStats.voiceTime += Math.floor(
-      getTimeInSeconds() -
-          (userStats.joinTime === 0 ? getTimeInSeconds() : userStats.joinTime)
+      getDateNowInSeconds() -
+          (userStats.joinTime === 0 ? getDateNowInSeconds() : userStats.joinTime)
     );
-    userStats.joinTime = getTimeInSeconds();
+    userStats.joinTime = getDateNowInSeconds();
     break;
 
   case "leftVoiceChannel":
     userStats.voiceTime += Math.floor(
-      getTimeInSeconds() - userStats.joinTime
+      getDateNowInSeconds() - userStats.joinTime
     );
     break;
 
@@ -67,6 +68,27 @@ function addToStats(details) {
   saveStats();
 }
 
+function orderStatsByRank(guildStats, guild) {
+  /*
+   * This is a complicated chain
+   * Essentially, find all user stats by matching keys to DISCORD_ID_LENGTH,
+   * map those stats to be [id, totalExperience],
+   * order all those stats using totalExperience,
+   * and then map the ordered stats to [id, totalExperience, rankPosition].
+   *
+   * After, find the entry matching the user ID and return it.
+   *
+   * TODO: There is _definitely_ a better way to do this.
+   */
+  return Object.entries(guildStats)
+    .filter(
+      ([key]) => key.length === DISCORD_ID_LENGTH && guild.members.cache.has(key)
+    )
+    .map(([key, stats]) => [key, stats.totalExperience])
+    .sort(([, first], [, second]) => second - first);
+}
+
 module.exports = {
   addToStats,
+  orderStatsByRank,
 };

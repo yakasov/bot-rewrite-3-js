@@ -2,6 +2,7 @@
 
 const { MessageFlags, SlashCommandBuilder } = require("discord.js");
 const chanceResponses = require("../resources/chanceResponses.json");
+const { wrapCodeBlockString } = require("../util/common");
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -19,8 +20,11 @@ module.exports = {
     if (key) {
       if (chanceResponses[key]) {
         return interaction.followUp({
-          content: `\`\`\`json\n${JSON.stringify(chanceResponses[key], null, 2)}\n\`\`\``,
-          flags: MessageFlags.Ephemeral
+          content: wrapCodeBlockString(
+            JSON.stringify(chanceResponses[key], null, 4),
+            "json"
+          ),
+          flags: MessageFlags.Ephemeral,
         });
       }
       return interaction.followUp({
@@ -28,7 +32,7 @@ module.exports = {
           chanceResponses
         )
           .join(", ")}`,
-        flags: MessageFlags.Ephemeral
+        flags: MessageFlags.Ephemeral,
       });
     }
 
@@ -37,7 +41,7 @@ module.exports = {
         .join(
           ", "
         )}\n\`\`\``,
-      flags: MessageFlags.Ephemeral
+      flags: MessageFlags.Ephemeral,
     });
-  }
+  },
 };

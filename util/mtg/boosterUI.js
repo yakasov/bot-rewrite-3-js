@@ -5,7 +5,7 @@ const {
   ButtonBuilder,
   ButtonStyle,
   EmbedBuilder,
-  AttachmentBuilder
+  AttachmentBuilder,
 } = require("discord.js");
 const { MTG_PACK_SIZE } = require("../consts.js");
 const { allSets } = require("../../resources/mtg/mtgSets.js");
@@ -27,7 +27,7 @@ const replacements = {
   "{T}": " :arrow_right_hook: ",
   "{U}": " :new_moon_with_face: ",
   "{W}": " :alien: ",
-  "{X}": " :regional_indicator_x: "
+  "{X}": " :regional_indicator_x: ",
 };
 
 function getButtons(interactions, id) {
@@ -44,46 +44,58 @@ function getButtons(interactions, id) {
           ? "Return to Summary"
           : "Next card"
       )
-      .setStyle(ButtonStyle.Secondary)
+      .setStyle(ButtonStyle.Secondary),
   ];
   return new ActionRowBuilder()
     .addComponents(...buttons);
 }
 
 function getRarityString(cards) {
-  const commons = cards.filter((c) => c.rarity === "common").length;
-  const uncommons = cards.filter((c) => c.rarity === "uncommon").length;
-  const rares = cards.filter((c) => c.rarity === "rare").length;
-  const mythics = cards.filter((c) => c.rarity === "mythic").length;
-  return `${commons} C // ${uncommons} U // ${rares} R // ${mythics} RM`;
+  const rarities = {
+    common: 0,
+    uncommon: 0,
+    rare: 0,
+    mythic: 0,
+  };
+
+  for (const card of cards) {
+    if (Object.hasOwn(rarities, card.rarity)) {
+      rarities[card.rarity]++;
+    }
+  }
+
+  return [
+    `${rarities.common} C`,
+    `${rarities.uncommon} U`,
+    `${rarities.rare} R`,
+    `${rarities.mythic} RM`,
+  ].join(" // ");
 }
 
 function getAllCardsString(cards) {
-  let returnString = "";
-  cards.forEach((c, i) => {
-    returnString += `${i + 1}. ${c.name}\n`;
-  });
-  return returnString;
+  return cards.map((card, i) => `${i + 1}. ${card.name}`)
+    .join("\n");
 }
 
 function replaceIcons(text) {
-  let returnText = text ?? "-";
-  Object.entries(replacements)
-    .forEach(([k, v]) => {
-      returnText = returnText.replaceAll(k, v);
-    });
-  return returnText || "-";
+  return (
+    Object.entries(replacements)
+      .reduce(
+        (currentText, [pattern, emoji]) => currentText.replaceAll(pattern, emoji),
+        text ?? "-"
+      ) || "-"
+  );
 }
 
 function getContent(interactions, id) {
-  const capitaliseFirst = (s) =>
-    String(s[0])
-      .toUpperCase() + String(s)
+  const capitaliseFirst = (string) =>
+    String(string[0])
+      .toUpperCase() + String(string)
       .slice(1);
-  const c = interactions[id].cards[interactions[id].page - 2];
+  const card = interactions[id].cards[interactions[id].page - 2];
 
   const setPrice = allSets.find(
-    (s) => s.code === interactions[id].cards[1].set
+    (set) => set.code === interactions[id].cards[1].set
   ).price;
   const cardValue = interactions[id].overallPrice;
 
@@ -94,81 +106,81 @@ function getContent(interactions, id) {
         .addFields(
           {
             name: "Set",
-            value: `${interactions[id].cards[1].set_name} (${interactions[id].cards[1].set})`
+            value: `${interactions[id].cards[1].set_name} (${interactions[id].cards[1].set})`,
           },
           {
             name: "Rarities",
-            value: getRarityString(interactions[id].cards)
+            value: getRarityString(interactions[id].cards),
           },
           {
             name: "Overall Price",
-            value: `Set: $${setPrice} // Cards: $${cardValue} // Profit: $${cardValue - setPrice}`
+            value: `Set: $${setPrice} // Cards: $${cardValue} // Profit: $${cardValue - setPrice}`,
           },
           { name: "\u200B", value: "\u200B" },
           {
             name: "Cards",
-            value: getAllCardsString(interactions[id].cards)
+            value: getAllCardsString(interactions[id].cards),
           },
           { name: "\u200B", value: "\u200B" },
           {
             name: "Extra cards added?",
             value: interactions[id].cardFill
               ? `Yes, added ${interactions[id].cardFill} card(s)`
-              : "No"
+              : "No",
           }
         ),
-      null
+      null,
     ];
   }
 
   try {
-    const file = c.local ? new AttachmentBuilder(`${c.image}.jpg`) : null;
+    const file = card.local ? new AttachmentBuilder(`${card.image}.jpg`) : null;
     return [
       new EmbedBuilder()
-        .setTitle(`${interactions[id].page - 1} - ${c.name}`)
-        .setURL(c.url)
-        .setDescription(c.type_line)
+        .setTitle(`${interactions[id].page - 1} - ${card.name}`)
+        .setURL(card.url)
+        .setDescription(card.type_line)
         .addFields(
           {
             name: "Set",
-            value: `${c.set_name} (${c.set})`
+            value: `${card.set_name} (${card.set})`,
           },
           {
             name: "Oracle text",
-            value: replaceIcons(c.oracle_text)
+            value: replaceIcons(card.oracle_text),
           },
           {
             name: "Flavour text",
-            value: replaceIcons(c.flavour_text)
+            value: replaceIcons(card.flavour_text),
           },
           { name: "\u200B", value: "\u200B" },
           {
             inline: true,
             name: "Rarity",
-            value: capitaliseFirst(c.rarity)
+            value: capitaliseFirst(card.rarity),
           },
           {
             inline: true,
             name: "Foil",
-            value: c.foil ? "Yes" : "No"
+            value: card.foil ? "Yes" : "No",
           },
           {
             inline: true,
             name: "Price",
-            value: `$${(c.foil ? c.price_foil : c.price) || "???"}`
+            value: `$${(card.foil ? card.price_foil : card.price) || "???"}`,
           }
         )
         .setImage(
-          c.local
-            ? `attachment://${c.image.split("/")
+          card.local
+            ? `attachment://${card.image.split("/")
               .pop()}.jpg`
-            : c.image
+            : card.image
         ),
-      file
+      file,
     ];
-  } catch (e) {
-    console.error(e);
-    console.warn(c);
+  } catch (err) {
+    console.error(err);
+    console.warn(card);
   }
 
   return null;
@@ -176,5 +188,5 @@ function getContent(interactions, id) {
 
 module.exports = {
   getButtons,
-  getContent
+  getContent,
 };
