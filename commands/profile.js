@@ -11,6 +11,7 @@ const {
 } = require("../util/common.js");
 const globals = require("../util/globals.js");
 const { orderStatsByRank } = require("../util/stats/stats.js");
+const { REGEX_DISCORD_MESSAGE_LENGTH_SHORT } = require("../util/consts.js");
 
 function findUserStatsAndRank(guildStats, guild, userId) {
   const ranked = orderStatsByRank(guildStats, guild)
@@ -74,7 +75,7 @@ module.exports = {
 
     if (debug) {
       const outputMessage = JSON.stringify(allUserStats, null, 4);
-      const outputArray = outputMessage.match(/[\s\S]{1,1980}(?!\S)/gu);
+      const outputArray = outputMessage.match(REGEX_DISCORD_MESSAGE_LENGTH_SHORT);
       for (const r of outputArray) {
         await interaction.followUp(wrapCodeBlockString(r, "json"));
       }
@@ -95,7 +96,7 @@ module.exports = {
       )}...`
     );
 
-    const outputArray = outputMessage.match(/[\s\S]{1,1980}(?!\S)/gu);
+    const outputArray = outputMessage.match(REGEX_DISCORD_MESSAGE_LENGTH_SHORT);
     for (const r of outputArray) {
       await interaction.followUp({
         content: wrapCodeBlockString(r, "ansi"),

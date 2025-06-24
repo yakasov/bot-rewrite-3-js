@@ -4,19 +4,20 @@ const { Message } = require("discord.js");
 
 /*
  * This exists to overwrite the Message.prototype methods
- * to handle errors and keeping running rather than just crashing out
+ * to handle errors and to keep the bot running rather 
+ * than just crashing out
  */
 function messageSuperPatch() {
   const superReply = Message.prototype.reply;
 
-  Message.prototype.reply = function (s) {
+  Message.prototype.reply = function (string) {
     try {
       return superReply.call(this, {
-        content: s,
+        content: string,
         failIfNotExists: false
       });
-    } catch (e) {
-      return console.error(e.message);
+    } catch (err) {
+      return console.error(err.message);
     }
   };
 
@@ -25,8 +26,8 @@ function messageSuperPatch() {
   Message.prototype.delete = function () {
     try {
       return superDelete.call(this);
-    } catch (e) {
-      return console.error(e.message);
+    } catch (err) {
+      return console.error(err.message);
     }
   };
 }

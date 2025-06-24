@@ -8,7 +8,8 @@ const {
   AI_MAX_TOKENS,
   AI_MODEL,
   AI_REQUEST_ATTEMPTS,
-  AI_DEFAULT_TEMP
+  AI_DEFAULT_TEMP,
+  REGEX_DISCORD_MESSAGE_LENGTH
 } = require("../util/consts.js");
 
 const openai = new OpenAI({
@@ -113,7 +114,7 @@ module.exports = {
     if (response) {
       response = response.choices[0].message;
       conversation = conversation.concat(response);
-      const responseArray = response.content.match(/[\s\S]{1,2000}(?!\S)/gu);
+      const responseArray = response.content.match(REGEX_DISCORD_MESSAGE_LENGTH);
       for (const r of responseArray) {
         await interaction.followUp(r);
       }

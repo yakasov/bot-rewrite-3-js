@@ -4,140 +4,132 @@ const { botResponseChance } = require("../resources/config.json");
 const chanceResponses = require("../resources/chanceResponses.json");
 const responses = require("../resources/responses.json");
 const { getNicknameFromMessage } = require("../util/common.js");
-const { THIS_ID_IS_ALWAYS_LATE_TELL_HIM_OFF } = require("./consts.js");
+const {
+  THIS_ID_IS_ALWAYS_LATE_TELL_HIM_OFF,
+  REGEX_STEAM_LINK,
+  REGEX_TIME_MATCH,
+  STEAM_URL_LINK,
+} = require("./consts.js");
 const globals = require("./globals.js");
 
-// Move to consts?
-const steamLinkRegex = /https:\/\/steamcommunity\.com\S*/gu;
-
-async function swapTwitterLinks(msg) {
-  const content = `${getNicknameFromMessage(msg)} sent:\n${msg.content
+async function swapTwitterLinks(message) {
+  const content = `${getNicknameFromMessage(message)} sent:\n${message.content
     .replace("https://x.com/", "https://fixupx.com/")
     .replace("https://twitter.com/", "https://fxtwitter.com/")}`;
 
-  if (msg.reference && msg.reference.channelId === msg.channel.id) {
-    const replyMsg = await msg.channel.messages.fetch(msg.reference.messageId);
-    replyMsg.reply(content);
+  if (message.reference && message.reference.channelId === message.channel.id) {
+    const replyMessage = await message.channel.messages.fetch(
+      message.reference.messageId
+    );
+    replyMessage.reply(content);
   } else {
-    msg.channel.send(content);
+    message.channel.send(content);
   }
 
-  await msg.delete()
+  await message.delete()
     .catch(console.error);
 }
 
-function addSteamDirectLink(msg) {
+function addSteamDirectLink(message) {
   const steamLink =
-      msg.content.split(" ")
-        .find((m) => steamLinkRegex.test(m)) ?? msg.content;
-  msg.channel.send(
-    /* eslint-disable-next-line max-len */
-    `Embedded link: https://yakasov.github.io/pages/miscellaneous/steam_direct.html?page=${encodeURIComponent(steamLink)}`
+    message.content.split(" ")
+      .find((word) => REGEX_STEAM_LINK.test(word)) ??
+    message.content;
+  message.channel.send(
+    `Embedded link: ${STEAM_URL_LINK}${encodeURIComponent(steamLink)}`
   );
 }
 
-function replyWithHypeMessage(msg) {
+function replyWithHypeMessage(message) {
   const hypeEntries = Object.entries(chanceResponses)
     .filter(([key]) =>
       key.includes("hype"));
   const randomEntry =
     hypeEntries[Math.floor(Math.random() * hypeEntries.length)][1].string;
-  return msg.channel.send(randomEntry);
+  return message.channel.send(randomEntry);
 }
 
-async function checkMessageResponse(msg) {
-  if (steamLinkRegex.test(msg.content)) {
-    addSteamDirectLink(msg);
+async function sendCustomResponse(message, key, value) {
+  let response = value;
+  if (response.includes("{AUTHOR}")) {
+    response = response.replace("{AUTHOR}", getNicknameFromMessage(message));
+  }
+
+  if (response.includes("{FOLLOWING}")) {
+    let lastMessage = "";
+    if (
+      message.content.toLowerCase()
+        .trim() === key ||
+      message.content.toLowerCase()
+        .trim()
+        .endsWith(key)
+    ) {
+      lastMessage = await message.channel.messages
+        .fetch({ limit: 2 })
+        .then((c) => getNicknameFromMessage([...c.values()].pop()));
+    }
+
+    const following = message.content
+      .toLowerCase()
+      .split(key)
+      .slice(1)
+      .join(key);
+    response = response.replace(
+      "{FOLLOWING}",
+      lastMessage || !following.trim()
+        ? lastMessage ?? getNicknameFromMessage(message)
+        : following.trim()
+    );
+  }
+
+  if (response.includes("{STICKER:")) {
+    const stickerId = response.split(":")[1].slice(0, -1);
+    const stickerObject = message.guild.stickers.cache.filter(
+      (sticker) => sticker.id === stickerId
+    );
+    if (stickerObject.size) {
+      return message.channel.send({ stickers: stickerObject });
+    }
+    return null;
+  }
+
+  return message.channel.send(response);
+}
+
+async function checkMessageResponse(message) {
+  if (REGEX_STEAM_LINK.test(message.content)) {
+    return addSteamDirectLink(message);
   }
 
   // Swap Twitter/X URLs for proper embedding ones
   if (
-    ["https://x.com/", "https://twitter.com/"].find((l) =>
-      msg.content.includes(l)) &&
-    msg.content.includes("status")
+    ["https://x.com/", "https://twitter.com/"].some((link) =>
+      message.content.includes(link)) &&
+    message.content.includes("status")
   ) {
-    return await swapTwitterLinks(msg);
+    return await swapTwitterLinks(message);
   }
 
   if (
-    msg.author.id === THIS_ID_IS_ALWAYS_LATE_TELL_HIM_OFF &&
-    msg.content.match(/\b\d+\s*:\s*\d+\b/gu)
+    message.author.id === THIS_ID_IS_ALWAYS_LATE_TELL_HIM_OFF &&
+    message.content.match(REGEX_TIME_MATCH)
   ) {
-    return replyWithHypeMessage(msg);
+    return replyWithHypeMessage(message);
   }
 
-  /*
-   * I don't really like this function method
-   * but I have yet to figure out a *better* way
-   * of doing this as simply as this
-   *
-   * I can split each check into different functions
-   * but not sure it's worth it, might just make it
-   * more verbose
-   */
-  async function f(k, v) {
-    let res = v;
-    if (res.includes("{AUTHOR}")) {
-      res = res.replace("{AUTHOR}", getNicknameFromMessage(msg));
-    }
-
-    if (res.includes("{FOLLOWING}")) {
-      let lastMsg = "";
-      if (
-        msg.content.toLowerCase()
-          .trim() === k ||
-        msg.content.toLowerCase()
-          .trim()
-          .endsWith(k)
-      ) {
-        lastMsg = await msg.channel.messages
-          .fetch({
-            limit: 2,
-          })
-          .then((c) => getNicknameFromMessage([...c.values()].pop()));
-      }
-
-      const following = msg.content.toLowerCase()
-        .split(k)
-        .slice(1)
-        .join(k);
-      res = res.replace(
-        "{FOLLOWING}",
-        lastMsg || !following.trim()
-          ? (lastMsg ?? getNicknameFromMessage(msg))
-          : following.trim()
-      );
-    }
-
-    if (res.includes("{STICKER:")) {
-      const stickerId = res.split(":")[1].slice(0, -1);
-      const sticker = msg.guild.stickers.cache.filter(
-        (s) => s.id === stickerId
-      );
-      if (sticker.size) {
-        return msg.channel.send({
-          stickers: sticker,
-        });
-      }
-      return null;
-    }
-
-    return msg.channel.send(res);
-  }
-
-  const entries = Object.entries(responses);
-  for (let i = 0; i < entries.length; i++) {
-    const [k, v] = entries[i];
-    if (` ${msg.content.toLowerCase()} `.includes(` ${k} `)) {
-      return f(k, v);
+  // Custom responses
+  for (const [key, value] of Object.entries(responses)) {
+    if (` ${message.content.toLowerCase()} `.includes(` ${key} `)) {
+      await sendCustomResponse(message, key, value);
+      return;
     }
   }
 }
 
-async function checkMessageReactions(msg) {
+async function checkMessageReactions(message) {
   // Fix for deleted message - return if message fetch fails
   try {
-    await msg.channel.messages.fetch(msg.id);
+    await message.channel.messages.fetch(message.id);
   } catch {
     return;
   }
@@ -152,24 +144,21 @@ async function checkMessageReactions(msg) {
           try {
             switch (response.type) {
             case "message":
-              msg.reply(response.string);
+              message.reply(response.string);
               break;
-
             case "react":
-              msg.react(response.string);
+              message.react(response.string);
               break;
-
             default:
               break;
             }
-
+            
             return true;
-          } catch (e) {
-            console.error(e);
+          } catch (err) {
+            console.error(err);
             return false;
           }
         }
-
         return false;
       });
   }
