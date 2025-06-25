@@ -23,7 +23,7 @@ exports.run = async (client, force = false) => {
     // Get all members with birthday role
     const roleMembers = guild.roles.cache.find(
       (role) => role.id === birthdayRoleId
-    ).members;
+    )?.members;
     const guildMembers = guild.members.cache;
 
     // Check for members not in server anymore
@@ -48,7 +48,7 @@ exports.run = async (client, force = false) => {
     }
 
     // Remove role if not their birthday anymore
-    roleMembers.forEach((member) => {
+    roleMembers?.forEach((member) => {
       if (birthdays[member.id] && birthdays[member.id].date !== today.format("DD/MM")) {
         member.roles.remove(birthdayRoleId);
       }
@@ -60,7 +60,7 @@ exports.run = async (client, force = false) => {
         birthdays[member.id] &&
         birthdays[member.id].date === today.tz("Europe/London")
           .format("DD/MM") &&
-        !roleMembers.some((me) => me.user.id === member.id)
+        !roleMembers?.some((me) => me.user.id === member.id)
       ) {
         member.roles.add(birthdayRoleId);
         birthdayChannel.send(

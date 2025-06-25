@@ -1,6 +1,8 @@
 "use strict";
 
 const { statsConfig } = require("./resources/config.json");
+const { createTables } = require("./util/stats/dbFunctions.js");
+const globals = require("./util/globals.js");
 
 async function setupDatabase() {
   if (!statsConfig.useDatabase) {
@@ -16,19 +18,17 @@ async function setupDatabase() {
     dbFunctions.initialiseDatabase();
     
     console.log("Creating tables");
-    await dbFunctions.createTables();
+    await createTables();
     
     console.log("Database setup completed and it worked");
     
-    // Try and migrate existing stats.json data
+    // Try and migrate existing stats.json data if it exists
     const fs = require("fs");
     if (fs.existsSync("./resources/stats.json")) {
       try {
         console.log("Migrating stats data");
         const existingStats = require("./resources/stats.json");
-        const globals = require("./util/globals.js");
         globals.set("stats", existingStats);
-            
         await dbFunctions.saveStatsToDatabase();
         console.log("Stats have been migrated");
       } catch (err) {
@@ -38,10 +38,20 @@ async function setupDatabase() {
         
     await dbFunctions.closeDatabase();
     
-    
   } catch (err) {
     console.error("Database setup failed:", err);
+    // Try to close database connection even if setup failed
+    try {
+      const dbFunctions = require("./util/stats/dbFunctions.js");
+      await dbFunctions.closeDatabase();
+    } catch (closeErr) {
+      console.error("Error closing database:", closeErr);
+    }
+    throw err;
   }
 }
 
-setupDatabase();
+if (require.main === module) {
+  setupDatabase()
+    .catch(console.error);
+}

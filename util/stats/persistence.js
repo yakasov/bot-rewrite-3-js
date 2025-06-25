@@ -38,7 +38,7 @@ async function loadStats() {
       await dbFunctions.createTables();
       return await dbFunctions.loadStatsFromDatabase();
     } else {
-      // Load from file (existing behavior)
+      // Load from file if not using database
       try {
         return require("../../resources/stats.json");
       } catch (err) {

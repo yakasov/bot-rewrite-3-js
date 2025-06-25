@@ -6,7 +6,7 @@ const {
   StringSelectMenuOptionBuilder,
   SlashCommandBuilder,
 } = require("discord.js");
-const globals = require("../util/globals");
+const { validateStats } = require("../util/statsValidation");
 
 /* eslint-disable sort-keys */
 const STANDARD_NAMES = {
@@ -49,9 +49,13 @@ module.exports = {
     .setDescription("Choose your title"),
   async execute(interaction) {
     await interaction.deferReply();
-    const guildId = interaction.guild.id;
-    const userId = interaction.user.id;
-    const userStats = globals.get("stats")[guildId][userId];
+    
+    const validation = validateStats(interaction);
+    if (!validation.success) {
+      return interaction.editReply(validation.errorMessage);
+    }
+    
+    const { userStats } = validation;
     const { unlockedNames } = userStats;
 
     const select = buildSelectMenu(unlockedNames);
