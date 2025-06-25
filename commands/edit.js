@@ -1,7 +1,7 @@
 "use strict";
 
 const { MessageFlags, SlashCommandBuilder } = require("discord.js");
-const globals = require("../util/globals");
+const { validateStats } = require("../util/statsValidation");
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -29,7 +29,16 @@ module.exports = {
     const attribute = interaction.options.getString("attribute");
     const value = interaction.options.getString("value");
     const add = interaction.options.getBoolean("add") ?? false;
-    const userStats = globals.get("stats")[interaction.guild.id][user];
+    
+    const validation = validateStats(interaction, user);
+    if (!validation.success) {
+      return interaction.reply({
+        content: validation.errorMessage,
+        flags: MessageFlags.Ephemeral,
+      });
+    }
+    
+    const { userStats } = validation;
 
     await interaction.client.application.fetch();
     if (

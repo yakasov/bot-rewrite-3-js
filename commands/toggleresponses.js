@@ -1,7 +1,7 @@
 "use strict";
 
 const { MessageFlags, SlashCommandBuilder } = require("discord.js");
-const globals = require("../util/globals");
+const { ensureGuildStats } = require("../util/statsValidation");
 module.exports = {
   data: new SlashCommandBuilder()
     .setName("toggleresponses")
@@ -12,7 +12,7 @@ module.exports = {
       interaction.user === interaction.client.application.owner ||
       interaction.user.id === (await interaction.guild.fetchOwner()).user.id
     ) {
-      const guildStats = globals.get("stats")[interaction.guild.id];
+      const guildStats = ensureGuildStats(interaction);
       guildStats.allowResponses = !guildStats.allowResponses;
 
       return interaction.reply(

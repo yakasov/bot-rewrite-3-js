@@ -3,7 +3,9 @@
 const { SlashCommandBuilder } = require("discord.js");
 const { baseStats } = require("../util/stats");
 const { DISCORD_ID_LENGTH } = require("../util/consts");
+const { validateGuildStats } = require("../util/statsValidation");
 const globals = require("../util/globals");
+const { resetDatabase } = require("../util/stats/dbFunctions");
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -15,6 +17,13 @@ module.exports = {
       interaction.user === interaction.client.application.owner ||
       interaction.user.id === (await interaction.guild.fetchOwner()).user.id
     ) {
+      const validation = validateGuildStats(interaction);
+      if (!validation.success) {
+        return interaction.reply("This server has no statistics to reset!");
+      }
+      
+      await resetDatabase(interaction.guild.id);
+      
       const stats = globals.get("stats");
       Object.entries(stats)
         .filter(([k]) => k === interaction.guild.id)
@@ -33,10 +42,12 @@ module.exports = {
               stats[guildId][userId].previousVoiceTime = previousVoiceTime;
             });
         });
+      
+      return interaction.reply(
+        `Reset all guild stats for guild ${interaction.guild.id}.`
+      );
     }
 
-    return interaction.reply(
-      `Reset all guild stats for guild ${interaction.guild.id}.`
-    );
+    return interaction.reply("You are not an admin user!");
   },
 };

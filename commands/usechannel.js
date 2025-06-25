@@ -1,7 +1,8 @@
 "use strict";
 
 const { MessageFlags, SlashCommandBuilder } = require("discord.js");
-const globals = require("../util/globals");
+const { ensureGuildStats } = require("../util/statsValidation");
+const { saveStats } = require("../util/stats/persistence");
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -13,8 +14,11 @@ module.exports = {
       interaction.user === interaction.client.application.owner ||
       interaction.user.id === (await interaction.guild.fetchOwner()).user.id
     ) {
-      globals.get("stats")[interaction.guild.id].rankUpChannel =
-        interaction.channel.id;
+      const guildStats = ensureGuildStats(interaction);
+      guildStats.rankUpChannel = interaction.channel.id;
+      
+      const globals = require("../util/globals");
+      saveStats(globals.get("stats"));
 
       return interaction.reply(
         `Set the rank up channel to ${interaction.channel.name}.`

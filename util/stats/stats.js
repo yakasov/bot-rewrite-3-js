@@ -12,18 +12,23 @@ function addToStats(details) {
   const { type, userId, guildId, giver } = details;
   const giverId = giver ? giver.id : 0;
   const stats = globals.get("stats");
-  const guildStats = stats[guildId];
-  const userStats = guildStats[userId];
-
-  if (!guildStats) {
+  
+  // Ensure guild stats exist first
+  if (!stats[guildId]) {
     stats[guildId] = {
       allowResponses: true,
       rankUpChannel: "",
     };
   }
-
+  
+  const guildStats = stats[guildId];
+  
+  // Initialize stats first before accessing user stats
   initialiseStats(guildId, userId);
   initialiseStats(guildId, giverId);
+  
+  // Now get user stats after initialization
+  const userStats = guildStats[userId];
 
   switch (type) {
   case "init":

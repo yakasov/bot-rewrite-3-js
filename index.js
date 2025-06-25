@@ -6,13 +6,13 @@ const moment = require("moment-timezone");
 const process = require("node:process");
 
 const chanceResponses = require("./resources/chanceResponses.json");
-const loadedStats = require("./resources/stats.json");
 const { token } = require("./resources/config.json");
 
 const { generateRollTable } = require("./util/rollTableGenerator.js");
 const globals = require("./util/globals.js");
 const { loadCommands } = require("./util/commandLoader.js");
 const { messageSuperPatch } = require("./util/messageSuperPatch.js");
+const { loadStats } = require("./util/stats/persistence.js");
 
 const { handleClientReady } = require("./events/ready.js");
 const { handleInteractionCreate } = require("./events/interactionCreate.js");
@@ -23,41 +23,56 @@ process.on("unhandledRejection", (error) => {
   console.error("Unhandled error:", error);
 });
 
-globals.set("botUptime", 0);
-globals.set("currentDate", moment()
-  .tz("Europe/London"));
-globals.set("firstRun", { birthdays: true, minecraft: 1 });
-globals.set("rollTable", generateRollTable(chanceResponses));
-globals.set("splash", "");
-globals.set("stats", loadedStats);
-globalThis.fetch = fetch;
+async function initBot() {
+  globals.set("botUptime", 0);
+  globals.set("currentDate", moment()
+    .tz("Europe/London"));
+  globals.set("firstRun", { birthdays: true, minecraft: 1 });
+  globals.set("rollTable", generateRollTable(chanceResponses));
+  globals.set("splash", "");
 
-globalThis.client = new Client({
-  allowedMentions: {
-    parse: ["users", "roles"],
-    repliedUser: true,
-  },
-  intents: [
-    GatewayIntentBits.Guilds,
-    GatewayIntentBits.GuildMembers,
-    GatewayIntentBits.GuildMessages,
-    GatewayIntentBits.GuildMessageReactions,
-    GatewayIntentBits.GuildPresences,
-    GatewayIntentBits.GuildVoiceStates,
-    GatewayIntentBits.MessageContent,
-  ],
-});
+  try {
+    const loadedStats = await loadStats();
+    globals.set("stats", loadedStats);
+    console.log("Stats loaded successfully");
+  } catch (err) {
+    console.error("Failed to load stats:", err);
+    globals.set("stats", {});
+  }
 
-process.on("unhandledRejection", (error) => {
-  console.error("Unhandled error:", error);
-});
+  globalThis.fetch = fetch;
 
-messageSuperPatch();
-loadCommands(globalThis.client);
+  globalThis.client = new Client({
+    allowedMentions: {
+      parse: ["users", "roles"],
+      repliedUser: true,
+    },
+    intents: [
+      GatewayIntentBits.Guilds,
+      GatewayIntentBits.GuildMembers,
+      GatewayIntentBits.GuildMessages,
+      GatewayIntentBits.GuildMessageReactions,
+      GatewayIntentBits.GuildPresences,
+      GatewayIntentBits.GuildVoiceStates,
+      GatewayIntentBits.MessageContent,
+    ],
+  });
 
-globalThis.client.once(Events.ClientReady, handleClientReady);
-globalThis.client.on(Events.InteractionCreate, handleInteractionCreate);
-globalThis.client.on(Events.MessageCreate, handleMessageCreate);
-globalThis.client.on(Events.VoiceStateUpdate, handleVoiceStateUpdate);
+  messageSuperPatch();
+  loadCommands(globalThis.client);
 
-globalThis.client.login(token);
+  globalThis.client.once(Events.ClientReady, handleClientReady);
+  globalThis.client.on(Events.InteractionCreate, handleInteractionCreate);
+  globalThis.client.on(Events.MessageCreate, handleMessageCreate);
+  globalThis.client.on(Events.VoiceStateUpdate, handleVoiceStateUpdate);
+
+  globalThis.client.login(token);
+}
+
+
+// Needed for async function at top of file
+initBot()
+  .catch((err) => {
+    console.error("Failed to initialise bot:", err);
+    process.exit(1);
+  });

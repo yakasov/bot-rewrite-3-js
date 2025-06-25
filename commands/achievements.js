@@ -2,7 +2,7 @@
 
 const { SlashCommandBuilder } = require("discord.js");
 const achievements = require("../resources/achievements.json");
-const globals = require("../util/globals");
+const { validateStats } = require("../util/statsValidation");
 const { wrapCodeBlockString } = require("../util/common");
 
 function formatAchievementLine(achievement, unlocked) {
@@ -43,11 +43,14 @@ module.exports = {
     .setName("achievements")
     .setDescription("See your achievements"),
   async execute(interaction) {
-    const guildId = interaction.guild.id;
-    const userId = interaction.user.id;
-    const userStats = globals.get("stats")[guildId]?.[userId];
+    const validation = validateStats(interaction);
+    if (!validation.success) {
+      await interaction.reply(validation.errorMessage);
+      return;
+    }
 
-    const unlocks = userStats.achievements;
+    const { userStats } = validation;
+    const unlocks = userStats.achievements || [];
     const message = formatAchievementsMessage(unlocks, achievements);
 
     await interaction.reply(message);

@@ -9,8 +9,8 @@ const {
   getTitle,
   wrapCodeBlockString,
 } = require("../util/common.js");
-const globals = require("../util/globals.js");
 const { orderStatsByRank } = require("../util/stats/stats.js");
+const { validateStats } = require("../util/statsValidation.js");
 const { REGEX_DISCORD_MESSAGE_LENGTH_SHORT } = require("../util/consts.js");
 
 function findUserStatsAndRank(guildStats, guild, userId) {
@@ -56,19 +56,17 @@ module.exports = {
     }
     const debug = interaction.options.getBoolean("debug") ?? false;
 
-    const guildStats = globals.get("stats")[interaction.guild.id];
-    if (!guildStats) {
-      return interaction.reply("This server has no statistics yet!");
-    }
-
     const userId = user ?? interaction.user.id;
-    if (!guildStats[userId]) {
-      return interaction.reply("This user has no statistics yet!");
+    const validation = validateStats(interaction, userId);
+    if (!validation.success) {
+      return interaction.editReply(validation.errorMessage);
     }
+    
+    const { guildStats } = validation;
 
     const found = findUserStatsAndRank(guildStats, interaction.guild, userId);
     if (!found) {
-      return interaction.reply("Could not find user stats.");
+      return interaction.editReply("Could not find user stats.");
     }
     const { userStats, rank } = found;
     const allUserStats = guildStats[userStats[0]];
