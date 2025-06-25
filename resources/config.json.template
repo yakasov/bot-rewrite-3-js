@@ -30,6 +30,16 @@
     "_voiceChatSRGain": "The amount of SR to gain per second whilst in voice chat.",
     "tokenMax": 50,
     "dailyTokens": 3,
-    "charmCost": 5
+    "charmCost": 5,
+    "useDatabase": false,
+    "_useDatabase": "Use MariaDB instead of file storage for stats."
+  },
+  "database": {
+    "host": "localhost",
+    "port": 3306,
+    "user": "botuser",
+    "password": "",
+    "database": "discord_bot",
+    "_config": "database configuration (only used if useDatabase is true)."
   },
 }
