@@ -1,3 +1,5 @@
+# bot-rewrite-3-js is now deprecated! Please see [bot-rewrite-4-ts](https://github.com/yakasov/bot-rewrite-4-ts) for the new and improved version.
+
 # bot-rewrite-3-js
 
 Discord bot written in Node.js.
